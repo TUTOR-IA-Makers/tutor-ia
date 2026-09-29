@@ -1,0 +1,26 @@
+name: Chore
+description: Tooling, dependencies, CI, refactoring with no behaviour change
+labels: ["chore"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What needs doing
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: What it unblocks or costs us today
+      description: A chore with no consequence is not worth a branch.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: behaviour
+    attributes:
+      label: Confirm
+      options:
+        - label: This changes no observable behaviour (if it does, it is a feat or a fix)
+          required: true

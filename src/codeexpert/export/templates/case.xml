@@ -1,0 +1,17 @@
+ <testcase testtype="0" useasexample=Macro_UseAsExample hiderestiffail="0" mark="1.0000000" >
+      <testcode>
+                <text></text>
+      </testcode>
+      <stdin>
+                <text>Macro_StdIn</text>
+      </stdin>
+      <expected>
+                <text>Macro_OutputExpected</text>
+      </expected>
+      <extra>
+                <text></text>
+      </extra>
+      <display>
+                <text>Macro_Display</text>
+      </display>
+</testcase>

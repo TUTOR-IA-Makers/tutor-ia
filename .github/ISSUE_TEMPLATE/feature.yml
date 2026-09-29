@@ -1,0 +1,49 @@
+name: Feature
+description: A capability the product should have
+labels: ["feat"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One issue, one branch, one PR. If this needs two branches, it is two issues.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: Whose problem is it, and what do they do today instead?
+      placeholder: A teacher generating a "no loops" exercise has no way to know the solution actually avoids loops...
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: What is true when this is done
+      description: Observable behaviour, not implementation. This becomes the acceptance criteria.
+    validations:
+      required: true
+
+  - type: input
+    id: epic
+    attributes:
+      label: Related epic or gap
+      description: The SAD epic, FEAT id or entry in docs/product/gap-analysis.md this belongs to.
+      placeholder: EPIC-017 / FEAT-024 / gap 9
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
+      description: What a reader might reasonably expect here and should not get. This is the line an agent must not cross.
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size
+      options:
+        - S — under a day
+        - M — a few days
+        - L — needs splitting, or an ADR first
+    validations:
+      required: true

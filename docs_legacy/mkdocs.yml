@@ -1,0 +1,160 @@
+site_name: CodeExpert
+site_url: https://hugorosa29.github.io/coderunner_v2/
+site_description: Gerador automatizado de exercícios de programação em C para o Moodle CodeRunner.
+site_author: Hugo Rosa
+copyright: Copyright &copy; 2026 Hugo Rosa — Licenciado sob MIT
+
+repo_name: coderunner_v2
+repo_url: https://github.com/HugoRosa29/coderunner_v2
+edit_uri: ""
+
+docs_dir: docs
+site_dir: .dist/site
+
+theme:
+  name: material
+  language: pt-BR
+  favicon: assets/favicon.svg
+  logo: assets/logo.svg
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Seguir o tema do sistema
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Mudar para tema escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Mudar para tema claro
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - navigation.path
+    - navigation.tracking
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - content.tooltips
+    - search.suggest
+    - search.highlight
+    - search.share
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/HugoRosa29/coderunner_v2
+      name: Repositorio no GitHub
+  generator: false
+
+plugins:
+  - search:
+      lang:
+        - pt
+        - en
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Link permanente para esta secção
+      title: Nesta página
+  - pymdownx.betterem
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Início: index.md
+  - Produto:
+      - product/index.md
+      - Roadmap e enquadramento: product/roadmap.md
+      - Backlog do MVP: product/mvp-backlog.md
+      - Arquitetura alvo: product/target-architecture.md
+      - Análise de lacunas: product/gap-analysis.md
+  - Primeiros passos:
+      - getting-started/index.md
+      - Instalação: getting-started/installation.md
+      - Configuração: getting-started/configuration.md
+      - Executar o servidor: getting-started/running.md
+  - Guias:
+      - guides/index.md
+      - Gerar uma questão completa: guides/generate-a-question.md
+      - Pipeline passo a passo: guides/step-by-step-pipeline.md
+      - Importar no Moodle: guides/import-into-moodle.md
+  - Arquitetura:
+      - architecture/index.md
+      - Pipeline de geração: architecture/pipeline.md
+      - Cache e estado: architecture/cache-and-state.md
+      - Integração com o LLM: architecture/llm-integration.md
+      - Templates Moodle XML: architecture/moodle-xml.md
+  - API:
+      - api/index.md
+      - Configuração: api/config.md
+      - Endpoints de geração: api/generation.md
+      - Orquestrador: api/create-question.md
+      - Erros: api/errors.md
+  - Desenvolvimento:
+      - development/index.md
+      - Estrutura do projeto: development/project-structure.md
+      - Convenções: development/conventions.md
+      - Testes e verificação: development/testing.md
+      - Resolução de problemas: development/troubleshooting.md
+  - Deploy: deployment/index.md
+  - Contribuir: contributing/index.md
+
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn

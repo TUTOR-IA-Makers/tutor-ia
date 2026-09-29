@@ -1,0 +1,44 @@
+name: Bug
+description: Something behaves differently from what is documented or intended
+labels: ["fix"]
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen
+      description: And where that expectation comes from — a doc page, an ADR, a test.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens instead
+      description: Include the exact error, the status code, or the wrong output.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      placeholder: |
+        1. make run
+        2. curl -X POST ... -d '{...}'
+        3. ...
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Commit or branch
+      placeholder: main @ 5f7bfa5
+
+  - type: checkboxes
+    id: silent
+    attributes:
+      label: Failure mode
+      options:
+        - label: This fails silently (wrong output, no error) — these are the expensive ones

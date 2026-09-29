@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Working agreement
+    url: https://github.com/HugoRosa29/coderunner_v2/blob/main/AGENTS.md
+    about: How we work here — read before opening your first issue.
+  - name: Onboarding
+    url: https://github.com/HugoRosa29/coderunner_v2/blob/main/ONBOARDING.md
+    about: What this project is, and where this repository sits in it.
