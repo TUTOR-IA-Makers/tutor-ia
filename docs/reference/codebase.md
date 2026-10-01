@@ -40,6 +40,8 @@ scripts/                 check.sh (gate), dev-setup.sh, fix.sh, new-task.sh
 docs/                    este site; docs/adr/ em inglês
 .agents/                 regras, workflows e arquivos de tarefa (ver Harness)
 main.py                  atalho de compatibilidade para `python main.py`
+Dockerfile               imagem com a API e o gcc (ver Rodar com Docker)
+.dockerignore            o que nunca entra no contexto de build: .env, var/, .git
 ```
 
 Cerca de 1.500 linhas em `src/`. Um pacote só, sem monorepo ([ADR-0002](../adr/0002-modular-monolith-src-layout.md)). Direção das dependências e invariantes em [Arquitetura](../architecture/index.md#direcao-das-dependencias).
