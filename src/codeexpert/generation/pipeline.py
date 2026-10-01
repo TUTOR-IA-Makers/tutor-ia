@@ -9,6 +9,7 @@ the services directly now; the HTTP endpoints are one caller among several.
 import logging
 
 from codeexpert.domain import Constraints, Statement, TestCase
+from codeexpert.errors import CodeExpertError
 from codeexpert.execution import CodeRunner
 from codeexpert.export.moodle import ExportResult, export_question
 from codeexpert.generation.codegen import generate_code
@@ -50,11 +51,17 @@ def create_question(
 ) -> QuestionResult:
     logger.info("Run %s — starting generation", workspace.run_id)
 
-    statement = generate_statement(workspace, constraints, llm)
-    code = generate_code(workspace, llm)
-    inputs = generate_inputs(workspace, quantity, llm)
-    testcases = generate_testcases(workspace, runner)
-    export = export_question(workspace)
+    try:
+        statement = generate_statement(workspace, constraints, llm)
+        code = generate_code(workspace, llm)
+        inputs = generate_inputs(workspace, quantity, llm)
+        testcases = generate_testcases(workspace, runner)
+        export = export_question(workspace)
+    except CodeExpertError as exc:
+        # The steps already paid for stay in the workspace; without the id the
+        # client cannot find them to resume.
+        exc.run_id = workspace.run_id
+        raise
 
     logger.info("Run %s — complete, exported to %s", workspace.run_id, export.file_path)
     return QuestionResult(workspace.run_id, statement, code, inputs, testcases, export)

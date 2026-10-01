@@ -69,9 +69,6 @@ Um arquivo de tarefa em `main` significa trabalho em andamento ou branch abandon
 
 Falha que "parece não ter nada a ver" continua sendo falha: o CI vai falhar igual.
 
-!!! warning "O passo 6 não pega avisos hoje"
-    O script chama `mkdocs build --strict --quiet`, e o `--quiet` esconde os avisos, então link quebrado ou página fora do `nav` passam. Antes de abrir PR que mexe em `docs/`, rode `.venv/bin/mkdocs build --strict` sem `--quiet`. Ver [divergências conhecidas](../product/roadmap.md#divergencias-conhecidas).
-
 ## CI
 
 | Workflow | Quando | Jobs |

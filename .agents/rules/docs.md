@@ -1,10 +1,8 @@
 # Rules — documentation
 
 The site in `docs/` is written in Brazilian Portuguese and built with MkDocs
-Material. CI builds it with `--strict`, so a broken link, a missing anchor or a
-page outside the nav fails. `make check` currently passes `--quiet`, which hides
-those warnings — run `.venv/bin/mkdocs build --strict` yourself before a PR that
-touches `docs/`.
+Material. `make check` and CI build it with `--strict`, so a broken link, a
+missing anchor or a page outside the nav fails the gate.
 
 ## The distinction that this documentation exists to preserve
 

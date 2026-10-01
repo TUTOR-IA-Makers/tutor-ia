@@ -44,4 +44,7 @@ def register_error_handlers(app: FastAPI) -> None:
             logger.exception("Request failed with %d", status, exc_info=exc)
         else:
             logger.info("Request rejected with %d: %s", status, exc)
-        return JSONResponse(status_code=status, content={"detail": str(exc)})
+        content: dict[str, str] = {"detail": str(exc)}
+        if exc.run_id is not None:
+            content["run_id"] = exc.run_id
+        return JSONResponse(status_code=status, content=content)

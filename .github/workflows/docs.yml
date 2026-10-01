@@ -2,7 +2,7 @@ name: Documentation
 
 on:
   push:
-    branches: [main, docs]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -26,7 +26,7 @@ jobs:
           path: .dist/site
 
   deploy:
-    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/docs')
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     concurrency:

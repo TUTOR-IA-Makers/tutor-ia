@@ -60,7 +60,9 @@ run_docs() {
     echo "  mkdocs not installed — skipping (pip install -e '.[docs]')"
     return 0
   fi
-  "$PY" -m mkdocs build --strict --quiet
+  # Not --quiet: it hides the warnings that --strict is there to turn into
+  # failures. Only the INFO lines are filtered; pipefail keeps mkdocs' status.
+  "$PY" -m mkdocs build --strict 2>&1 | { grep -v '^INFO' || true; }
 }
 
 step "no runtime artefacts or secrets tracked" guard_artifacts

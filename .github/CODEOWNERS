@@ -2,19 +2,19 @@
 # areas where a mistake is expensive or invisible get a required reviewer.
 
 # Prompts decide the output and no test fully guards them.
-/src/codeexpert/generation/prompts.py   @HugoRosa29 @MartinQQmelo
+/src/codeexpert/generation/prompts.py   @HugoRosa29 @MartinQMelo
 
 # A broken macro is invisible until a Moodle import fails.
-/src/codeexpert/export/templates/       @HugoRosa29 @MartinQQmelo
+/src/codeexpert/export/templates/       @HugoRosa29 @MartinQMelo
 
 # Decisions are made by people; agents draft, humans accept.
-/docs/adr/                              @HugoRosa29 @MartinQQmelo
+/docs/adr/                              @HugoRosa29 @MartinQMelo
 
 # An agent must never be able to widen its own permissions or weaken the gate.
-/AGENTS.md                              @HugoRosa29 @MartinQQmelo
-/.agents/                               @HugoRosa29 @MartinQQmelo
-/.github/                               @HugoRosa29 @MartinQQmelo
-/scripts/                               @HugoRosa29 @MartinQQmelo
+/AGENTS.md                              @HugoRosa29 @MartinQMelo
+/.agents/                               @HugoRosa29 @MartinQMelo
+/.github/                               @HugoRosa29 @MartinQMelo
+/scripts/                               @HugoRosa29 @MartinQMelo
 
 # Supply chain.
-/pyproject.toml                         @HugoRosa29 @MartinQQmelo
+/pyproject.toml                         @HugoRosa29 @MartinQMelo

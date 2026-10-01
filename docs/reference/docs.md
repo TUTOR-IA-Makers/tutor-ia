@@ -6,7 +6,7 @@
 
 ```bash
 make docs                          # http://127.0.0.1:8001, com recarga
-.venv/bin/mkdocs build --strict    # o que o CI roda; falha em link quebrado, âncora inexistente ou página fora do nav
+make check                         # inclui mkdocs build --strict: falha em link quebrado, âncora inexistente ou página fora do nav
 ```
 
 O site é MkDocs Material, com versões fixadas em `requirements-docs.txt` (usado pelo CI) e no extra `docs` do `pyproject.toml` (usado por `make setup`). Se algo aparece diferente localmente e publicado, compare as versões dos dois.
@@ -103,9 +103,4 @@ Página nova entra no `nav` do `mkdocs.yml` no mesmo commit, ou o build estrito 
 
 **Endereço:** <https://tutor-ia-makers.github.io/tutor-ia/> (definido em `site_url` no `mkdocs.yml`).
 
-!!! warning "Habilitar uma vez no repositório"
-    Hoje o Pages não está habilitado e o job `deploy` falha em `configure-pages`. Alguém com permissão de administrador precisa, uma vez:
-
-    **Settings → Pages → Build and deployment → Source: GitHub Actions.**
-
-    Depois disso, o próximo push em `main` (ou *Run workflow* em **Documentation**) publica o site.
+O Pages está configurado em **Settings → Pages → Source: GitHub Actions**. Para republicar sem um push, use *Run workflow* em **Actions → Documentation**. Se essa configuração for desfeita, o job `deploy` falha em `configure-pages`.

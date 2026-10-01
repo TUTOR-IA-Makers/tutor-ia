@@ -10,7 +10,13 @@ the `detail` field. State what is missing *and* what to do about it.
 
 
 class CodeExpertError(Exception):
-    """Base class for every error this package raises deliberately."""
+    """Base class for every error this package raises deliberately.
+
+    `run_id` is set when the failure happened inside a run that stays on disk,
+    so the client can resume it step by step instead of starting over.
+    """
+
+    run_id: str | None = None
 
 
 class ConfigurationError(CodeExpertError):

@@ -114,3 +114,23 @@ def test_create_question_runs_every_step(client, statement_response) -> None:
     assert body["run_id"]
     assert len(body["testcases"]) == 1
     assert body["export"]["question_count"] == 1
+
+
+def test_create_question_failure_names_the_run_to_resume(
+    client, statement_response, isolated_settings
+) -> None:
+    """A mid-pipeline failure keeps the run on disk; the client needs its id to resume it."""
+    client.fake_llm._responses = [statement_response, SOLUTION_SOURCE, '["1\\n2\\n"]']
+    client.fake_runner.fail_compile = "solution.c:1:1: error: boom"
+
+    response = client.post("/create_question", json={"statement_request": {}, "qty": 1})
+
+    assert response.status_code == 422
+    body = response.json()
+    assert "boom" in body["detail"]
+    assert (isolated_settings.workspace_root / body["run_id"] / "solution.c").exists()
+
+
+def test_create_question_input_request_requires_a_run_id(client) -> None:
+    response = client.post("/create_question", json={"input_request": {"qty": 5}})
+    assert response.status_code == 422

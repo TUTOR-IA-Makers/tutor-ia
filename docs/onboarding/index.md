@@ -40,12 +40,8 @@ Instalar o `gcc`: `sudo apt install build-essential` (Debian/Ubuntu), `sudo dnf 
 ```bash
 git clone https://github.com/TUTOR-IA-Makers/tutor-ia.git
 cd tutor-ia
-chmod +x scripts/*.sh     # necessário até a correção do modo dos scripts entrar em main
 make setup                # cria .venv, instala dependências, copia .env.example para .env
 ```
-
-!!! warning "Por que o `chmod`"
-    Os scripts em `scripts/` foram versionados sem permissão de execução. Sem o `chmod`, `make setup`, `make check` e `make task` falham com `Permission denied` — é também por isso que o CI está vermelho. Ver [divergências conhecidas](../product/roadmap.md#divergencias-conhecidas).
 
 `make setup` pode ser executado de novo quando quiser. Ele instala o pacote em modo editável com os extras `dev` e `docs`, então mudanças em `src/` têm efeito sem reinstalar.
 

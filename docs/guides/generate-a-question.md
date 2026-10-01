@@ -95,12 +95,15 @@ curl -X POST $API/export_moodle_xml_question -H "$H" -d "{\"run_id\": \"$RUN\"}"
 
 ## Retomar depois de uma falha {#retomar-depois-de-uma-falha}
 
-Uma falha não apaga o que já foi gerado. Os erros de `/create_question` nem sempre trazem o `run_id`, então localize a execução pelo diretório:
+Uma falha não apaga o que já foi gerado. O erro de `/create_question` traz o `run_id` da execução:
+
+```json
+{ "detail": "Compilation failed:\nsolution.c:5:5: error: ...", "run_id": "20260918T221305Z-1a2b3c4d" }
+```
 
 ```bash
-ls var/runs/ | tail -3                     # os ids são ordenados por data
 RUN=20260918T221305Z-1a2b3c4d
-ls var/runs/$RUN/                          # até onde chegou
+ls var/runs/$RUN/                          # até onde chegou (ou ls var/runs/ | tail -3)
 
 $EDITOR var/runs/$RUN/solution.c           # corrigir o que falhou
 curl -X POST http://127.0.0.1:8000/gen_testcases \

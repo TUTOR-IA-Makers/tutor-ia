@@ -28,8 +28,8 @@ body:
     id: epic
     attributes:
       label: Related epic or gap
-      description: The SAD epic, FEAT id or entry in docs/product/gap-analysis.md this belongs to.
-      placeholder: EPIC-017 / FEAT-024 / gap 9
+      description: The SAD epic, FEAT id or item of the delivery plan (G0–G9) this belongs to.
+      placeholder: G2-2 / EPIC-017 / FEAT-024
 
   - type: textarea
     id: out-of-scope

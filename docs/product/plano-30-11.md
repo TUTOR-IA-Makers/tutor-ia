@@ -70,7 +70,7 @@ Aplicamos um desconto crescente sobre novembro, que é quando as outras matéria
 | **S4** — Fechar | 16/11 → 29/11 | 2 | 46 SP | 33 SP | 72% |
 | | | **9** | **246 SP** | **208 SP** | **85%** |
 
-!!! note "Por que a S4 está a 65%"
+!!! note "Por que a S4 está a 72%"
     Porque a segunda semana dela não é de trabalho novo. **Congelamento em 23/11**: a
     partir daí só correção de bug, deploy final e documentação. Uma sprint que termina
     no dia da entrega não tem margem para nada dar errado, e algo vai dar errado.
@@ -1032,7 +1032,7 @@ Doze critérios verificáveis. Não é "está bonito" — é passa ou não passa
 | --- | --- | --- | --- |
 | Estado no sistema de arquivos não sobrevive ao Cloud Run | Alto | G0-4 na S1, com ADR. Descobrir em outubro, não em novembro | A |
 | `tree-sitter-c` não distingue algum caso de escopo | Alto | Conjunto adversarial escrito **antes** do parser (G2-2). Plano B: aviso na tela em vez de rejeição automática | A |
-| Novembro come a capacidade (provas, trabalhos finais) | Alto | Desconto já aplicado; S4 a 65%; ordem de sacrifício decidida antes de doer | PO |
+| Novembro come a capacidade (provas, trabalhos finais) | Alto | Desconto já aplicado; S4 a 72%; ordem de sacrifício decidida antes de doer | PO |
 | Custo de LLM estoura | Médio | G0-6 e G8-2, teto duro, alerta em 50% | C |
 | Catalogar 32 questões é mais lento que o estimado | Médio | Começa na S0, distribuído em três sprints. Se atrasar, reduz de 4 eixos para 2 e diz isso na documentação | C |
 | Uma dupla fica bloqueada esperando outra | Médio | Backend entrega API antes da tela; front trabalha contra mock até a API existir | Todos |

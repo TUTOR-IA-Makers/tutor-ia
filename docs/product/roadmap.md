@@ -181,18 +181,18 @@ As lacunas do protótipo em relação ao EPIC-017, e onde o plano as trata. "Sil
 
 ## Divergências conhecidas {#divergencias-conhecidas}
 
-Encontradas ao revisar código, documentação e plano em 30/09. Ficam registradas aqui até serem corrigidas por uma issue própria.
+Nenhuma aberta. Encontradas na revisão de 30/09 e já corrigidas:
 
-| Divergência | Efeito | Correção sugerida |
-| --- | --- | --- |
-| Os scripts em `scripts/` estão versionados sem permissão de execução (`100644`) | `make setup`, `make check` e `make task` falham com `Permission denied` num clone novo; o job `gate` do CI falha pelo mesmo motivo | `git update-index --chmod=+x scripts/*.sh` |
-| `scripts/check.sh` roda `mkdocs build --strict --quiet`; o `--quiet` suprime os avisos e o modo estrito não dispara | O gate local não pega link quebrado nem página fora do `nav`. O workflow de docs (sem `--quiet`) pega | Remover `--quiet`, ou filtrar a saída sem esconder avisos |
-| GitHub Pages não está habilitado no repositório | O job `deploy` de `docs.yml` falha em `configure-pages` | Settings → Pages → Source: **GitHub Actions** ([Documentação](../reference/docs.md#publicacao)) |
-| `POST /create_question` aceita `input_request`, mas ele herda `run_id` obrigatório de `RunRequest` | `{"input_request": {"qty": 5}}` responde `422`. Use `qty` no nível de cima | Tornar `run_id` opcional ali, ou remover o campo |
-| Erros de `/create_question` nem sempre trazem o `run_id` | Para retomar, é preciso achar a execução em `var/runs/` | Incluir o `run_id` no `detail` |
-| `.github/ISSUE_TEMPLATE/config.yml` e `CODEOWNERS` referem o repositório/pessoas de origem (`HugoRosa29/coderunner_v2`) | Links de "Working agreement" e "Onboarding" no formulário de issue abrem o repositório antigo | Apontar para `TUTOR-IA-Makers/tutor-ia` (exige revisão humana) |
-| `docs.yml` também publica a partir de uma branch `docs`, que não existe mais | Nenhum; configuração morta | Remover `docs` do gatilho |
-| O plano diz "Por que a S4 está a 65%", mas a tabela de capacidade mostra 72% | Número inconsistente no contrato de escopo | Corrigir o plano por PR |
+| Divergência | Correção |
+| --- | --- |
+| Scripts em `scripts/` sem permissão de execução: `make setup`, `check` e `task` falhavam, e o CI também | Scripts versionados como executáveis |
+| `check.sh` rodava `mkdocs build --strict --quiet`; o `--quiet` escondia os avisos | Gate sem `--quiet`; agora falha em link quebrado ou página fora do `nav` |
+| GitHub Pages desabilitado; o job `deploy` falhava | Pages habilitado com origem GitHub Actions |
+| Erros de `/create_question` não diziam qual execução retomar | A resposta de erro traz `run_id` |
+| `input_request` exige `run_id`, e a documentação dizia o contrário | Documentação corrigida; o `run_id` continua obrigatório |
+| `CODEOWNERS` com login errado (`@MartinQQmelo`) e formulário de issue apontando para `HugoRosa29/coderunner_v2` | Login corrigido para `@MartinQMelo`; links apontam para `TUTOR-IA-Makers/tutor-ia` |
+| `docs.yml` publicava também a partir de uma branch `docs` inexistente | Gatilho só em `main` |
+| O plano dizia "S4 a 65%", mas a tabela mostra 72% | Plano corrigido para 72% |
 
 A documentação anterior também afirmava coisas que o código já não faz (execução "sem timeout", Pydantic "com API v1", "sem registro de modelo ou versão de prompt", "a equipe avança para a Onda 1"). Esta versão foi reescrita a partir do código de `main`.
 

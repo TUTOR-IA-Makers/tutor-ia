@@ -28,7 +28,6 @@ compatível com OpenAI. No Windows, use WSL.
 
 ```bash
 git clone https://github.com/TUTOR-IA-Makers/tutor-ia.git && cd tutor-ia
-chmod +x scripts/*.sh   # os scripts estão versionados sem permissão de execução
 make setup              # .venv, dependências, .env
 $EDITOR .env            # preencha CODEEXPERT_LLM_API_KEY
 make check              # o gate: formatação, lint, testes, docs

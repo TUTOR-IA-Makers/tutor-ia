@@ -24,7 +24,7 @@
 | <span class="ce-badge ce-badge--post">POST</span> | [`/export_moodle_xml_question`](#post-export_moodle_xml_question) | Etapa 5 — acrescenta a questão ao XML |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/create_question`](#post-create_question) | As cinco etapas numa chamada |
 
-Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem a forma `{"detail": "..."}` (exceto validação, ver [Erros](#erros)).
+Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem a forma `{"detail": "..."}`; erros de `/create_question` trazem também `run_id` (validação é diferente, ver [Erros](#erros)).
 
 | Endpoint | Duração típica | Dominada por |
 | --- | --- | --- |
@@ -151,7 +151,7 @@ As cinco etapas em sequência, numa execução nova (ou na indicada em `statemen
 | --- | --- | --- | --- |
 | `statement_request` | objeto | `{}` | Os campos de [`/gen_statement`](#post-gen_statement) |
 | `qty` | `int` | `10` | Número de entradas, 1 a 100 |
-| `input_request` | objeto | `null` | Alternativa para `qty`. **Hoje exige `run_id` também** — use `qty` |
+| `input_request` | objeto | `null` | Alternativa para `qty`: `{"run_id": "...", "qty": 5}`. Se presente, `run_id` é obrigatório e `qty` dele prevalece. A execução usada é sempre a de `statement_request.run_id` (ou uma nova) |
 
 ```json title="200"
 {
@@ -164,7 +164,7 @@ As cinco etapas em sequência, numa execução nova (ou na indicada em `statemen
 }
 ```
 
-Se uma etapa falha, o erro dela é devolvido com o mesmo status do endpoint individual, e o que já foi gerado fica no disco. Nem todo erro traz o `run_id`; para retomar, veja [Gerar uma questão](../guides/generate-a-question.md#retomar-depois-de-uma-falha). Não é idempotente: cada chamada cria uma execução e acrescenta uma questão ao XML.
+Se uma etapa falha, o erro dela é devolvido com o mesmo status do endpoint individual, e o que já foi gerado fica no disco. Nesse caso a resposta de erro traz também o `run_id`, para retomar etapa por etapa — ver [Gerar uma questão](../guides/generate-a-question.md#retomar-depois-de-uma-falha). Não é idempotente: cada chamada cria uma execução e acrescenta uma questão ao XML.
 
 ---
 

@@ -16,7 +16,7 @@ ls var/runs/ | tail -3                     # execuções mais recentes
 
 | Sintoma | Causa | Correção |
 | --- | --- | --- |
-| `make: ./scripts/dev-setup.sh: Permission denied` (também em `check`, `fix`, `task`) | Scripts versionados sem permissão de execução | `chmod +x scripts/*.sh` |
+| `make: ./scripts/…: Permission denied` | Clone antigo, de antes de os scripts virarem executáveis, ou cópia que perdeu a permissão | `git pull`; se persistir, `chmod +x scripts/*.sh` |
 | `ModuleNotFoundError: codeexpert` ou de uma dependência | Pacote não instalado no ambiente, ou dependência nova no `pyproject.toml` | `make setup` |
 | `make run`: porta 8000 ocupada | Outro processo | `.venv/bin/uvicorn codeexpert.api.app:app --reload --port 8010` |
 | `make check` verde, mas a etapa 4 falha | Sem `gcc`, os testes `@requires_gcc` são pulados | Instale o `gcc` (ver [Primeiro dia](../onboarding/index.md#pre-requisitos)) |
@@ -43,7 +43,7 @@ ls var/runs/ | tail -3                     # execuções mais recentes
 | `422 'gcc' was not found on PATH` | Sem compilador | Instale o `gcc` |
 | `409 '…' not found in run …` | Etapa chamada antes da anterior | Rode o endpoint indicado na mensagem |
 | `404 Run '…' not found` | `run_id` errado ou `var/` foi limpo | `ls var/runs/`, ou comece com `/gen_statement` |
-| `422` em `/create_question` com `input_request.run_id` | `input_request` exige `run_id` hoje | Use `qty` no nível de cima |
+| `422` em `/create_question` apontando `input_request.run_id` | `input_request` exige `run_id` | Envie o `run_id` em `input_request`, ou use só `qty` no nível de cima |
 
 ## Resultado errado sem erro
 
@@ -69,6 +69,5 @@ ls var/runs/ | tail -3                     # execuções mais recentes
 
 | Sintoma | Causa | Correção |
 | --- | --- | --- |
-| `make check` verde, mas o workflow Documentation falha | O gate roda o `mkdocs` com `--quiet`, que esconde os avisos | Rode `.venv/bin/mkdocs build --strict` e corrija os avisos |
 | `The following pages exist in the docs directory, but are not included in the "nav"` | Página nova fora do `mkdocs.yml` | Adicione ao `nav` |
-| Job `deploy` falha em `configure-pages` | GitHub Pages não habilitado | Ver [Documentação § Publicação](docs.md#publicacao) |
+| Job `deploy` falha em `configure-pages` | GitHub Pages desabilitado nas configurações do repositório | Ver [Documentação § Publicação](docs.md#publicacao) |

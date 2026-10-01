@@ -18,9 +18,6 @@ O `Makefile` só chama os scripts em `scripts/`, então pessoas, agentes e CI ro
 | `make task T=feat I=42 S=slug` | Cria a branch `feat/42-slug` a partir de `main` atualizada e o arquivo `.agents/tasks/42-slug.md` | `scripts/new-task.sh` |
 | `make clean` | Apaga `var/`, `.dist/`, caches de ferramentas e `__pycache__` | — |
 
-!!! warning "`Permission denied` em `make setup`, `check`, `fix` ou `task`"
-    Os scripts estão versionados sem permissão de execução. Rode `chmod +x scripts/*.sh` uma vez. Ver [divergências conhecidas](../product/roadmap.md#divergencias-conhecidas).
-
 Outras formas de iniciar a API, sem recarga: `.venv/bin/codeexpert`, `python -m codeexpert` ou `python main.py` — as três escutam em `0.0.0.0:8000`.
 
 ## Variáveis de ambiente {#variaveis-de-ambiente}
