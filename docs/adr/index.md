@@ -19,6 +19,7 @@
 | [0006](0006-issues-plus-task-file-per-branch.md) | GitHub issues plus one task file per branch | Accepted |
 | [0007](0007-configuration-from-the-environment.md) | Configuration from the environment | Accepted |
 | [0008](0008-one-gate-for-people-agents-and-ci.md) | One gate for people, agents and CI | Accepted |
+| [0009](0009-container-image-with-gcc.md) | One container image with the API and gcc | Proposed |
 
 Para escrever uma nova, ver [`.agents/workflows/add-adr.md`](https://github.com/HugoRosa29/coderunner_v2/blob/main/.agents/workflows/add-adr.md) e o [modelo](0000-template.md).
 

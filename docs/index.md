@@ -45,7 +45,8 @@ Até **30/11** a equipe vai transformar isso num produto usável por um professo
 | Saídas esperadas por execução real, com limite de tempo e de saída | <span class="ce-badge ce-status--done">Implementado</span> | [Pipeline § 4](architecture/pipeline.md#4-casos-de-teste) |
 | Rastreabilidade (modelo e versão de prompt por execução) | <span class="ce-badge ce-status--done">Implementado</span> | [Visão geral](architecture/index.md#o-diretorio-da-execucao) |
 | Gate único (`make check`), CI e harness para agentes | <span class="ce-badge ce-status--done">Implementado</span> | [Harness](reference/harness.md) |
-| Imagem Docker com `gcc` e deploy contínuo no Cloud Run | <span class="ce-badge ce-status--wip">Em desenvolvimento</span> | [Roadmap](product/roadmap.md#infraestrutura-e-deploy) |
+| Imagem Docker com a API e `gcc` | <span class="ce-badge ce-status--done">Implementado</span> | [Rodar com Docker](guides/docker.md) |
+| Deploy contínuo no Cloud Run | <span class="ce-badge ce-status--wip">Em desenvolvimento</span> | [Roadmap](product/roadmap.md#infraestrutura-e-deploy) |
 | Esqueleto do front-end e design system | <span class="ce-badge ce-status--wip">Em desenvolvimento</span> | [Roadmap](product/roadmap.md#interface-do-professor) |
 | Taxonomia e catalogação do acervo de referência | <span class="ce-badge ce-status--wip">Em desenvolvimento</span> | [Roadmap](product/roadmap.md#acervo-de-referencia) |
 | Postgres, banco de questões e geração como job | <span class="ce-badge ce-status--planned">Planejado</span> | [Roadmap](product/roadmap.md#estado-da-geracao) |
