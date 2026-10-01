@@ -6,195 +6,107 @@ hide:
 
 <div class="ce-hero" markdown>
 
-<span class="ce-hero__eyebrow">Protótipo · Pilar 1 · EPIC-017</span>
+<span class="ce-hero__eyebrow">Protótipo · EPIC-017 · Sprint 0 de 5</span>
 
 # CodeExpert
 
 <p class="ce-hero__sub">
-Serviço HTTP que gera exercícios de programação em C do zero — enunciado, solução de referência, entradas de teste e casos de teste verificados por execução real — e exporta tudo como um ficheiro XML pronto a importar no Moodle CodeRunner.
+Serviço HTTP que gera exercícios de programação em C — enunciado, solução de referência e casos de teste — e exporta como XML para o Moodle CodeRunner. As saídas esperadas vêm da execução real da solução, nunca de um modelo.
 </p>
 
-[Começar agora](getting-started/index.md){ .md-button .md-button--primary }
-[Onboarding](onboarding/index.md){ .md-button }
-[Contexto do produto](product/index.md){ .md-button }
+[Primeiro dia](onboarding/index.md){ .md-button .md-button--primary }
+[Arquitetura](architecture/index.md){ .md-button }
+[Roadmap até 30/11](product/roadmap.md){ .md-button }
 
 </div>
-
-!!! info "O que este repositório é, e o que não é"
-    O CodeExpert é um **protótipo do EPIC-017 — Geração de questões com IA**, o Pilar 1 de uma plataforma educacional mais ampla. Nos documentos de planeamento, esse épico está na **Onda 3 e explicitamente fora do MVP**.
-
-    Este código **não** é a plataforma. Não tem autenticação, base de dados, sandbox, análise estrutural nem cálculo de notas — nada disso lhe compete, e todos esses itens pertencem a épicos anteriores que ainda não existem.
-
-    O que faz, faz de ponta a ponta: produz uma questão CodeRunner utilizável a partir de um conjunto de restrições pedagógicas. Ver [Contexto do produto](product/index.md) para o enquadramento e [Análise de lacunas](product/gap-analysis.md) para a distância até ao alvo.
 
 ## O que é
 
-Criar uma questão de CodeRunner à mão é trabalho repetitivo: escrever o enunciado, programar a solução, inventar dezenas de entradas, executar cada uma para saber a saída esperada e depois embrulhar tudo em XML.
+Hoje o CodeExpert é uma API FastAPI sem interface, sem banco de dados e sem autenticação, que roda na máquina de quem desenvolve. Um pedido descreve as restrições pedagógicas do exercício (pode usar `if`? repetição? funções? vetores? qual o nível?) e o serviço:
 
-O CodeExpert automatiza esse ciclo. Um pedido HTTP descreve as **restrições pedagógicas** do exercício — pode usar `if`? e `else`? repetição? funções? vetores? qual a dificuldade? — e o serviço devolve uma questão completa.
+1. pede a um modelo de linguagem o enunciado, a solução em C e as entradas de teste;
+2. compila a solução com `gcc` e executa com cada entrada — o `stdout` real vira a saída esperada;
+3. monta um XML que o Moodle CodeRunner importa.
 
-O ponto crítico é que as saídas esperadas **não são geradas por um modelo de linguagem**. O serviço compila a solução com `gcc` e executa-a com cada entrada, capturando o `stdout` real. O que vai para o Moodle é o comportamento observado do programa, não uma previsão.
+Até **30/11** a equipe vai transformar isso num produto usável por um professor: interface web, banco de questões, verificação de escopo, aprovação humana e deploy público. O recorte está no [Plano de entrega](product/plano-30-11.md).
 
-!!! quote "Porque isso importa mais do que parece"
-    É o mesmo princípio que atravessa toda a plataforma alvo: **a IA produz texto, não veredictos.** A regra `RN-NOTA-01` proíbe qualquer saída de modelo de entrar no cálculo de uma nota. Este protótipo aplica a versão correspondente na geração — o que é verificável, verifica-se por execução.
+!!! quote "A regra que explica o código"
+    **O que pode ser verificado por execução nunca é previsto por um modelo.** Detalhe em [Primeiro dia](onboarding/index.md#a-regra-que-explica-o-codigo).
 
-## Principais funcionalidades
+## Estado atual
 
-<div class="grid cards" markdown>
+<span class="ce-badge ce-status--done">Implementado</span> existe no código de `main` ·
+<span class="ce-badge ce-status--wip">Em desenvolvimento</span> tem issue aberta na sprint atual ·
+<span class="ce-badge ce-status--planned">Planejado</span> está no plano, ainda sem código
 
--   :material-text-box-outline: **Enunciados sob restrições**
+| Área | Estado | Onde |
+| --- | --- | --- |
+| Pipeline de geração (5 etapas) e exportação Moodle XML | <span class="ce-badge ce-status--done">Implementado</span> | [Pipeline](architecture/pipeline.md) |
+| Saídas esperadas por execução real, com limite de tempo e de saída | <span class="ce-badge ce-status--done">Implementado</span> | [Pipeline § 4](architecture/pipeline.md#4-casos-de-teste) |
+| Rastreabilidade (modelo e versão de prompt por execução) | <span class="ce-badge ce-status--done">Implementado</span> | [Visão geral](architecture/index.md#o-diretorio-da-execucao) |
+| Gate único (`make check`), CI e harness para agentes | <span class="ce-badge ce-status--done">Implementado</span> | [Harness](reference/harness.md) |
+| Imagem Docker com `gcc` e deploy contínuo no Cloud Run | <span class="ce-badge ce-status--wip">Em desenvolvimento</span> | [Roadmap](product/roadmap.md#infraestrutura-e-deploy) |
+| Esqueleto do front-end e design system | <span class="ce-badge ce-status--wip">Em desenvolvimento</span> | [Roadmap](product/roadmap.md#interface-do-professor) |
+| Taxonomia e catalogação do acervo de referência | <span class="ce-badge ce-status--wip">Em desenvolvimento</span> | [Roadmap](product/roadmap.md#acervo-de-referencia) |
+| Postgres, banco de questões e geração como job | <span class="ce-badge ce-status--planned">Planejado</span> | [Roadmap](product/roadmap.md#estado-da-geracao) |
+| Verificação de escopo com `tree-sitter-c` | <span class="ce-badge ce-status--planned">Planejado</span> | [Roadmap](product/roadmap.md#verificacao-de-escopo) |
+| Revisão e aprovação humana | <span class="ce-badge ce-status--planned">Planejado</span> | [Roadmap](product/roadmap.md#revisao-e-aprovacao) |
+| Acesso por convite, cota e teto de custo | <span class="ce-badge ce-status--planned">Planejado</span> | [Roadmap](product/roadmap.md#acesso-e-custo) |
+| Sandbox isolado (Judge0) | Fora do recorte de 30/11 | [Roadmap](product/roadmap.md#execucao-de-codigo) |
 
-    ---
+!!! danger "Revise antes de usar com alunos"
+    Hoje nada verifica se a solução gerada respeita as restrições pedidas. Uma questão "sem repetição" pode sair com um `for`. As questões exportadas chegam ao Moodle com a etiqueta `Nao revisado`.
 
-    Cinco eixos combináveis (`if`, `else`, repetição, funções, vetores/matrizes) e cinco níveis de dificuldade traduzem-se num prompt em português que descreve exatamente o que a solução pode e não pode usar.
-
-    [:octicons-arrow-right-24: Referência dos parâmetros](api/generation.md#gen_statement)
-
--   :material-language-c: **Solução de referência em C**
-
-    ---
-
-    O modelo recebe o enunciado gerado e produz código C puro, sem markdown, que lê de `stdin` sem imprimir mensagens de prompt — o formato que o CodeRunner espera.
-
-    [:octicons-arrow-right-24: Como funciona](architecture/pipeline.md#2-gen_code)
-
--   :material-console: **Casos de teste executados, não previstos**
-
-    ---
-
-    `gcc` compila a solução, o binário é executado com cada entrada e o `stdout` capturado torna-se a saída esperada. Se o código não compilar, o pipeline falha em vez de exportar lixo.
-
-    [:octicons-arrow-right-24: Geração de casos de teste](architecture/pipeline.md#4-gen_testcases)
-
--   :material-file-xml-box: **Exportação Moodle XML**
-
-    ---
-
-    Três templates com marcadores `Macro_*` montam o XML final. Exportações sucessivas **acumulam** questões no mesmo ficheiro, permitindo construir um questionário inteiro.
-
-    [:octicons-arrow-right-24: Templates e acumulação](architecture/moodle-xml.md)
-
--   :material-swap-horizontal: **Provedor LLM configurável**
-
-    ---
-
-    A integração usa a API de *chat completions* compatível com OpenAI. Modelo, chave e URL do fornecedor vêm do ambiente — nunca do código — e `GET /config` aplica uma alteração sem reiniciar.
-
-    [:octicons-arrow-right-24: Configuração](getting-started/configuration.md)
-
--   :material-play-box-multiple: **Um endpoint ou cinco**
-
-    ---
-
-    `POST /create_question` corre o pipeline inteiro. Os cinco endpoints individuais expõem cada etapa isoladamente, para inspecionar ou repetir apenas uma parte.
-
-    [:octicons-arrow-right-24: Pipeline passo a passo](guides/step-by-step-pipeline.md)
-
-</div>
-
-## Quick start
-
-!!! warning "Pré-requisitos obrigatórios"
-    Python 3.12 ou superior, um compilador `gcc` no `PATH` e uma chave de API de um fornecedor compatível com OpenAI. No Windows, use WSL. Os detalhes estão em [Instalação](getting-started/installation.md).
-
-```bash
-# 1. Ambiente, dependências e .env
-make setup
-
-# 2. Preencha CODEEXPERT_LLM_API_KEY no .env
-#    (ver Configuração)
-
-# 3. Arranque o servidor
-make run
-```
-
-O servidor fica em `http://127.0.0.1:8000` e a raiz redireciona para o Swagger UI em `/docs`. Para gerar a primeira questão:
-
-```bash
-curl -X POST http://127.0.0.1:8000/create_question \
-  -H "Content-Type: application/json" \
-  -d '{"statement_request": {"difficulty": "facil", "can_has_repetition": true}, "qty": 10}'
-```
-
-O XML fica em `var/questions/Moodle_Questionnaire.xml`, e os artefactos da execução em `var/runs/<run_id>/` — incluindo o `meta.json` que regista o modelo e a versão de prompt usados.
-
-!!! danger "Reveja antes de usar com alunos"
-    O protótipo **não verifica se a solução gerada respeitou as restrições pedidas**. As questões exportadas dizem-no — chegam ao Moodle etiquetadas como `Nao revisado` — mas dizê-lo não é o mesmo que resolvê-lo.
-
-    É a lacuna que separa este protótipo do requisito FEAT-024, e está na lista *"nunca cortar"* do MVP. Ver [Verificações antes de usar com alunos](guides/import-into-moodle.md#verificacoes-antes-de-usar-com-alunos).
-
-[:octicons-arrow-right-24: Guia completo, com respostas de cada etapa](guides/generate-a-question.md)
-
-## Por onde continuar
+## Onde encontrar cada resposta
 
 <div class="grid cards" markdown>
 
--   :material-compass-outline: **[Onboarding](onboarding/index.md)**
+-   :material-compass-outline: **Como eu rodo?**
 
     ---
 
-    O primeiro dia: o que estamos a construir, a regra que explica o código, e como pôr isto a correr.
+    Pré-requisitos, clone, configuração, primeira questão gerada.
 
--   :material-lightbulb-outline: **[Contexto do produto](product/index.md)**
+    [:octicons-arrow-right-24: Primeiro dia](onboarding/index.md)
 
-    ---
-
-    A plataforma que este protótipo antecipa: problema, pilares, personas, e onde o EPIC-017 se encaixa no roadmap.
-
--   :material-rocket-launch-outline: **[Primeiros passos](getting-started/index.md)**
+-   :material-source-pull: **Como eu contribuo?**
 
     ---
 
-    Pré-requisitos, instalação, o formato do ficheiro de configuração e como arrancar o servidor.
+    Da issue ao PR, com o harness, o gate e o agente de código.
 
--   :material-sitemap-outline: **[Arquitetura](architecture/index.md)**
+    [:octicons-arrow-right-24: Da issue ao PR](guides/first-task.md)
 
-    ---
-
-    Como as cinco etapas comunicam através do diretório de cada execução, e porque é que só uma delas produz verdade.
-
--   :material-api: **[API](api/index.md)**
+-   :material-sitemap-outline: **Como funciona a arquitetura?**
 
     ---
 
-    Os seis endpoints, com corpos de pedido, respostas reais e os códigos de erro que cada um pode devolver.
+    Componentes, fluxo de dados, onde fica o estado, o que não existe.
 
--   :material-compare: **[Análise de lacunas](product/gap-analysis.md)**
+    [:octicons-arrow-right-24: Arquitetura](architecture/index.md)
 
-    ---
-
-    Este protótipo confrontado com os requisitos do EPIC-017, item a item, ordenado por retorno sobre esforço.
-
--   :material-code-braces: **[Desenvolvimento](development/index.md)**
+-   :material-robot-outline: **Como funciona o harness?**
 
     ---
 
-    Estrutura de pastas, convenções em uso, como verificar alterações e os problemas mais comuns.
+    `AGENTS.md`, `.agents/`, arquivo de tarefa, gate, CODEOWNERS.
 
--   :material-handshake-outline: **[Contribuir](contributing/index.md)**
+    [:octicons-arrow-right-24: Harness](reference/harness.md)
+
+-   :material-map-outline: **O que ainda vamos desenvolver?**
 
     ---
 
-    O ciclo de trabalho, o harness em `.agents/`, o portão, e como instruir um agente de código.
+    Cada mudança como Hoje → Planejado → Esperado, sprint a sprint.
+
+    [:octicons-arrow-right-24: Roadmap até 30/11](product/roadmap.md)
+
+-   :material-api: **Qual é o contrato da API?**
+
+    ---
+
+    Endpoints, corpos, respostas e códigos de erro.
+
+    [:octicons-arrow-right-24: Referência da API](reference/api.md)
 
 </div>
-
-## Estado do projeto
-
-O CodeExpert é um protótipo. Vale saber, antes de o adotar:
-
-| Área | Estado |
-| --- | --- |
-| Pipeline de geração | Funcional ponta a ponta |
-| Verificação das restrições declaradas | :material-close: Não implementada — [lacuna 1](product/gap-analysis.md#as-restricoes-nao-sao-verificadas) |
-| Portão de aprovação humana | :material-close: Ausente — as questões saem etiquetadas como `Nao revisado` — [lacuna 2](product/gap-analysis.md#o-portao-humano-nao-existe) |
-| Acervo de referência para ancoragem | :material-close: Gera sem referência — [lacuna 3](product/gap-analysis.md#nao-ha-acervo-de-referencia) |
-| Isolamento da execução | :material-alert: Limites de tempo e de saída, mas sem sandbox — [lacuna 4](product/gap-analysis.md#execucao-sem-isolamento) |
-| Testes automatizados | :material-check: Suite offline, corrida pelo portão e pelo CI |
-| Ficheiro de dependências da aplicação | :material-check: `pyproject.toml`, instalável com `make setup` |
-| Autenticação da API | :material-close: Nenhuma — todos os endpoints são públicos |
-| CI/CD | :material-check: Portão e construção da documentação no GitHub Actions |
-| Suporte a linguagens além de C | :material-close: `gcc` e `c_program` estão fixos no código |
-| Rastreabilidade da geração | :material-check: Modelo e versão de prompt por execução; custo ainda não |
-
-Cada um destes pontos está detalhado na secção correspondente, com o que existe e o que teria de mudar.

@@ -1,22 +1,19 @@
-# Gerar uma questão completa
+# Gerar uma questão
 
-<p class="lead">Uma chamada, cinco etapas, um ficheiro XML pronto a importar. Este guia acompanha o percurso completo e mostra o que inspecionar no fim.</p>
+<p class="lead">Duas formas de usar a API hoje: uma chamada que faz tudo, ou as cinco etapas uma a uma, editando os arquivos intermediários entre elas. As duas executam o mesmo código.</p>
+
+<span class="ce-badge ce-status--done">Implementado</span> Tudo nesta página funciona em `main`, via API local. A interface web para o professor está <span class="ce-badge ce-status--planned">Planejada</span> ([Roadmap](../product/roadmap.md#interface-do-professor)).
 
 ## Antes de começar
 
 ```bash
-curl http://127.0.0.1:8000/config
+make run                                          # em um terminal
+curl "http://127.0.0.1:8000/config?verify=true"   # em outro
 ```
 
-Confirme que `api_key_configured` é `true`. Se não for, volte a [Configuração](../getting-started/configuration.md) — falhar aqui custa um segundo; falhar a meio do pipeline custa trinta.
+`api_key_configured` e `provider_reachable` devem ser `true`. Falhar aqui custa um segundo; falhar no meio do pipeline custa trinta.
 
-E confirme o compilador:
-
-```bash
-gcc --version
-```
-
-## O pedido
+## Uma chamada: `POST /create_question`
 
 ```bash
 curl -X POST http://127.0.0.1:8000/create_question \
@@ -34,16 +31,7 @@ curl -X POST http://127.0.0.1:8000/create_question \
       }'
 ```
 
-`qty: 5` mantém a espera curta enquanto se está a experimentar. Para uma questão a sério, 10 a 20 casos dão uma cobertura mais honesta.
-
-!!! tip "Comece por um pedido mínimo"
-    ```bash
-    curl -X POST http://127.0.0.1:8000/create_question \
-      -H "Content-Type: application/json" -d '{"statement_request": {}, "qty": 3}'
-    ```
-    Todos os campos têm valores por omissão. Serve para confirmar que a cadeia inteira funciona antes de afinar restrições.
-
-## O que acontece durante o pedido
+Todos os campos têm padrão; `{"statement_request": {}, "qty": 3}` já funciona. Use `qty` pequeno para testar e 10 a 20 para uma questão de verdade. Significado de cada campo em [API](../reference/api.md#post-gen_statement).
 
 ```mermaid
 sequenceDiagram
@@ -56,95 +44,88 @@ sequenceDiagram
     C->>A: POST /create_question
     A->>W: cria o diretório da execução
     A->>M: enunciado
-    M-->>A: texto em blocos
     A->>W: statement.json
     A->>M: solução em C
-    M-->>A: código
     A->>W: solution.c
     A->>M: entradas de teste
-    M-->>A: array JSON
     A->>W: inputs.json
     A->>G: compila e executa cada entrada
     G-->>A: stdout real
     A->>W: testcases.json
     A->>A: renderiza o XML
-    A-->>C: 200 com run_id e tudo o resto
+    A-->>C: 200 com run_id e tudo o que foi gerado
 ```
 
-Três chamadas ao modelo, uma compilação e `qty` execuções. A quarta etapa é a única que não pergunta nada a um modelo.
+A resposta traz o `run_id`, o enunciado, o código, as entradas, os casos de teste e o caminho do XML. Guarde o `run_id`: é com ele que você encontra os arquivos e retoma o trabalho.
 
-## A resposta
+## Etapa por etapa
 
-```json
-{
-  "run_id": "20260918T221305Z-1a2b3c4d",
-  "statement": { "name": "Soma dos numeros pares", "statement": "..." },
-  "code": "#include <stdio.h>\n...",
-  "inputs": ["5\n1\n2\n3\n4\n5\n"],
-  "testcases": [{ "input": "5\n1\n2\n3\n4\n5\n", "output": "6\n" }],
-  "export": {
-    "file_path": "var/questions/Moodle_Questionnaire.xml",
-    "question_count": 1
-  }
-}
-```
-
-Guarde o `run_id`. É por ele que se encontram os artefactos no disco e se retoma o trabalho.
-
-## Quando uma etapa falha
-
-O erro da etapa é devolvido com o seu próprio código de estado, e **o que já foi gerado fica no disco**:
+Use quando quiser revisar ou corrigir um resultado antes de seguir: ajustar o enunciado antes de gerar a solução, trocar a solução pela sua, acrescentar casos-limite.
 
 ```bash
-RUN=20260918T221305Z-1a2b3c4d
-ls var/runs/$RUN/            # o que chegou a ser produzido
+API=http://127.0.0.1:8000
+H="Content-Type: application/json"
+
+# 1. Enunciado — cria a execução e devolve o run_id
+RUN=$(curl -sX POST $API/gen_statement -H "$H" \
+  -d '{"difficulty": "facil", "can_has_repetition": true}' | jq -r .run_id)
+$EDITOR var/runs/$RUN/statement.json        # opcional: ajustar título ou texto
+
+# 2. Solução em C
+curl -X POST $API/gen_code -H "$H" -d "{\"run_id\": \"$RUN\"}"
+$EDITOR var/runs/$RUN/solution.c            # opcional: usar a sua solução
+
+# 3. Entradas de teste
+curl -X POST $API/gen_inputs -H "$H" -d "{\"run_id\": \"$RUN\", \"qty\": 8}"
+$EDITOR var/runs/$RUN/inputs.json           # opcional: acrescentar zero, negativo, vazio, máximo
+
+# 4. Casos de teste — compila e executa; não chama o modelo
+curl -X POST $API/gen_testcases -H "$H" -d "{\"run_id\": \"$RUN\"}"
+
+# 5. Exportar para o XML
+curl -X POST $API/export_moodle_xml_question -H "$H" -d "{\"run_id\": \"$RUN\"}"
 ```
 
-A partir daí, retome pelo endpoint individual correspondente em vez de repetir tudo — ver [Pipeline passo a passo](step-by-step-pipeline.md#retomar-a-meio). Os erros mais comuns estão em [Erros](../api/errors.md).
+- Chamar uma etapa antes da anterior devolve `409`, dizendo qual arquivo falta e qual endpoint o produz.
+- Se você escrever a própria solução em `solution.c`, as saídas esperadas passam a refletir o seu código — dá para usar o serviço só como gerador de casos de teste.
+- Entradas precisam seguir exatamente o formato que os `scanf` da solução leem. Números separados por espaço quando o programa espera um por linha geram saídas vazias, sem erro.
 
-## Ficheiros no disco
+!!! warning "Exportar duas vezes duplica a questão"
+    O XML acumula. Chamar a etapa 5 duas vezes para o mesmo `run_id` deixa a questão duas vezes no arquivo. Para começar um questionário novo: `rm var/questions/Moodle_Questionnaire.xml`.
 
-```text
-var/runs/20260918T221305Z-1a2b3c4d/
-├── meta.json        restrições, modelo e versão de cada prompt
-├── statement.json
-├── solution.c
-├── solution         o binário
-├── inputs.json
-└── testcases.json
+## Retomar depois de uma falha {#retomar-depois-de-uma-falha}
 
-var/questions/
-└── Moodle_Questionnaire.xml
-```
-
-O XML acumula: cada exportação acrescenta uma questão ao mesmo ficheiro.
-
-## Verificar o resultado
-
-Um `200` não garante uma questão boa. Vale gastar um minuto:
+Uma falha não apaga o que já foi gerado. Os erros de `/create_question` nem sempre trazem o `run_id`, então localize a execução pelo diretório:
 
 ```bash
+ls var/runs/ | tail -3                     # os ids são ordenados por data
 RUN=20260918T221305Z-1a2b3c4d
+ls var/runs/$RUN/                          # até onde chegou
 
-# As restrições pedidas, e o prompt que as produziu
-cat var/runs/$RUN/meta.json
-
-# A solução respeita mesmo o que foi pedido? (nada no serviço o verifica)
-cat var/runs/$RUN/solution.c
-
-# Alguma saída capturada ficou vazia?
-python -c "
-import json; d=json.load(open('var/runs/'+'$RUN'+'/testcases.json'))
-vazias=[i for i,c in enumerate(d['testcases']) if not c['output'].strip()]
-print('saidas vazias:', vazias or 'nenhuma')"
-
-# Quantas questões tem o ficheiro?
-grep -c '<question type="coderunner"' var/questions/Moodle_Questionnaire.xml
+$EDITOR var/runs/$RUN/solution.c           # corrigir o que falhou
+curl -X POST http://127.0.0.1:8000/gen_testcases \
+  -H "Content-Type: application/json" -d "{\"run_id\": \"$RUN\"}"
 ```
 
-!!! danger "A verificação que o serviço não faz por si"
-    Se pediu uma questão sem repetição, **leia a solução**. O serviço não confirma que o modelo obedeceu, e o XML sai na mesma. É a lacuna 1 da [análise de lacunas](../product/gap-analysis.md#as-restricoes-nao-sao-verificadas).
+As etapas 1 a 3 são as que custam chamadas ao modelo; retomar da 4 não as repete.
 
-## Passo seguinte
+!!! info "O serviço verifica que o arquivo existe, não que faz sentido"
+    Se você editar `solution.c` e rodar a etapa 4 de novo, os casos de teste passam a refletir o código novo, mas o enunciado continua descrevendo o problema antigo. Refaça as etapas seguintes à que você editou.
 
-Para controlar cada etapa e editar resultados intermédios, ver [Pipeline passo a passo](step-by-step-pipeline.md). Para levar o XML ao Moodle, ver [Importar no Moodle](import-into-moodle.md).
+## Conferir o resultado
+
+Um `200` não garante uma boa questão. Antes de importar:
+
+```bash
+cat var/runs/$RUN/meta.json | jq .constraints              # o que foi pedido
+grep -nE "\b(for|while|do)\b" var/runs/$RUN/solution.c     # usou repetição? (acha comentários também)
+grep -nE "rand\(|srand\(|time\(NULL\)" var/runs/$RUN/solution.c   # é determinística?
+jq '[.testcases[] | select(.output | test("^\\s*$"))] | length' var/runs/$RUN/testcases.json   # saídas vazias
+```
+
+- [ ] A solução respeita as restrições pedidas. **Hoje nada verifica isso** — <span class="ce-badge ce-status--planned">Planejado</span> no G2 ([Roadmap](../product/roadmap.md#verificacao-de-escopo)).
+- [ ] A solução é determinística. Com `rand()` ou `time(NULL)`, nenhuma submissão passa, nem a própria resposta.
+- [ ] Nenhuma saída esperada está vazia.
+- [ ] O enunciado descreve a entrada no formato que a solução lê.
+
+**Próximo passo:** [Importar no Moodle](import-into-moodle.md).

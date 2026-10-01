@@ -1,11 +1,11 @@
 site_name: CodeExpert
-site_url: https://hugorosa29.github.io/coderunner_v2/
+site_url: https://tutor-ia-makers.github.io/tutor-ia/
 site_description: Gerador automatizado de exercícios de programação em C para o Moodle CodeRunner.
 site_author: Hugo Rosa
 copyright: Copyright &copy; 2026 Hugo Rosa — Licenciado sob MIT
 
-repo_name: coderunner_v2
-repo_url: https://github.com/HugoRosa29/coderunner_v2
+repo_name: TUTOR-IA-Makers/tutor-ia
+repo_url: https://github.com/TUTOR-IA-Makers/tutor-ia
 edit_uri: ""
 
 docs_dir: docs
@@ -63,8 +63,8 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/HugoRosa29/coderunner_v2
-      name: Repositorio no GitHub
+      link: https://github.com/TUTOR-IA-Makers/tutor-ia
+      name: Repositório no GitHub
   generator: false
 
 plugins:
@@ -83,7 +83,7 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
-      permalink_title: Link permanente para esta secção
+      permalink_title: Link permanente para esta seção
       title: Nesta página
   - pymdownx.betterem
   - pymdownx.caret
@@ -116,29 +116,14 @@ markdown_extensions:
 
 nav:
   - Início: index.md
-  - Onboarding: onboarding/index.md
-  - Produto:
-      - product/index.md
-      - Roadmap e enquadramento: product/roadmap.md
-      - Arquitetura alvo: product/target-architecture.md
-      - Análise de lacunas: product/gap-analysis.md
-      - Backlog do MVP: product/mvp-backlog.md
-  - Primeiros passos:
-      - getting-started/index.md
-      - Instalação: getting-started/installation.md
-      - Configuração: getting-started/configuration.md
-      - Executar o servidor: getting-started/running.md
-  - Guias:
-      - guides/index.md
-      - Gerar uma questão completa: guides/generate-a-question.md
-      - Pipeline passo a passo: guides/step-by-step-pipeline.md
+  - Começar:
+      - Primeiro dia: onboarding/index.md
+      - Da issue ao PR: guides/first-task.md
+      - Gerar uma questão: guides/generate-a-question.md
       - Importar no Moodle: guides/import-into-moodle.md
   - Arquitetura:
       - architecture/index.md
       - Pipeline de geração: architecture/pipeline.md
-      - Workspace de execução: architecture/cache-and-state.md
-      - Integração com o LLM: architecture/llm-integration.md
-      - Templates Moodle XML: architecture/moodle-xml.md
       - Decisões (ADR):
           - adr/index.md
           - 0001 — Record architecture decisions: adr/0001-record-architecture-decisions.md
@@ -150,24 +135,19 @@ nav:
           - 0007 — Configuration from the environment: adr/0007-configuration-from-the-environment.md
           - 0008 — One gate for people, agents and CI: adr/0008-one-gate-for-people-agents-and-ci.md
           - Modelo: adr/0000-template.md
-  - API:
-      - api/index.md
-      - Configuração: api/config.md
-      - Endpoints de geração: api/generation.md
-      - Orquestrador: api/create-question.md
-      - Erros: api/errors.md
-  - Desenvolvimento:
-      - development/index.md
-      - Estrutura do projeto: development/project-structure.md
-      - Convenções: development/conventions.md
-      - Testes e verificação: development/testing.md
-      - Resolução de problemas: development/troubleshooting.md
-  - Deploy: deployment/index.md
-  - Contribuir:
-      - contributing/index.md
-      - O harness: contributing/harness.md
-      - Rever e fechar: contributing/review.md
-      - Trabalhar na documentação: contributing/documentation.md
+  - Roadmap:
+      - Evolução até 30/11: product/roadmap.md
+      - Plano de entrega 30/11: product/plano-30-11.md
+      - Plataforma-alvo: product/index.md
+      - Arquitetura-alvo (SAD): product/target-architecture.md
+      - Backlog da plataforma: product/mvp-backlog.md
+  - Referência:
+      - API: reference/api.md
+      - Comandos e configuração: reference/configuration.md
+      - Código: reference/codebase.md
+      - Harness: reference/harness.md
+      - Documentação: reference/docs.md
+      - Problemas comuns: reference/troubleshooting.md
 
 validation:
   omitted_files: warn

@@ -241,6 +241,16 @@
   margin: 0 0.5rem 0.4rem 0;
 }
 
+@media screen and (max-width: 44.9375em) {
+  .ce-hero {
+    padding: 1.6rem 1.1rem 1.4rem;
+  }
+
+  .md-typeset .ce-hero h1 {
+    font-size: 1.6rem;
+  }
+}
+
 /* --- Badges e metadados -------------------------------------------------- */
 
 .ce-badge {
@@ -260,6 +270,18 @@
 .ce-badge--post   { color: #4B4EDE; border-color: #4B4EDE55; }
 .ce-badge--req    { color: #b3261e; border-color: #b3261e55; }
 .ce-badge--opt    { color: var(--md-default-fg-color--light); }
+
+/* Estado de uma funcionalidade. Mesma forma do ce-badge, para que "o que existe"
+   e "o que é plano" se distingam de relance em qualquer página. */
+.ce-status--done    { color: #1a7f5a; border-color: #1a7f5a55; }
+.ce-status--wip     { color: #b26a00; border-color: #b26a0055; }
+.ce-status--planned { color: #4B4EDE; border-color: #4B4EDE55; border-style: dashed; }
+
+[data-md-color-scheme="slate"] .ce-status--done    { color: #4cc38a; }
+[data-md-color-scheme="slate"] .ce-status--wip     { color: #f0a54a; }
+[data-md-color-scheme="slate"] .ce-status--planned { color: #8f91ff; }
+[data-md-color-scheme="slate"] .ce-badge--post     { color: #8f91ff; }
+[data-md-color-scheme="slate"] .ce-badge--get      { color: #4cc38a; }
 
 /* --- Footer -------------------------------------------------------------- */
 

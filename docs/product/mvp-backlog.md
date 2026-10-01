@@ -1,14 +1,12 @@
-# Backlog do MVP
+# Backlog da plataforma
 
-<p class="lead">O backlog das Ondas 0 e 1 derivado do SAD v0.1, organizado para importação no GitHub Projects (Épicos → Histórias de Utilizador → Tarefas). Descreve a <strong>plataforma alvo</strong>, não este repositório.</p>
+<p class="lead">O backlog das Ondas 0 e 1 da plataforma-alvo, derivado do SAD v0.1 e organizado como épicos, histórias e tarefas. Descreve a plataforma, não este repositório.</p>
 
-!!! warning "Documento em reformulação — direção, não contrato"
-    Este backlog reflete o SAD v0.1 e **está a ser reformulado** pela equipa. Trate-o como a direção pretendida, não como a lista de trabalho acordada: os números, as prioridades e o recorte dos épicos vão mudar.
-
-    O trabalho efetivamente em curso vive nas [*issues* do GitHub](https://github.com/HugoRosa29/coderunner_v2/issues). O que este repositório implementa hoje é um protótipo do EPIC-017, da Onda 3 — nada nesta página está construído aqui. Ver [Análise de lacunas](gap-analysis.md).
+!!! warning "Direção de longo prazo, não lista de trabalho"
+    **O trabalho acordado até 30/11 está no [Plano de entrega](plano-30-11.md)**, e o trabalho em curso nas [issues do GitHub](https://github.com/TUTOR-IA-Makers/tutor-ia/issues). Este backlog continua valendo como direção da plataforma para depois de 30/11 e ainda vai ser revisado pela equipe. Nada nesta página está implementado.
 
 !!! info "Onde o SAD e o briefing divergem"
-    Onde o SAD regista uma **divergência arquitetural (D-1, D-2, D-3)**, o backlog já reflete a decisão corrigida, e não o briefing original.
+    Onde o SAD registra uma **divergência arquitetural (D-1, D-2, D-3)**, o backlog já reflete a decisão corrigida, e não o briefing original.
 
 ---
 

@@ -1,33 +1,42 @@
 # Rules — documentation
 
-The site in `docs/` is written in Portuguese and built with MkDocs Material.
-`make check` builds it with `--strict`, so a broken link, a missing anchor or a
-page outside the nav fails the gate.
+The site in `docs/` is written in Brazilian Portuguese and built with MkDocs
+Material. CI builds it with `--strict`, so a broken link, a missing anchor or a
+page outside the nav fails. `make check` currently passes `--quiet`, which hides
+those warnings — run `.venv/bin/mkdocs build --strict` yourself before a PR that
+touches `docs/`.
 
 ## The distinction that this documentation exists to preserve
 
-Most of `docs/product/` describes a **platform that does not exist yet** — the
-SAD, the epics, the waves. This repository implements one prototype of one epic
-from the last wave. Every page must make clear which side of that line it is on.
+Much of the documentation describes things that do not exist yet: the delivery
+plan until 30/11 (`docs/product/plano-30-11.md`) and the target platform (the
+SAD, the epics, the waves). Every page must make clear which side of that line
+it is on.
 
 | Writing about | Say it like |
 | --- | --- |
-| What the code does today | Plainly, in the present tense |
-| What the planning documents specify | "The SAD defines…", "EPIC-017 requires…" |
-| What is missing | Name the gap and link to `docs/product/gap-analysis.md` |
+| What the code on `main` does today | Plainly, in the present tense, in `architecture/`, `guides/` or `reference/` |
+| What the plan or the SAD specify | "The plan adds…", "The SAD defines…", and a link to `docs/product/roadmap.md` |
+| State of a feature | The badge: `ce-status--done` (Implementado), `ce-status--wip` (Em desenvolvimento — open issue in the current sprint), `ce-status--planned` (Planejado) |
 
 Confusing the two is the most expensive mistake available in this repository,
 because it sends a reader looking for code that was never written.
+
+One fact, one place: write it on one page and link to it from the others.
+Guides (`onboarding/`, `guides/`) walk through a task; reference pages
+(`reference/`) are for lookup. See `docs/reference/docs.md`.
 
 ## When code changes
 
 If a change alters behaviour that a page describes, the page changes in the same
 PR. The pages most easily made wrong:
 
-- `docs/architecture/` — pipeline, run workspace, LLM integration, XML templates
-- `docs/api/` — request and response shapes
-- `docs/getting-started/` — installation and configuration
-- `docs/development/` — project structure and conventions
+- `docs/architecture/` — components, run workspace, pipeline, LLM client, XML templates
+- `docs/reference/api.md` — request and response shapes, status codes
+- `docs/reference/configuration.md` — `Makefile`, scripts, environment variables
+- `docs/reference/harness.md` — `AGENTS.md`, `.agents/`, CI, `CODEOWNERS`
+- `docs/onboarding/` — installation steps
+- `docs/product/roadmap.md` — when an issue from the plan closes, move its badge
 
 ## Style
 

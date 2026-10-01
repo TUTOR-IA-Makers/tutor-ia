@@ -1,71 +1,38 @@
-# Contexto do produto
+# Plataforma-alvo
 
-<p class="lead">Este repositório não é o produto. É um protótipo de uma das suas partes. Esta secção resume a visão da plataforma que os documentos de planeamento descrevem, para que o código seja lido no lugar certo.</p>
+<p class="lead">A plataforma completa que os documentos de planejamento descrevem, e onde este repositório se encaixa nela. Nada desta página existe em código, exceto onde indicado.</p>
 
-!!! info "Fonte desta secção"
-    O conteúdo aqui resume quatro documentos de planeamento externos ao repositório:
+!!! info "Fonte"
+    Resumo de quatro documentos de planejamento externos ao repositório, todos v0.1 e com decisões em aberto:
 
-    | Documento | Versão | Conteúdo |
-    | --- | --- | --- |
-    | Etapa 1 — Visão do produto | v0.1 | Problema, proposta de valor, personas, riscos, hipóteses |
-    | Etapa 2 — Mapa de épicos | v0.1 | 19 épicos, modelo de nota, matriz de permissões, ondas |
-    | Etapa 3 — Definição do MVP | — | Recorte por épico, critérios de saída, sequenciamento |
-    | SAD — Arquitetura do MVP | v0.1 (rascunho) | C4, ADRs, modelo de dados, resiliência, segurança |
-
-    São documentos **de planeamento, com decisões ainda em aberto**. Descrevem o que se pretende construir, não o que existe. O que existe está documentado em [Arquitetura](../architecture/index.md).
+    | Documento | Conteúdo |
+    | --- | --- |
+    | Etapa 1 — Visão do produto | Problema, proposta de valor, personas, riscos, hipóteses |
+    | Etapa 2 — Mapa de épicos | 19 épicos, modelo de nota, permissões, ondas |
+    | Etapa 3 — Definição do MVP | Recorte por épico, critérios de saída, sequenciamento |
+    | SAD — Arquitetura do MVP | C4, ADRs, modelo de dados, resiliência, segurança — resumido em [Arquitetura-alvo](target-architecture.md) |
 
 ## O problema
 
-O ensino de programação introdutória tem alta reprovação, e a ferramenta de apoio habitual — o juiz automático — mede a coisa errada: verifica se o programa produz a saída esperada, e nada mais.
+Disciplinas introdutórias de programação têm reprovação alta, e a ferramenta usual — o juiz automático — só verifica se o programa imprime a saída esperada. Três consequências:
 
-Daí decorrem três problemas encadeados:
+- **O aluno recebe um veredito, não um diagnóstico.** "Wrong Answer" não diz o que errou.
+- **O professor vê o resultado, não o processo.** Uma planilha de acertos não diz o que ensinar na próxima aula.
+- **O que importa pedagogicamente não é verificado.** "Resolva sem usar `if`" passa se a saída estiver certa.
 
-<div class="grid cards" markdown>
+E desde 2025, com modelos de linguagem a uma aba de distância, "o código passa nos testes" deixou de ser evidência de aprendizado. Por isso a plataforma se posiciona como **avaliação formativa e diagnóstica**, não como juiz automático melhorado.
 
--   :material-alert-circle-outline: **O aluno recebe um veredito, não um diagnóstico**
+## Três pilares
 
-    ---
+| Pilar | O que faz | Onda |
+| --- | --- | --- |
+| **Pilar 2** — Correção e feedback | Avalia a submissão em três camadas e devolve feedback formativo | 1 — o MVP |
+| **Pilar 3** — Analítica pedagógica | Transforma submissões em diagnóstico por conceito para o professor | 2 |
+| **Pilar 1** — Geração de questões | Gera exercícios no estilo pedagógico da instituição | 3 — **este repositório** |
 
-    *"Wrong Answer"* não diz onde está o erro nem que conceito falhou. O comportamento racional passa a ser tentativa e erro — o oposto do que a disciplina quer ensinar.
+O Pilar 2 produz os dados que os outros consomem; o Pilar 1 vem por último porque um humano aprova o que ele gera e porque depende de um acervo de referência.
 
--   :material-eye-off-outline: **O professor vê o resultado, não o processo**
-
-    ---
-
-    Uma folha de acertos não responde às perguntas que importam para a aula seguinte. Lê-las exige abrir código um a um, o que não escala para 40, 80 ou 200 alunos.
-
--   :material-scale-balance: **O que é pedagogicamente relevante não é verificável**
-
-    ---
-
-    *"Resolva sem usar condicionais"* é a restrição típica de uma introdutória. Um juiz tradicional aprova quem usou `if`, porque a saída está correta.
-
-</div>
-
-### A premissa mudou em 2025
-
-Com LLMs amplamente disponíveis, *"o código do aluno passa nos casos de teste"* deixou de ser evidência de aprendizagem em exercícios introdutórios.
-
-!!! warning "Consequência de posicionamento"
-    Os documentos de visão são explícitos: construir isto como *"juiz automático melhorado com IA"* seria resolver um problema já ultrapassado por fora. O posicionamento adotado é **plataforma de avaliação formativa e diagnóstica**, não instrumento de avaliação somativa.
-
-    Daí decorre uma decisão que afeta diretamente este repositório: os dados de processo — histórico de tentativas, evolução entre submissões, padrões de erro — são o núcleo do produto, não *analytics* acessório.
-
-## Os três pilares
-
-| Pilar | O que faz | Onda | Estado |
-| --- | --- | --- | --- |
-| **Pilar 2** — Correção e feedback | Avalia submissões em três camadas e devolve feedback formativo | 1 | O coração do MVP |
-| **Pilar 3** — Analytics pedagógico | Transforma submissões em diagnóstico agregado por conceito | 2 | Depende dos dados do Pilar 2 |
-| **Pilar 1** — Geração de questões | Gera questões alinhadas ao padrão pedagógico da instituição | 3 | **É o que este repositório prototipa** |
-
-A ordem é deliberada: `Pilar 2 → Pilar 3 → Pilar 1`. O Pilar 2 é o que gera os dados dos outros dois; o Pilar 1 é o mais tolerante a erro, porque tem um humano no portão de aprovação — e o mais dependente de um acervo que ainda pode não existir.
-
-Ver [Roadmap e enquadramento](roadmap.md) para onde este código se situa.
-
-## As três camadas de avaliação
-
-O desenho central do Pilar 2, e o contexto que explica várias decisões do protótipo:
+### As três camadas de avaliação
 
 ```mermaid
 flowchart LR
@@ -80,105 +47,97 @@ flowchart LR
     F --> A
 ```
 
-| Camada | Natureza | Entra na nota |
+!!! danger "RN-NOTA-01"
+    **Nenhuma saída de modelo de linguagem entra no cálculo da nota, em nenhuma proporção.** A IA produz texto, ancorado no que C1 e C2 já apuraram. Avaliação por LLM não é determinística nem auditável, e duas notas diferentes para códigos equivalentes destroem a confiança do professor.
+
+    Neste repositório, a mesma regra faz a etapa 4 compilar e executar em vez de perguntar ao modelo qual seria a saída.
+
+A camada C2 também não pode ser feita por LLM: um comentário, uma string ou uma variável `whileCount` induzem erro. Estruturas permitidas e proibidas são verificadas por parser determinístico (`tree-sitter-c`) — a mesma decisão que o G2-2 aplica à **nossa** solução de referência.
+
+## As quatro ondas
+
+```mermaid
+flowchart LR
+    O0["Onda 0<br/>Fundação<br/><small>identidade, tenancy,<br/>gestão acadêmica,<br/>banco de questões</small>"]
+    O1["Onda 1<br/>Pilar 2<br/><small>submissão, sandbox,<br/>nota, análise estrutural,<br/>feedback com IA</small>"]
+    O2["Onda 2<br/>Pilar 3<br/><small>relatórios</small>"]
+    O3["Onda 3<br/>Pilar 1<br/><small>geração de questões</small>"]
+    O0 --> O1 --> O2 --> O3
+    O1 -.->|"MVP fecha aqui"| M(["MVP"])
+```
+
+| Onda | Épicos | Resultado |
 | --- | --- | --- |
-| **C1 — Funcional** | Determinística | :material-check: Sim |
-| **C2 — Estrutural** | Determinística, via AST | :material-check: Sim (conforme o modo) |
-| **C3 — Pedagógica** | IA, não determinística | :material-close: **Nunca** |
+| **0 — Fundação** | EPIC-001 a 007, 018, 019 | Uma turma real existe na plataforma, com questões publicadas |
+| **1 — Pilar 2** | EPIC-008 a 013 | **MVP**: o aluno submete, recebe nota determinística e feedback |
+| **2 — Pilar 3** | EPIC-014 a 016 | O professor decide a próxima aula com base em dados |
+| **3 — Pilar 1** | EPIC-017 | O acervo cresce com apoio de IA |
 
-!!! danger "A regra que atravessa todo o produto"
-    **RN-NOTA-01 — Nenhuma saída de modelo de linguagem entra no cálculo da nota, em nenhuma proporção.**
+O backlog das Ondas 0 e 1 está em [Backlog da plataforma](mvp-backlog.md).
 
-    A IA produz apenas texto, ancorado em evidências que C1 e C2 já produziram. A justificação é direta: avaliação por LLM é não determinística e não auditável, e dois códigos equivalentes com notas diferentes destroem a confiança do professor de forma irreversível.
+## Onde este repositório se encaixa
 
-    Este repositório não calcula notas, pelo que a regra não o afeta diretamente. Mas explica porque é que a etapa de casos de teste do protótipo **compila e executa** em vez de perguntar ao modelo qual seria a saída — ver [Pipeline](../architecture/pipeline.md#4-gen_testcases).
+No roadmap original, o EPIC-017 é o **último épico da última onda** e depende de EPIC-004 (banco de questões), 005 (curadoria), 006 (casos de teste e validação) e 013 (governança de IA).
 
-!!! warning "C2 não pode ser feita por LLM"
-    Perguntar a um modelo *"este código usa `while`?"* é lento, caro e probabilístico — um comentário, uma string ou uma variável chamada `whileCount` induzem erro. Uma única ocorrência de aluno penalizado por uma estrutura que não usou derruba a confiança na plataforma.
+O [Plano de entrega](plano-30-11.md) **reescopa isso de propósito**: até 30/11 a equipe entrega o gerador como produto, e constrói só as partes de 004, 005 e 013 de que a geração precisa. O motivo: ~80% do núcleo do gerador já existia e passava nos testes, enquanto a Onda 1 exige sandbox, identidade, análise de AST de código de aluno e cálculo de nota, tudo do zero.
 
-    A verificação de estruturas permitidas e proibidas é sempre por parser determinístico. Ver [Arquitetura alvo](target-architecture.md#adr-005-tree-sitter-c).
+| O EPIC-017 exige | Hoje | Até 30/11 |
+| --- | --- | --- |
+| Parametrização (conteúdo, nível, estruturas) | <span class="ce-badge ce-status--done">Implementado</span> parcial: nível e cinco booleanos | <span class="ce-badge ce-status--planned">Planejado</span> eixo e listas de estruturas (G2-1, G6-1) |
+| Gerar enunciado, solução e casos de teste | <span class="ce-badge ce-status--done">Implementado</span> | — |
+| Validação automática antes de mostrar ao professor | <span class="ce-badge ce-status--done">Implementado</span> parcial: compila e executa | <span class="ce-badge ce-status--planned">Planejado</span> verificação de escopo (G2) |
+| Rastreabilidade (modelo, prompt, custo) | <span class="ce-badge ce-status--done">Implementado</span> parcial: modelo e versão de prompt | <span class="ce-badge ce-status--planned">Planejado</span> custo (G2-4) |
+| Revisar → editar → aprovar | Não existe | <span class="ce-badge ce-status--planned">Planejado</span> (G3, G4) |
+| Referências do acervo; habilitar só com ≥ 8 por combinação | Não existe | <span class="ce-badge ce-status--planned">Planejado</span> (G6) |
+| Alerta de similaridade com o acervo | Não existe | Fora do recorte |
+| Aprovador ≠ solicitante | Não existe | Fora do recorte |
 
 ## Personas
 
-| Persona | Papel | Relevante para este repositório |
+| Persona | Papel na plataforma | No recorte de 30/11 |
 | --- | --- | --- |
-| **Professor** | Cria questões, publica atividades, sobrescreve notas | :material-check: É quem opera a geração e aprova o resultado |
-| **Tutor** | Cria, edita e valida questões | :material-check: Também aprova questões no banco |
-| **Aluno** | Submete código, lê feedback | Consome as questões geradas |
-| **Monitor** | Lê submissões e relatórios da sua turma | Somente leitura |
-| **Coordenador** | Consome relatórios agregados | Não opera o sistema |
-| **Administrador** | Tenant, utilizadores, cotas de IA | Configura o provedor e os limites |
+| **Professor** | Cria questões, publica atividades | Gera, revisa, aprova e exporta |
+| **Tutor** | Cria, edita e valida questões | — |
+| **Monitor** | Lê submissões e relatórios da turma | Cataloga o acervo |
+| **Aluno** | Submete código, lê feedback | Não toca o sistema |
+| **Coordenador** | Consome relatórios agregados | — |
+| **Administrador** | Tenant, usuários, cotas de IA | — (a equipe opera) |
 
-!!! note "O comportamento crítico do professor"
-    Os documentos de visão registam-no de forma explícita: o professor **desconfia de avaliação dada por IA** e abandona o sistema se discordar de duas ou três avaliações.
+O professor desconfia de avaliação feita por IA e abandona o sistema depois de discordar de duas ou três. Por isso a geração tem aprovação humana obrigatória.
 
-    É a razão pela qual o Pilar 1 tem um portão humano obrigatório — e pela qual este protótipo etiqueta hoje as suas questões como `Nao revisado`. O template afirmava o contrário; a etiqueta ficou honesta, mas o portão continua por construir. Ver [Análise de lacunas](gap-analysis.md#o-portao-humano-nao-existe).
+## Ordem de sacrifício {#ordem-de-sacrificio}
 
-## Objetivos e métricas
+Features que a Definição do MVP proíbe cortar, porque a falta delas aparece como injustiça, insegurança ou ilegalidade:
 
-A métrica-norte proposta é o **número de submissões que resultam em melhoria observável na submissão seguinte do mesmo aluno** — mede aprendizagem a acontecer, não utilização da ferramenta.
+| Feature | Por quê | Neste repositório |
+| --- | --- | --- |
+| **FEAT-024** — validação automática da questão | Questão sem solução válida reprova aluno certo | Parcial; G2 completa |
+| **FEAT-033** — isolamento da execução | Código não confiável sem sandbox | Fora do recorte; risco aceito (G8-3) |
+| **FEAT-040** — verificação de escopo | Aluno perde ponto por estrutura que não usou | G2-2 |
+| **FEAT-045** — ancoragem do feedback | Feedback inventado | Não se aplica |
+| **FEAT-047** — filtro anti-solução | A IA entrega a resposta | Não se aplica |
+| **FEAT-058** — degradação sem IA | Provedor fora derruba a nota | Não se aplica |
+| **FEAT-061/062** — menores e minimização de dados | Ilegalidade | Nenhum dado de aluno no recorte |
 
-Dos seis objetivos definidos, dois tocam diretamente o Pilar 1:
+A ordem de corte do próprio plano de 30/11 está em [Plano § 7](plano-30-11.md#7-ordem-de-sacrificio).
 
-| # | Objetivo | Indicador | Meta inicial |
-| --- | --- | --- | --- |
-| **O1** | Reduzir o esforço de criação de questões | Tempo mediano entre iniciar a geração e publicar | < 10 min, com ≤ 1 ronda de edição em 70% dos casos |
-| **O5** | Confiabilidade da avaliação | Concordância com avaliação humana em amostra auditada | ≥ 85%, com ≤ 5% de divergência grave |
+## Critérios de saída do MVP relevantes aqui
 
-O1 é o objetivo que este protótipo persegue.
+| # | Critério | Meta |
+| --- | --- | --- |
+| 2 | Precisão da verificação de escopo | Zero falsos positivos num conjunto adversarial |
+| 7 | Segurança de execução | Bateria de código malicioso contida em 100% dos casos |
+| 12 | Acervo | ≥ 8 questões aprovadas por eixo × nível nos eixos E1–E4 — é o limiar que habilita a geração por IA |
 
-## Fora de escopo
-
-Itens explicitamente excluídos, com o motivo registado:
+## Fora de escopo da plataforma
 
 | Item | Motivo |
 | --- | --- |
-| Deteção de plágio ou de uso de IA pelo aluno | Impreciso, caro, e consequências disciplinares sobre falsos positivos |
-| Provas somativas com nota oficial | Exige integridade académica e contestação formal |
-| Integração com LMS (LTI, sincronização de notas) | Alto custo; validar valor primeiro |
-| Geração de casos de teste sem solução de referência | Risco de teste incorreto reprovar aluno certo |
-| Gamificação, *rankings*, medalhas | Sem evidência de valor; risco pedagógico |
+| Detecção de plágio ou de uso de IA pelo aluno | Impreciso, e falso positivo tem consequência disciplinar |
+| Provas somativas com nota oficial | Exige integridade acadêmica e contestação formal |
+| Integração com LMS (LTI, sincronização de notas) | Custo alto; validar valor primeiro |
+| Casos de teste sem solução de referência | Teste errado reprova aluno certo |
+| Gamificação e rankings | Sem evidência de valor |
 | Mais de duas linguagens | Cada linguagem multiplica sandbox, parser, rubrica e prompts |
 
-!!! info "A integração com o Moodle está fora do MVP"
-    Este protótipo exporta para Moodle XML. Nos documentos de planeamento, a integração com LMS está explicitamente adiada e a plataforma tem interface própria.
-
-    Não é uma contradição: exportar XML é a forma de o protótipo entregar valor **hoje**, sem depender de nenhuma das ondas 0 a 2. É também o que o torna descartável quando a plataforma existir. Ver [Roadmap](roadmap.md#o-que-acontece-a-este-codigo).
-
-## Riscos que tocam este repositório
-
-Dos doze riscos identificados, cinco aplicam-se diretamente ao que este código faz:
-
-| # | Risco | Prob. | Impacto | Como se manifesta aqui |
-| --- | --- | --- | --- | --- |
-| **R1** | Execução de código malicioso | Alta | Crítico | O protótipo compila e executa sem qualquer isolamento |
-| **R5** | *Cold start* do banco de questões | Alta | Alto | O protótipo gera sem acervo de referência |
-| **R6** | Custo e latência do provedor de IA | Alta | Médio | Três chamadas sequenciais por questão, sem cache nem cota |
-| **R7** | Indisponibilidade do provedor | Média | Alto | Sem retentativas; qualquer falha aborta o pipeline |
-| **R9** | Questão gerada sem solução válida ou com enunciado ambíguo | Alta | Alto | A validação existe em parte — compila e executa, mas não verifica as restrições declaradas |
-
-Cada um está desenvolvido em [Análise de lacunas](gap-analysis.md).
-
-## Continuar
-
-<div class="grid cards" markdown>
-
--   :material-map-outline: **[Roadmap e enquadramento](roadmap.md)**
-
-    ---
-
-    As quatro ondas, os 19 épicos e exatamente onde este repositório se situa.
-
--   :material-sitemap-outline: **[Arquitetura alvo](target-architecture.md)**
-
-    ---
-
-    O que o SAD v0.1 define — C4, ADRs, modelo de dados, sandbox — e o que já é compatível com este código.
-
--   :material-compare: **[Análise de lacunas](gap-analysis.md)**
-
-    ---
-
-    Este protótipo confrontado com os requisitos do EPIC-017, item a item.
-
-</div>
+Exportar Moodle XML não contradiz o item de LMS: é como este gerador entrega valor hoje a quem já usa o CodeRunner, sem depender da plataforma.
