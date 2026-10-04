@@ -7,8 +7,8 @@
 ## Context
 
 The service compiles and runs C with the `gcc` found on `PATH`
-(`execution/local.py`), and sends its output through `os.killpg`, so it needs
-Linux. Until now it ran only where someone had set up a Python virtualenv and a
+(`execution/local.py`), and kills the process group on timeout with `os.killpg`, so it
+needs Linux. Until now it ran only where someone had set up a Python virtualenv and a
 compiler by hand, and the one place the project must eventually run — Cloud Run —
 had never been tried. The delivery plan lists `gcc` not running
 there as a medium risk and puts the image in the first sprint so it is found out

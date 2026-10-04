@@ -26,8 +26,7 @@ RUN useradd --create-home --uid 1000 app \
 WORKDIR /app
 
 # pyproject.toml references README.md and LICENSE, so the package build needs
-# them. Copying the metadata before src/ keeps the dependency layer cached
-# until pyproject.toml changes.
+# them.
 COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
 RUN pip install .

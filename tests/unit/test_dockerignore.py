@@ -13,8 +13,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # Never allowed in the build context: secrets and everything the app writes.
 MUST_BE_IGNORED = [
-    ".env",
-    ".env.*",
+    "**/.env",
+    "**/.env.*",
+    "**/__pycache__/",
     "var/",
     "cache/",
     "Questions/",
@@ -34,6 +35,10 @@ def _patterns() -> set[str]:
 @pytest.mark.parametrize("pattern", MUST_BE_IGNORED)
 def test_secrets_and_artefacts_are_excluded(pattern: str) -> None:
     assert pattern in _patterns()
+
+
+def test_no_negation_reopens_an_exclusion() -> None:
+    assert not [p for p in _patterns() if p.startswith("!")]
 
 
 @pytest.mark.parametrize("name", MUST_STAY_IN_CONTEXT)
