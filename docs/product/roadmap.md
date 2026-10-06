@@ -36,11 +36,11 @@ Distribuição por dupla, estimativas e ordem de corte em [Plano de entrega](pla
 
 | Hoje | Mudança planejada | Estado esperado |
 | --- | --- | --- |
-| Roda com `make run` na máquina de cada um. Sem Dockerfile, sem deploy | **G0-1** imagem Docker com API e `gcc` · **G0-2** GitHub Actions: `make check` → build → push → deploy no Cloud Run a cada merge em `main` | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
+| Roda com `make run` ou na imagem Docker com `gcc` (**G0-1**, [guia](../guides/docker.md)). Sem deploy | **G0-2** GitHub Actions: `make check` → build → push → deploy no Cloud Run a cada merge em `main` | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
 | Chave no `.env` local | **G0-3** chave no Secret Manager, lida pela conta de serviço (S1) | Nenhuma chave no repositório, nos logs ou no painel do Cloud Run |
 | Logs em `stdout`, sem `run_id` | **G0-5** logs estruturados com `run_id`, etapa e duração (P1, sem sprint) | Uma geração inteira rastreável no Cloud Logging |
 
-S0 e S1. G0-1 e G0-2 estão <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o resto, <span class="ce-badge ce-status--planned">Planejado</span>. Ambiente de staging (G0-7) fica fora do recorte.
+S0 e S1. G0-1 está <span class="ce-badge ce-status--done">Implementado</span>; G0-2 está <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o resto, <span class="ce-badge ce-status--planned">Planejado</span>. Ambiente de staging (G0-7) fica fora do recorte.
 
 ### Estado da geração e banco de questões {#estado-da-geracao}
 
