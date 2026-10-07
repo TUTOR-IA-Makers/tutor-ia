@@ -121,6 +121,7 @@ nav:
       - Da issue ao PR: guides/first-task.md
       - Gerar uma questão: guides/generate-a-question.md
       - Rodar com Docker: guides/docker.md
+      - Deploy no Cloud Run: guides/deploy.md
       - Importar no Moodle: guides/import-into-moodle.md
   - Arquitetura:
       - architecture/index.md
