@@ -137,6 +137,7 @@ nav:
           - 0007 — Configuration from the environment: adr/0007-configuration-from-the-environment.md
           - 0008 — One gate for people, agents and CI: adr/0008-one-gate-for-people-agents-and-ci.md
           - 0009 — One container image with the API and gcc: adr/0009-container-image-with-gcc.md
+          - 0010 — Deploy main after the gate: adr/0010-continuous-deployment-after-the-gate.md
           - Modelo: adr/0000-template.md
   - Roadmap:
       - Evolução até 30/11: product/roadmap.md
