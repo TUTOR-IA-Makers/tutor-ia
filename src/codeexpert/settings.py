@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     llm_timeout_seconds: float = Field(default=60.0, gt=0)
     llm_max_retries: int = Field(default=3, ge=1, le=10)
 
+    # ── Deployment ────────────────────────────────────────────────────────────
+    # Set by the deploy workflow to the commit it shipped. The package version
+    # only moves on a release, so it cannot tell two deploys of main apart.
+    commit_sha: str | None = None
+
     # ── Filesystem ────────────────────────────────────────────────────────────
     workspace_root: Path = Path("var/runs")
     questions_dir: Path = Path("var/questions")
