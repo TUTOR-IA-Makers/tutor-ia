@@ -6,7 +6,7 @@ describe('status', () => {
     for (const status of QUESTION_STATUSES) expect(STATUS[status].label).not.toMatch(/_/)
   })
 
-  it('segue o mapa de ações da SPEC', () => {
+  it('segue o mapa de ações por estado', () => {
     expect(can('GERANDO', 'approve')).toBe(false)
     expect(can('GERADA', 'approve')).toBe(true)
     expect(can('GERADA', 'reject')).toBe(true)

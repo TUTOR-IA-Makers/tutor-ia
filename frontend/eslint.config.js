@@ -91,12 +91,16 @@ export default tseslint.config(
         'error',
         {
           name: 'localStorage',
-          message: 'Sessão e dados sensíveis não ficam no navegador (SPEC §11).',
+          message: 'Sessão e dados sensíveis não ficam no navegador.',
         },
       ],
       'no-restricted-properties': [
         'error',
-        { object: 'window', property: 'localStorage', message: 'Proibido pela SPEC §11.' },
+        {
+          object: 'window',
+          property: 'localStorage',
+          message: 'Sessão e dados sensíveis não ficam no navegador.',
+        },
         {
           object: 'document',
           property: 'cookie',
@@ -108,7 +112,7 @@ export default tseslint.config(
         'error',
         {
           selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
-          message: 'Texto gerado por LLM nunca vira HTML cru (SPEC §11).',
+          message: 'Texto gerado por LLM nunca vira HTML cru.',
         },
         {
           selector: 'AssignmentExpression[left.property.name=/^(innerHTML|outerHTML)$/]',

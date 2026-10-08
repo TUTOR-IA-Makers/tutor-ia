@@ -71,7 +71,7 @@ Um arquivo de tarefa em `main` significa trabalho em andamento ou branch abandon
 Falha que "parece não ter nada a ver" continua sendo falha: o CI vai falhar igual.
 
 !!! warning "Front-end ainda fora do CI"
-    O `ci.yml` não instala Node nem roda `npm ci`, então no CI o passo 6 é pulado. Incluir `actions/setup-node` e o job do Playwright é uma mudança em `.github/workflows/` e precisa de aprovação humana (PR 5 da `SPEC.md`).
+    O `ci.yml` não instala Node nem roda `npm ci`, então no CI o passo 6 é pulado. Incluir `actions/setup-node` e o job do Playwright é uma mudança em `.github/workflows/` e precisa de aprovação humana.
 
 ## CI
 

@@ -51,7 +51,7 @@ Lidas pelo Vite no build e no `make front-dev`, a partir de `frontend/.env.local
 | Variável | Padrão | O que controla |
 | --- | --- | --- |
 | `VITE_PUBLIC_API_MODE` | `mock` no `make front-dev`, `http` no build | `mock` usa dados simulados em memória; `http` chama a API real. O build só usa `mock` quando pedido explicitamente, como faz o `make front-e2e` |
-| `VITE_PUBLIC_API_BASE_URL` | `/api/v1` | Prefixo das rotas da API no modo `http`. O prefixo `/api/v1` é proposta da `SPEC.md` e ainda não existe no backend |
+| `VITE_PUBLIC_API_BASE_URL` | `/api/v1` | Prefixo das rotas da API no modo `http`. O prefixo `/api/v1` é uma proposta e ainda não existe no backend |
 
 !!! warning "Nome errado é ignorado sem aviso"
     Variáveis desconhecidas são aceitas em silêncio: `CODEEXPERT_LLM_MODELO=...` não faz nada. Confira o que está em uso com `curl http://127.0.0.1:8000/config`.

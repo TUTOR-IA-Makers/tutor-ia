@@ -1,6 +1,6 @@
 # Front-end do CodeExpert
 
-SPA em React 19 + TypeScript estrito, empacotada pelo Vite. Gera arquivos estáticos que o FastAPI vai servir no mesmo container (ainda não implementado, PR 3 da `SPEC.md`). Não existe servidor Node em produção.
+SPA em React 19 + TypeScript estrito, empacotada pelo Vite. Gera arquivos estáticos que o FastAPI vai servir no mesmo container (ainda não implementado). Não existe servidor Node em produção.
 
 No `make front-dev` todas as telas rodam com **dados simulados** (modo `mock`). O build de produção usa a API real (modo `http`), a menos que `VITE_PUBLIC_API_MODE=mock` seja pedido explicitamente; ver [Integração com o FastAPI](#integração-com-o-fastapi).
 
@@ -116,7 +116,7 @@ O que já está pronto no modo `http`:
 
 O contrato do backend ainda não existe. Endpoints e DTOs são uma proposta. Quando a API ficar pronta:
 
-1. Ajuste `endpoints.ts` e `dto.ts` ao `openapi.json` (ou troque pelo cliente gerado pelo orval, PR 9 da SPEC).
+1. Ajuste `endpoints.ts` e `dto.ts` ao `openapi.json` (ou troque por um cliente gerado a partir do `openapi.json`, por exemplo com o orval).
 2. Ajuste `mappers.ts`. As telas não mudam, porque dependem só do domínio.
 3. Rode `src/services/http/createHttpServices.test.ts`: ele usa MSW e mostra o que quebrou.
 
@@ -138,7 +138,7 @@ O contrato do backend ainda não existe. Endpoints e DTOs são uma proposta. Qua
 | Sem sourcemap em produção; dev server preso a `127.0.0.1` | `vite.config.ts` |
 | Dependências de produção sem vulnerabilidade alta | `npm run audit:deps` |
 
-A CSP em `<meta>` não suporta `frame-ancestors`. Os headers completos da `SPEC.md` §5.3 serão aplicados pelo FastAPI.
+A CSP em `<meta>` não suporta `frame-ancestors`. Os headers de segurança completos (incluindo `frame-ancestors`) ficam a cargo do FastAPI quando ele passar a servir a SPA.
 
 ## Estilo
 
