@@ -32,10 +32,14 @@ which commit is serving.
 - A separate workflow, `deploy.yml`, triggered by `workflow_run` when `CI`
   completes on `main`. The job runs only when that run **succeeded** and came from
   a push, and checks out the exact commit CI verified. The gate is not repeated.
-- Its own concurrency group with `cancel-in-progress: false`: deploys queue and
-  are never interrupted.
+- Its own concurrency group with `cancel-in-progress: false`: a deploy is never
+  interrupted. GitHub keeps one pending run per group, so intermediate commits
+  are dropped, and a first job skips the run if its commit is no longer the tip
+  of `main` once it gets its turn.
 - Authentication by Workload Identity Federation. The job requests a GitHub OIDC
-  token; GCP accepts it only for `repo:TUTOR-IA-Makers/tutor-ia:environment:production`.
+  token; GCP accepts it only for `repo:TUTOR-IA-Makers/tutor-ia:environment:production`
+  **and** the repository's numeric id, so a repository recreated under the same
+  name inherits nothing.
   No key exists. Project, region and identities are repository variables, not
   secrets.
 - Build with the repository `Dockerfile`, tag with the commit SHA, push to

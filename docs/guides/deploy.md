@@ -39,6 +39,8 @@ PROJECT_ID=meu-projeto
 REGION=southamerica-east1
 REPO=TUTOR-IA-Makers/tutor-ia
 PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')
+# O id numérico não muda se o repositório for renomeado, apagado e recriado.
+REPO_ID=$(gh api "repos/$REPO" --jq .id)
 
 gcloud services enable run.googleapis.com artifactregistry.googleapis.com \
   iamcredentials.googleapis.com --project "$PROJECT_ID"
@@ -63,14 +65,14 @@ gcloud iam workload-identity-pools create github --location=global --project "$P
 gcloud iam workload-identity-pools providers create-oidc tutor-ia \
   --location=global --workload-identity-pool=github --project "$PROJECT_ID" \
   --issuer-uri=https://token.actions.githubusercontent.com \
-  --attribute-mapping="google.subject=assertion.sub" \
-  --attribute-condition="assertion.sub == 'repo:$REPO:environment:production'"
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository_id=assertion.repository_id" \
+  --attribute-condition="assertion.sub == 'repo:$REPO:environment:production' && assertion.repository_id == '$REPO_ID'"
 gcloud iam service-accounts add-iam-policy-binding "$SA" --project "$PROJECT_ID" \
   --role=roles/iam.workloadIdentityUser \
   --member="principal://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github/subject/repo:$REPO:environment:production"
 ```
 
-A condição restringe o acesso a jobs do ambiente `production`. Em **Settings → Environments → production** do GitHub, limite o ambiente à branch `main`; assim nem um workflow de outra branch obtém credenciais.
+A condição restringe o acesso a jobs do ambiente `production` **do repositório com aquele id**. Checar só o nome (`sub`) não basta: se o repositório for renomeado ou apagado e alguém recriar o mesmo nome, o `sub` seria idêntico e herdaria o acesso; o `repository_id` não se repete. Em **Settings → Environments → production** do GitHub, limite o ambiente à branch `main`; assim nem um workflow de outra branch obtém credenciais.
 
 *A confirmar:* se `roles/iam.workloadIdentityUser` basta para o passo que gera o token de identidade usado na verificação do `/health`, ou se a conta também precisa de `roles/iam.serviceAccountTokenCreator` sobre si mesma.
 
