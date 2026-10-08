@@ -65,9 +65,13 @@ Um arquivo de tarefa em `main` significa trabalho em andamento ou branch abandon
 | 3 | Formatação | `ruff format --check src tests main.py` |
 | 4 | Lint | `ruff check src tests main.py` |
 | 5 | Testes | `pytest -q` |
-| 6 | Documentação | `mkdocs build --strict` (pulado se o `mkdocs` não estiver instalado, e com `make check-fast`) |
+| 6 | Front-end | `scripts/front-check.sh`: Prettier, ESLint, Stylelint, `tsc`, contraste dos tokens, Vitest com cobertura mínima de 80%, build, busca de segredos em `dist/`, orçamento de 150 KB gzip e `npm audit` das dependências de produção. Pulado se `npm` ou `frontend/node_modules` não existirem |
+| 7 | Documentação | `mkdocs build --strict` (pulado se o `mkdocs` não estiver instalado, e com `make check-fast`) |
 
 Falha que "parece não ter nada a ver" continua sendo falha: o CI vai falhar igual.
+
+!!! warning "Front-end ainda fora do CI"
+    O `ci.yml` não instala Node nem roda `npm ci`, então no CI o passo 6 é pulado. Incluir `actions/setup-node` e o job do Playwright é uma mudança em `.github/workflows/` e precisa de aprovação humana (PR 5 da `SPEC.md`).
 
 ## CI
 

@@ -16,7 +16,12 @@ O `Makefile` só chama os scripts em `scripts/`, então pessoas, agentes e CI ro
 | `make test` | `pytest` com cobertura | — |
 | `make docs` | Este site em <http://127.0.0.1:8001>, com recarga | — |
 | `make task T=feat I=42 S=slug` | Cria a branch `feat/42-slug` a partir de `main` atualizada e o arquivo `.agents/tasks/42-slug.md` | `scripts/new-task.sh` |
-| `make clean` | Apaga `var/`, `.dist/`, caches de ferramentas e `__pycache__` | — |
+| `make front-install` | `npm ci` em `frontend/`, a partir do `package-lock.json` | — |
+| `make front-dev` | Vite em <http://127.0.0.1:5173>, com proxy de `/api`, `/health`, `/docs` e `/openapi.json` para a API do `make run` | — |
+| `make front-build` | Build de produção em `frontend/dist` | — |
+| `make front-check` | Gate do front-end, também chamado pelo `make check` | `scripts/front-check.sh` |
+| `make front-e2e` | Playwright com axe-core contra o build de produção, em 1280px e 320px | — |
+| `make clean` | Apaga `var/`, `.dist/`, caches de ferramentas, `__pycache__` e as saídas de build e teste do front-end | — |
 
 Outras formas de iniciar a API, sem recarga: `.venv/bin/codeexpert`, `python -m codeexpert` ou `python main.py` — as três escutam em `0.0.0.0:8000`.
 
@@ -38,6 +43,15 @@ Lidas por `Settings` em `src/codeexpert/settings.py`, com prefixo `CODEEXPERT_`.
 | `CODEEXPERT_RUN_MAX_OUTPUT_BYTES` | `65536` | Saída capturada por execução; o excedente é truncado |
 
 Caminhos relativos são resolvidos a partir do diretório onde o servidor foi iniciado.
+
+### Front-end
+
+Lidas pelo Vite no build e no `make front-dev`, a partir de `frontend/.env.local` (ignorado pelo Git; modelo em `frontend/.env.example`). Só variáveis com prefixo `VITE_PUBLIC_` chegam ao navegador, então nenhuma delas pode ser segredo.
+
+| Variável | Padrão | O que controla |
+| --- | --- | --- |
+| `VITE_PUBLIC_API_MODE` | `mock` no `make front-dev`, `http` no build | `mock` usa dados simulados em memória; `http` chama a API real. O build só usa `mock` quando pedido explicitamente, como faz o `make front-e2e` |
+| `VITE_PUBLIC_API_BASE_URL` | `/api/v1` | Prefixo das rotas da API no modo `http`. O prefixo `/api/v1` é proposta da `SPEC.md` e ainda não existe no backend |
 
 !!! warning "Nome errado é ignorado sem aviso"
     Variáveis desconhecidas são aceitas em silêncio: `CODEEXPERT_LLM_MODELO=...` não faz nada. Confira o que está em uso com `curl http://127.0.0.1:8000/config`.

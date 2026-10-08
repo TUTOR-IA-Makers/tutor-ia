@@ -36,7 +36,8 @@ src/codeexpert/
 
 tests/unit/              funções puras — sem rede, sem compilador
 tests/integration/       vários módulos juntos — ainda offline
-scripts/                 check.sh (gate), dev-setup.sh, fix.sh, new-task.sh
+scripts/                 check.sh (gate), front-check.sh, dev-setup.sh, fix.sh, new-task.sh
+frontend/                SPA em React + Vite; ver frontend/README.md
 docs/                    este site; docs/adr/ em inglês
 .agents/                 regras, workflows e arquivos de tarefa (ver Harness)
 main.py                  atalho de compatibilidade para `python main.py`
