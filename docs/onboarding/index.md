@@ -73,7 +73,7 @@ make run        # API em http://127.0.0.1:8000, com recarga automática
 Em outro terminal:
 
 ```bash
-curl http://127.0.0.1:8000/health                 # {"status": "ok", "version": "0.2.0"}
+curl http://127.0.0.1:8000/health                 # {"status": "ok", "version": "0.2.0", "commit": null}
 curl "http://127.0.0.1:8000/config?verify=true"   # api_key_configured e provider_reachable devem ser true
 ```
 

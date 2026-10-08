@@ -31,6 +31,7 @@ Lidas por `Settings` em `src/codeexpert/settings.py`, com prefixo `CODEEXPERT_`.
 | `CODEEXPERT_LLM_BASE_URL` | `https://api.openai.com/v1` | Provedor. Qualquer API `/chat/completions` compatível com OpenAI |
 | `CODEEXPERT_LLM_TIMEOUT_SECONDS` | `60` | Timeout por chamada ao modelo |
 | `CODEEXPERT_LLM_MAX_RETRIES` | `3` | Tentativas em erros transitórios (1 a 10) |
+| `CODEEXPERT_COMMIT_SHA` | *(vazia)* | Commit devolvido em `GET /health` como `commit`. O [workflow de deploy](../guides/deploy.md) define o commit publicado; fora dele fica `null` |
 | `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções |
 | `CODEEXPERT_QUESTIONS_DIR` | `var/questions` | Onde o XML é escrito |
 | `CODEEXPERT_COMPILE_TIMEOUT_SECONDS` | `20` | Timeout da compilação |

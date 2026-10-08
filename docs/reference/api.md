@@ -38,10 +38,10 @@ Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem
 ## `GET /health` {#get-health}
 
 ```json
-{ "status": "ok", "version": "0.2.0" }
+{ "status": "ok", "version": "0.2.0", "commit": null }
 ```
 
-Não lê configuração, disco nem rede. Responde `200` mesmo sem chave — serve como sonda de container, não como diagnóstico.
+`version` é a versão do pacote; `commit` vem de `CODEEXPERT_COMMIT_SHA` e é `null` quando a variável não está definida. Não chama o provedor nem o compilador. Responde `200` mesmo sem chave — serve como sonda de container, não como diagnóstico.
 
 ## `GET /config` {#get-config}
 

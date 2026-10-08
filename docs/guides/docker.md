@@ -2,7 +2,7 @@
 
 <p class="lead">A API e o <code>gcc</code> numa imagem só, para que o mesmo artefato rode na máquina de qualquer pessoa. Esta página mostra como construir a imagem, subir o container, conferir que ela está limpa e gerar uma questão de ponta a ponta.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` na raiz do repositório. O deploy no Cloud Run e o front-end na mesma imagem estão <span class="ce-badge ce-status--planned">Planejados</span> ([Roadmap](../product/roadmap.md#infraestrutura-e-deploy)).
+<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` na raiz do repositório. O [deploy no Cloud Run](deploy.md) está <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o front-end na mesma imagem, <span class="ce-badge ce-status--planned">Planejado</span> ([Roadmap](../product/roadmap.md#infraestrutura-e-deploy)).
 
 !!! danger "A imagem não é um sandbox"
     O container não acrescenta isolamento à execução do código gerado: o serviço continua só limitando tempo e tamanho de saída ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). Sem autenticação, não exponha a porta à internet. Veja [Arquitetura](../architecture/index.md).
@@ -57,7 +57,7 @@ O volume `ce-var` guarda `/app/var`, onde ficam as execuções e o XML. Sem ele,
 
 ```bash
 curl http://127.0.0.1:8000/health
-# {"status":"ok","version":"0.2.0"}
+# {"status":"ok","version":"0.2.0","commit":null}
 
 curl "http://127.0.0.1:8000/config?verify=true"
 # api_key_configured e provider_reachable devem ser true

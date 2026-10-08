@@ -36,6 +36,10 @@ class CreateQuestionRequest(BaseModel):
 class HealthResponse(BaseModel):
     status: str = "ok"
     version: str
+    commit: str | None = Field(
+        default=None,
+        description="Commit this instance was deployed from. Null when not deployed by CI.",
+    )
 
 
 class ConfigResponse(BaseModel):
