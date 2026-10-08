@@ -1,0 +1,19 @@
+.wrapper {
+  position: relative;
+  min-width: 0;
+}
+
+.select {
+  padding-right: var(--space-8);
+  appearance: none;
+  cursor: pointer;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
