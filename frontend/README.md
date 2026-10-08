@@ -142,7 +142,7 @@ A CSP em `<meta>` não suporta `frame-ancestors`. Os headers de segurança compl
 
 ## Estilo
 
-Os valores vêm de `TutorIA-Identidade-Visual.md`: azul `#243C8C` para navegar e iniciar, verde-azulado `#1B7A70` para concluir e aprovar, Source Sans 3 e IBM Plex Mono servidas pelo próprio projeto (latin, 4 arquivos woff2), ícones Lucide com traço 1,75.
+Os valores vêm da página [Identidade visual](../docs/design/identidade.md) da documentação: azul `#243C8C` para navegar e iniciar, verde-azulado `#1B7A70` para concluir e aprovar, Source Sans 3 e IBM Plex Mono servidas pelo próprio projeto (latin, 4 arquivos woff2), ícones Lucide com traço 1,75.
 
 Todo valor de cor, espaço, fonte, raio, sombra e duração vem de `src/styles/tokens.css`. O Stylelint recusa hex, `rgb()` e valores literais nessas propriedades em qualquer outro arquivo. `npm run contrast` recalcula o contraste WCAG de 32 pares de tokens e falha abaixo de 4.5 (texto) ou 3 (não-texto).
 
