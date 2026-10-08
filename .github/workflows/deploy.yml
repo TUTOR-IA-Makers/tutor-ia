@@ -1,0 +1,148 @@
+name: Deploy
+
+# Ships main to Cloud Run, and only main, and only after the gate passed.
+#
+# Triggered by the CI workflow finishing rather than by the push itself, so the
+# gate is `scripts/check.sh` exactly as CI ran it — not a second copy of it that
+# could drift (docs/adr/0008). A red, cancelled or skipped CI run never reaches
+# the deploy job. See docs/adr/0010.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Never cancel a deploy half way. A newer commit waits for the current deploy.
+# GitHub keeps a single pending run per group, so with several merges in a row
+# the ones in between are dropped; the `current` job below also skips a run whose
+# commit is no longer the tip of main by the time it gets its turn.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # Runs only once this run has its turn in the concurrency group, so "is my
+  # commit still the tip of main" is answered after any wait, not before it.
+  # A superseded commit is skipped, not failed: the newer commit deploys on the
+  # back of its own CI run.
+  current:
+    name: commit is the tip of main
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      is_tip: ${{ steps.tip.outputs.is_tip }}
+    steps:
+      - id: tip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          tip=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          if [ "$tip" = "$SHA" ]; then
+            echo "is_tip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::$SHA is no longer the tip of main ($tip); skipping its deploy."
+            echo "is_tip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    name: build, push, deploy
+    needs: current
+    if: needs.current.outputs.is_tip == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+    permissions:
+      contents: read
+      # Keyless authentication to GCP (Workload Identity Federation): GitHub
+      # issues a short-lived OIDC token, so no service account key exists to leak.
+      id-token: write
+    env:
+      # The commit CI checked, not whatever main points at by now.
+      SHA: ${{ github.event.workflow_run.head_sha }}
+      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      REGION: ${{ vars.GCP_REGION }}
+      REPOSITORY: ${{ vars.GCP_ARTIFACT_REPOSITORY }}
+      SERVICE: ${{ vars.CLOUD_RUN_SERVICE }}
+      WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      DEPLOY_SA: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+    steps:
+      - name: Check the deploy configuration
+        run: |
+          missing=""
+          for name in PROJECT_ID REGION REPOSITORY SERVICE WIF_PROVIDER DEPLOY_SA; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Repository variables not set:$missing. See docs/guides/deploy.md."
+            exit 1
+          fi
+          echo "IMAGE=$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/codeexpert:$SHA" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.SHA }}
+
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOY_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v3
+
+      - name: Build the image
+        run: docker build --tag "$IMAGE" .
+
+      - name: Push to Artifact Registry
+        run: |
+          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+          docker push "$IMAGE"
+
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
+          image: ${{ env.IMAGE }}
+          # Merged into the variables already set on the service, so settings
+          # configured there (the API key among them) are left alone.
+          env_vars: CODEEXPERT_COMMIT_SHA=${{ env.SHA }}
+          # The image listens on 8000; Cloud Run assumes 8080 (docs/adr/0009).
+          # No --allow-unauthenticated: who may call the service is decided on
+          # the service, by a person, not by every deploy.
+          flags: --port=8000
+
+      # The deploy step succeeds as soon as the revision is ready. This checks
+      # that the revision serving traffic is the one just built.
+      - name: Get a token to call the service
+        id: invoker
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOY_SA }}
+          token_format: id_token
+          id_token_audience: ${{ steps.deploy.outputs.url }}
+          id_token_include_email: true
+
+      - name: Check GET /health reports this commit
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+          TOKEN: ${{ steps.invoker.outputs.id_token }}
+        run: |
+          body=$(curl --fail --silent --show-error --retry 5 --retry-all-errors \
+            -H "Authorization: Bearer $TOKEN" "$URL/health")
+          echo "$body"
+          commit=$(printf '%s' "$body" | python3 -c 'import json, sys; print(json.load(sys.stdin)["commit"])')
+          if [ "$commit" != "$SHA" ]; then
+            echo "::error::$URL/health reports commit '$commit', expected '$SHA'."
+            exit 1
+          fi

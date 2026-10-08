@@ -165,7 +165,7 @@ A tabela completa de status está em [API § Erros](../reference/api.md#erros).
 | Front-end | Só o Swagger UI em `/docs` | Interface do professor — [G4](../product/roadmap.md#interface-do-professor) |
 | Processamento assíncrono | Nenhum. O pedido fica aberto até o fim; as rotas são `async def` executando código síncrono, o que serializa os pedidos no processo | Geração como job com estado no banco — [G0-8](../product/roadmap.md#estado-da-geracao) |
 | Isolamento da execução | Limite de tempo e de saída; sem limite de memória, processos, rede ou sistema de arquivos | Continua assim; risco aceito e documentado — [G8-3](../product/roadmap.md#execucao-de-codigo) |
-| Deploy | Nenhum. Roda com `make run` na máquina de quem usa | Cloud Run com deploy contínuo — [G0-1, G0-2](../product/roadmap.md#infraestrutura-e-deploy) |
+| Deploy | Nenhum em produção ainda. Roda com `make run` ou na [imagem Docker](../guides/docker.md); o [workflow de deploy](../guides/deploy.md) existe e aguarda a configuração do GCP | Cloud Run com deploy contínuo — [G0-2](../product/roadmap.md#infraestrutura-e-deploy) |
 
 !!! danger "Não exponha o serviço"
     Sem autenticação, qualquer máquina que alcance a porta gasta a chave de API e faz o servidor compilar e executar código. Rode em `127.0.0.1`.

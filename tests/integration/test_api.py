@@ -4,6 +4,7 @@ import pytest
 
 from codeexpert.errors import LLMError
 from codeexpert.llm import get_llm_client
+from codeexpert.settings import reset_settings_cache
 
 pytestmark = pytest.mark.integration
 
@@ -14,6 +15,18 @@ def test_health_needs_no_configuration(client) -> None:
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] == "ok"
+
+
+def test_health_reports_the_deployed_commit(client, monkeypatch) -> None:
+    monkeypatch.setenv("CODEEXPERT_COMMIT_SHA", "a833fc4")
+    reset_settings_cache()
+    assert client.get("/health").json()["commit"] == "a833fc4"
+
+
+def test_health_commit_is_null_outside_a_deploy(client, monkeypatch) -> None:
+    monkeypatch.delenv("CODEEXPERT_COMMIT_SHA", raising=False)
+    reset_settings_cache()
+    assert client.get("/health").json()["commit"] is None
 
 
 def test_config_never_returns_the_key(client) -> None:

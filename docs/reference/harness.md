@@ -31,6 +31,7 @@ scripts/check.sh              o gate
 .github/
   workflows/ci.yml            gate + convenções do PR
   workflows/docs.yml          build e publicação deste site
+  workflows/deploy.yml        build, push e deploy no Cloud Run após o CI
   CODEOWNERS                  revisores obrigatórios por área
   PULL_REQUEST_TEMPLATE.md
   ISSUE_TEMPLATE/             feature.yml, bug.yml, chore.yml
@@ -79,6 +80,7 @@ Falha que "parece não ter nada a ver" continua sendo falha: o CI vai falhar igu
 | --- | --- | --- |
 | `ci.yml` | Push em `main`, todo PR, manual | **gate**: instala `.[dev,docs]` em Python 3.13 e roda `./scripts/check.sh`, depois mostra a cobertura. **conventions** (só em PR): título em Conventional Commits; corpo com `Closes/Fixes/Resolves/Refs #N` |
 | `docs.yml` | Push em `main`, todo PR, manual | **build**: `mkdocs build --strict`. **deploy** (só push em `main`): publica no GitHub Pages — ver [Documentação](docs.md#publicacao) |
+| `deploy.yml` | `ci.yml` concluído em `main` | **deploy** (só se o CI passou e foi push): build da imagem, push no Artifact Registry, deploy no Cloud Run, confere `GET /health` — ver [Deploy](../guides/deploy.md) |
 
 ## CODEOWNERS e o que um agente não decide sozinho {#o-que-um-agente-nao-decide-sozinho}
 

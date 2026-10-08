@@ -21,3 +21,8 @@ def test_missing_key_explains_the_fix() -> None:
 
 def test_key_is_not_exposed_by_repr(isolated_settings) -> None:
     assert "sk-test-not-a-real-key" not in repr(isolated_settings)
+
+
+@pytest.mark.parametrize("raw", ["", "   "])
+def test_blank_commit_sha_means_not_deployed(raw: str) -> None:
+    assert Settings(commit_sha=raw).commit_sha is None
