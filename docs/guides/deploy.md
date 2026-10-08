@@ -15,7 +15,7 @@
 4. Publica a imagem no serviço do Cloud Run com `--port=8000` e `CODEEXPERT_COMMIT_SHA=<sha>`. As outras variáveis do serviço são mantidas.
 5. Chama `GET /health` na URL do serviço e falha se `commit` não for o SHA publicado.
 
-Deploys nunca são cancelados no meio. Se dois merges chegam juntos, o segundo espera o primeiro terminar.
+Deploys nunca são cancelados no meio. O GitHub guarda **um** deploy pendente por vez, então, se vários merges chegam em sequência, os do meio são descartados. Antes de construir, um job confere se o commit ainda é a ponta de `main`; se não for, o deploy é pulado (não falha), porque o commit mais novo publica a si mesmo depois do próprio CI.
 
 ## Conferir o que está no ar
 

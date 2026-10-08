@@ -15,18 +15,47 @@ on:
 permissions:
   contents: read
 
-# Never cancel a deploy half way. A newer commit waits for the current deploy,
-# and only the newest pending one runs.
+# Never cancel a deploy half way. A newer commit waits for the current deploy.
+# GitHub keeps a single pending run per group, so with several merges in a row
+# the ones in between are dropped; the `current` job below also skips a run whose
+# commit is no longer the tip of main by the time it gets its turn.
 concurrency:
   group: deploy-production
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: build, push, deploy
+  # Runs only once this run has its turn in the concurrency group, so "is my
+  # commit still the tip of main" is answered after any wait, not before it.
+  # A superseded commit is skipped, not failed: the newer commit deploys on the
+  # back of its own CI run.
+  current:
+    name: commit is the tip of main
     if: >-
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      is_tip: ${{ steps.tip.outputs.is_tip }}
+    steps:
+      - id: tip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          tip=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          if [ "$tip" = "$SHA" ]; then
+            echo "is_tip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::$SHA is no longer the tip of main ($tip); skipping its deploy."
+            echo "is_tip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    name: build, push, deploy
+    needs: current
+    if: needs.current.outputs.is_tip == 'true'
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -43,11 +72,10 @@ jobs:
       REGION: ${{ vars.GCP_REGION }}
       REPOSITORY: ${{ vars.GCP_ARTIFACT_REPOSITORY }}
       SERVICE: ${{ vars.CLOUD_RUN_SERVICE }}
+      WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      DEPLOY_SA: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
     steps:
       - name: Check the deploy configuration
-        env:
-          WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          DEPLOY_SA: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
         run: |
           missing=""
           for name in PROJECT_ID REGION REPOSITORY SERVICE WIF_PROVIDER DEPLOY_SA; do
@@ -65,8 +93,8 @@ jobs:
 
       - uses: google-github-actions/auth@v3
         with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOY_SA }}
 
       - uses: google-github-actions/setup-gcloud@v3
 
@@ -99,8 +127,8 @@ jobs:
         id: invoker
         uses: google-github-actions/auth@v3
         with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.DEPLOY_SA }}
           token_format: id_token
           id_token_audience: ${{ steps.deploy.outputs.url }}
           id_token_include_email: true
