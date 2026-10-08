@@ -64,6 +64,7 @@
 | Principal (cor) | `frontend/src/assets/brand/logo.svg` |
 | Monocromática | `frontend/src/assets/brand/logo-mono.svg` |
 | Símbolo | `frontend/public/favicon.svg`: logo dentro de um círculo branco, com o miolo das páginas recortado para mostrar a cor da aba |
+| Referência raster | `docs/design/marca/logo-original.png`: a imagem original vetorizada; fica fora de `frontend/public/` para não ir ao build |
 
 A logo foi vetorizada a partir da imagem de referência, com as cores exatas da seção 4.1. As imagens desta página são cópias em `docs/design/marca/`; ao mudar a logo, atualize as duas.
 

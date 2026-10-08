@@ -18,16 +18,16 @@ Para rodar os testes de ponta a ponta uma vez por máquina: `npx playwright inst
 
 ## Telas
 
-| Rota | Tela | Referência |
+| Rota | Tela | Captura |
 | --- | --- | --- |
 | `/` | Redireciona para `/biblioteca` | |
-| `/biblioteca` | Busca, filtros na URL, grade de questões, seleção de aprovadas e modal de exportação | `telas-mock/image.png`, `image copy 2.png` |
-| `/gerar` | Conteúdo, dificuldade em intervalo, casos de teste, casos específicos e estruturas em C | `image copy 4.png` |
-| `/questoes/:id` | Acompanhar geração enquanto o estado é `GERANDO`; revisão nos demais | `image copy.png`, `image copy 3.png` |
+| `/biblioteca` | Busca, filtros na URL, grade de questões, seleção de aprovadas e modal de exportação | [biblioteca](../docs/design/telas/biblioteca.png), [exportar](../docs/design/telas/exportar.png) |
+| `/gerar` | Conteúdo, dificuldade em intervalo, casos de teste, casos específicos e estruturas em C | [gerar](../docs/design/telas/gerar.png) |
+| `/questoes/:id` | Acompanhar geração enquanto o estado é `GERANDO`; revisão nos demais | [progresso](../docs/design/telas/progresso.png), [revisão: enunciado](../docs/design/telas/revisao-enunciado.png), [revisão: testes](../docs/design/telas/revisao-testes.png) |
 | `/ajuda` | Passo a passo, estados, importação no Moodle, glossário, status do servidor | |
 | `*` | 404 com volta à biblioteca | |
 
-Mudanças em relação aos mocks:
+Mudanças em relação aos protótipos:
 
 - **Dificuldade** é um intervalo de rating no estilo Codeforces: duas alças de 500 a 3500, passo 50. A faixa em palavras (Muito fácil a Muito difícil) é derivada do rating em `src/domain/difficulty.ts`.
 - **Casos de teste específicos** é um campo opcional abaixo da quantidade. O texto vai no pedido de geração como `test_case_hints`.
@@ -107,7 +107,7 @@ O que já está pronto no modo `http`:
 
 | Peça | Arquivo |
 | --- | --- |
-| Rotas e prefixo (`/api/v1`, ADR-0010 ainda não aceito) | `services/http/endpoints.ts` |
+| Rotas e prefixo (`/api/v1`, proposta ainda sem ADR) | `services/http/endpoints.ts` |
 | Formato das respostas, validado com Zod | `services/http/dto.ts` |
 | Conversão DTO (snake_case) ↔ domínio (camelCase) | `services/http/mappers.ts` |
 | Cliente: mesma origem, `credentials: 'same-origin'`, header anti-CSRF nas mutações, timeout, query string, download com `Content-Disposition` | `lib/http/` |
@@ -153,6 +153,6 @@ Todo valor de cor, espaço, fonte, raio, sombra e duração vem de `src/styles/t
 | `npm test` | Vitest: unitários (`lib`, `domain`, `services`), componentes e integração das telas com serviços mock, MSW e axe-core |
 | `npm run test:coverage` | O mesmo, exigindo 80% em `features/`, `components/ui/`, `lib/`, `domain/` e `services/` |
 | `npm run test:e2e` | Playwright contra o build de produção, em 1280px e 320px: fluxo completo, CSP, reflow e axe por rota |
-| `SCREENSHOTS=1 npx playwright test tests/e2e/screens.spec.ts` | Capturas de todas as telas, para comparar com `telas-mock/` |
+| `SCREENSHOTS=1 npx playwright test tests/e2e/screens.spec.ts` | Capturas de todas as telas em `test-results/`; copie para `docs/design/telas/` ao atualizar |
 
 O MSW recusa qualquer requisição sem handler, então um teste nunca chega à rede.
