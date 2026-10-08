@@ -21,6 +21,7 @@ MUST_BE_IGNORED = [
     "Questions/",
     "config/LLM_Config.txt",
     ".git",
+    "frontend/node_modules/",
 ]
 
 # `pip install .` needs these: pyproject.toml reads README.md and LICENSE.
