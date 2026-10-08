@@ -25,7 +25,6 @@ class Difficulty(StrEnum):
 
 class ContentAxis(StrEnum):
     """Priority axes for content taxonomy (E1-E4).
-
     A closed set to ensure standard taxonomy across cataloging.
     """
 
@@ -40,17 +39,29 @@ class CStructure(StrEnum):
 
     IF = "if"
     ELSE = "else"
+    TERNARY = "ternario"
+    SWITCH = "switch"
     FOR = "for"
     WHILE = "while"
     DO_WHILE = "do-while"
-    SWITCH = "switch"
+    BREAK = "break"
+    CONTINUE = "continue"
+    GOTO = "goto"
     ARRAY_1D = "vetor"
     ARRAY_2D = "matriz"
     STRING = "string"
     STRUCT = "struct"
+    TYPEDEF = "typedef"
+    ENUM = "enum"
     POINTER = "ponteiro"
+    DYNAMIC_ALLOC = "alocacao dinamica"
     FUNCTION = "funcao"
+    PASS_BY_REFERENCE = "passagem por referencia"  # noqa: S105
     RECURSION = "recursao"
+    FILE_IO = "arquivos"
+    MATH_LIB = "math.h"
+    STRING_LIB = "string.h"
+    STDLIB = "stdlib.h"
 
 
 class Constraints(BaseModel):
