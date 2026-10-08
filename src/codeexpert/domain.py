@@ -23,6 +23,36 @@ class Difficulty(StrEnum):
     MUITO_DIFICIL = "muito dificil"
 
 
+class ContentAxis(StrEnum):
+    """Priority axes for content taxonomy (E1-E4).
+
+    A closed set to ensure standard taxonomy across cataloging.
+    """
+
+    FUNDAMENTOS = "fundamentos"
+    CONTROLE_FLUXO = "controle de fluxo"
+    ESTRUTURAS_PONTEIROS = "estruturas de dados e ponteiros"
+    MODULARIZACAO = "modularizacao"
+
+
+class CStructure(StrEnum):
+    """Closed vocabulary of C structures for cataloging."""
+
+    IF = "if"
+    ELSE = "else"
+    FOR = "for"
+    WHILE = "while"
+    DO_WHILE = "do-while"
+    SWITCH = "switch"
+    ARRAY_1D = "vetor"
+    ARRAY_2D = "matriz"
+    STRING = "string"
+    STRUCT = "struct"
+    POINTER = "ponteiro"
+    FUNCTION = "funcao"
+    RECURSION = "recursao"
+
+
 class Constraints(BaseModel):
     """The pedagogical restrictions an exercise must respect.
 
