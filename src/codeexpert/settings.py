@@ -8,7 +8,7 @@ supplied by CI or a container. See docs/adr/0007.
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from codeexpert.errors import ConfigurationError
@@ -45,6 +45,13 @@ class Settings(BaseSettings):
     compile_timeout_seconds: float = Field(default=20.0, gt=0)
     run_timeout_seconds: float = Field(default=5.0, gt=0)
     run_max_output_bytes: int = Field(default=64 * 1024, gt=0)
+
+    @field_validator("commit_sha")
+    @classmethod
+    def _blank_commit_is_unset(cls, value: str | None) -> str | None:
+        # `CODEEXPERT_COMMIT_SHA=` (an empty line copied from .env.example) must
+        # read as "not deployed", not as a commit named "".
+        return (value or "").strip() or None
 
     def require_api_key(self) -> str:
         """Return the API key, or explain how to set it."""
