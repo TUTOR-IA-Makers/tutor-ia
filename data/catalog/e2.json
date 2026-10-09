@@ -352,6 +352,38 @@
     "direitos_restritos": false
   },
   {
+    "id": "E2-M-007",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["for"],
+    "enunciado": "Leia um inteiro `N` (N > 0) e imprima um triângulo retângulo de asteriscos (`*`) com `N` linhas. A primeira linha deve ter 1 asterisco, a segunda 2, e assim por diante.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++) {\n        for (int j = 1; j <= i; j++) {\n            printf(\"*\");\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3\n", "output": "*\n**\n***\n"},
+      {"input": "1\n", "output": "*\n"},
+      {"input": "5\n", "output": "*\n**\n***\n****\n*****\n"}
+    ],
+    "origem": "Exercício clássico de laços aninhados",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-M-008",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["while", "if"],
+    "enunciado": "Dizemos que uma sequência de números inteiros está em ordem crescente se cada número é estritamente maior que o anterior. Leia números inteiros positivos até ler o valor `0` (sentinela). Imprima `ordenada` se a sequência de números lidos (ignorando o 0) estiver em ordem estritamente crescente, ou `desordenada` caso contrário. Se for lido apenas o 0, imprima `ordenada`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int atual, anterior = -1;\n    int ordenada = 1;\n    while (1) {\n        scanf(\"%d\", &atual);\n        if (atual == 0) break;\n        if (anterior != -1 && atual <= anterior) {\n            ordenada = 0;\n        }\n        anterior = atual;\n    }\n    if (ordenada) printf(\"ordenada\\n\");\n    else printf(\"desordenada\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1 5 10 20 0\n", "output": "ordenada\n"},
+      {"input": "10 5 1 0\n", "output": "desordenada\n"},
+      {"input": "2 2 3 0\n", "output": "desordenada\n"},
+      {"input": "0\n", "output": "ordenada\n"}
+    ],
+    "origem": "Exercício de verificação de propriedade em sequência",
+    "direitos_restritos": false
+  },
+
+  {
     "id": "E2-D-001",
     "eixo": "controle de fluxo",
     "nivel": "dificil",
