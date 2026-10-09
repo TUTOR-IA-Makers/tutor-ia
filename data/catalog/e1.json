@@ -367,6 +367,24 @@
     "origem": "Exercício de equação quadrática — precisa de math.h",
     "direitos_restritos": false
   },
+
+  {
+    "id": "E1-M-008",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia um número inteiro positivo de exatamente três dígitos (ex: 123) e calcule a soma dos seus dígitos matematicamente, sem usar laços ou strings.\n\n**Entrada:** um inteiro `N` (100 ≤ N ≤ 999).\n\n**Saída:** a soma dos dígitos.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    printf(\"%d\\n\", (n / 100) + ((n / 10) % 10) + (n % 10));\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "123\n", "output": "6\n"},
+      {"input": "999\n", "output": "27\n"},
+      {"input": "100\n", "output": "1\n"},
+      {"input": "405\n", "output": "9\n"}
+    ],
+    "origem": "Exercício clássico de aritmética modular",
+    "direitos_restritos": false
+  },
+
   {
     "id": "E1-D-001",
     "eixo": "fundamentos",
