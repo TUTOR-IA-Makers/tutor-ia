@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+# The root .gitignore drops every lib/ (Python virtualenv template); this one is source code.
+!src/lib/

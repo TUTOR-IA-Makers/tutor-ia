@@ -1,0 +1,17 @@
+.loading {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--color-text-muted);
+}
+
+.loading svg {
+  color: var(--color-primary);
+}
+
+.error {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}

@@ -139,6 +139,8 @@ nav:
           - 0009 — One container image with the API and gcc: adr/0009-container-image-with-gcc.md
           - 0010 — Deploy main after the gate: adr/0010-continuous-deployment-after-the-gate.md
           - Modelo: adr/0000-template.md
+  - Design:
+      - Identidade visual: design/identidade.md
   - Roadmap:
       - Evolução até 30/11: product/roadmap.md
       - Plano de entrega 30/11: product/plano-30-11.md
