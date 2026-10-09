@@ -1,0 +1,450 @@
+[
+  {
+    "id": "E2-MF-001",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia um inteiro e imprima `positivo`, `negativo` ou `zero` conforme o valor.\n\n**Entrada:** um inteiro.\n\n**Saída:** uma das três strings.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    if (n > 0) printf(\"positivo\\n\");\n    else if (n < 0) printf(\"negativo\\n\");\n    else printf(\"zero\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "5\n",   "output": "positivo\n"},
+      {"input": "-3\n",  "output": "negativo\n"},
+      {"input": "0\n",   "output": "zero\n"},
+      {"input": "100\n", "output": "positivo\n"}
+    ],
+    "origem": "Exercício clássico de condicionais",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MF-002",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia dois inteiros e imprima o maior deles. Se forem iguais, imprima qualquer um.\n\n**Entrada:** dois inteiros.\n\n**Saída:** o maior.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    printf(\"%d\\n\", a >= b ? a : b);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3 7\n",  "output": "7\n"},
+      {"input": "9 4\n",  "output": "9\n"},
+      {"input": "5 5\n",  "output": "5\n"},
+      {"input": "-1 -2\n","output": "-1\n"}
+    ],
+    "origem": "Exercício clássico de condicionais",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MF-003",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia um inteiro de 1 a 7 representando um dia da semana. Imprima `fim de semana` se for 6 ou 7, senão imprima `dia util`.\n\n**Entrada:** um inteiro entre 1 e 7.\n\n**Saída:** `fim de semana` ou `dia util`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int d;\n    scanf(\"%d\", &d);\n    if (d == 6 || d == 7) printf(\"fim de semana\\n\");\n    else printf(\"dia util\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "6\n", "output": "fim de semana\n"},
+      {"input": "7\n", "output": "fim de semana\n"},
+      {"input": "1\n", "output": "dia util\n"},
+      {"input": "3\n", "output": "dia util\n"}
+    ],
+    "origem": "Exercício clássico de condicionais",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MF-004",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia um inteiro `N`. Se for par, imprima `par`; se for ímpar, imprima `impar`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    if (n % 2 == 0) printf(\"par\\n\");\n    else printf(\"impar\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "4\n",  "output": "par\n"},
+      {"input": "7\n",  "output": "impar\n"},
+      {"input": "0\n",  "output": "par\n"},
+      {"input": "-3\n", "output": "impar\n"}
+    ],
+    "origem": "Exercício clássico de condicionais — paridade",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MF-005",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia dois reais `a` e `b`. Se `a` for divisível por `b` (sem resto), imprima `divisivel`; caso contrário, imprima `nao divisivel`. Assuma `b != 0` e ambos inteiros.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    if (a % b == 0) printf(\"divisivel\\n\");\n    else printf(\"nao divisivel\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "10 2\n", "output": "divisivel\n"},
+      {"input": "10 3\n", "output": "nao divisivel\n"},
+      {"input": "9 3\n",  "output": "divisivel\n"},
+      {"input": "7 4\n",  "output": "nao divisivel\n"}
+    ],
+    "origem": "Exercício clássico de divisibilidade",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MF-006",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia a idade de uma pessoa. Imprima `maior de idade` se tiver 18 anos ou mais, senão `menor de idade`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int idade;\n    scanf(\"%d\", &idade);\n    if (idade >= 18) printf(\"maior de idade\\n\");\n    else printf(\"menor de idade\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "18\n", "output": "maior de idade\n"},
+      {"input": "17\n", "output": "menor de idade\n"},
+      {"input": "0\n",  "output": "menor de idade\n"},
+      {"input": "65\n", "output": "maior de idade\n"}
+    ],
+    "origem": "Exercício clássico de condicionais",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MF-007",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia três inteiros. Imprima `crescente` se estiverem em ordem estritamente crescente, senão imprima `nao crescente`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b, c;\n    scanf(\"%d %d %d\", &a, &b, &c);\n    if (a < b && b < c) printf(\"crescente\\n\");\n    else printf(\"nao crescente\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1 2 3\n", "output": "crescente\n"},
+      {"input": "1 1 3\n", "output": "nao crescente\n"},
+      {"input": "3 2 1\n", "output": "nao crescente\n"},
+      {"input": "-5 0 5\n","output": "crescente\n"}
+    ],
+    "origem": "Exercício clássico de condicionais compostos",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MF-008",
+    "eixo": "controle de fluxo",
+    "nivel": "muito facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia um caractere (letra maiúscula). Classifique-o como `vogal` ou `consoante`.\n\n**Entrada:** um caractere A-Z.\n\n**Saída:** `vogal` ou `consoante`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    char c;\n    scanf(\" %c\", &c);\n    if (c=='A'||c=='E'||c=='I'||c=='O'||c=='U')\n        printf(\"vogal\\n\");\n    else\n        printf(\"consoante\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "A\n", "output": "vogal\n"},
+      {"input": "B\n", "output": "consoante\n"},
+      {"input": "E\n", "output": "vogal\n"},
+      {"input": "Z\n", "output": "consoante\n"}
+    ],
+    "origem": "Exercício clássico de condicionais com char",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-001",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia a nota de um aluno (real, 0 a 10). Classifique: ≥ 9 `A`, ≥ 7 `B`, ≥ 5 `C`, < 5 `D`. Imprima a letra.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double nota;\n    scanf(\"%lf\", &nota);\n    if (nota >= 9.0)      printf(\"A\\n\");\n    else if (nota >= 7.0) printf(\"B\\n\");\n    else if (nota >= 5.0) printf(\"C\\n\");\n    else                  printf(\"D\\n\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "9.5\n", "output": "A\n"},
+      {"input": "7.0\n", "output": "B\n"},
+      {"input": "5.5\n", "output": "C\n"},
+      {"input": "3.0\n", "output": "D\n"}
+    ],
+    "origem": "Exercício de classificação por faixas — introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-002",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["if", "else"],
+    "enunciado": "Leia três lados de um triângulo. Verifique se formam um triângulo válido (cada lado menor que a soma dos outros dois). Se sim, classifique como `equilatero`, `isosceles` ou `escaleno`. Caso contrário, imprima `invalido`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    if (a >= b+c || b >= a+c || c >= a+b) {\n        printf(\"invalido\\n\");\n    } else if (a == b && b == c) {\n        printf(\"equilatero\\n\");\n    } else if (a == b || b == c || a == c) {\n        printf(\"isosceles\\n\");\n    } else {\n        printf(\"escaleno\\n\");\n    }\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3.0 3.0 3.0\n", "output": "equilatero\n"},
+      {"input": "3.0 3.0 4.0\n", "output": "isosceles\n"},
+      {"input": "3.0 4.0 5.0\n", "output": "escaleno\n"},
+      {"input": "1.0 2.0 5.0\n", "output": "invalido\n"}
+    ],
+    "origem": "Exercício de classificação de triângulos",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-003",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["switch"],
+    "enunciado": "Leia um inteiro de 1 a 12 representando um mês. Imprima o número de dias desse mês (assuma que fevereiro tem 28 dias).",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int mes;\n    scanf(\"%d\", &mes);\n    int dias;\n    switch (mes) {\n        case 2: dias = 28; break;\n        case 4: case 6: case 9: case 11: dias = 30; break;\n        default: dias = 31;\n    }\n    printf(\"%d\\n\", dias);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1\n",  "output": "31\n"},
+      {"input": "2\n",  "output": "28\n"},
+      {"input": "4\n",  "output": "30\n"},
+      {"input": "12\n", "output": "31\n"}
+    ],
+    "origem": "Exercício clássico de switch",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-004",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["for"],
+    "enunciado": "Leia um inteiro `N` e imprima os `N` primeiros múltiplos de 3, um por linha (começando de 3).",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++)\n        printf(\"%d\\n\", 3 * i);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "4\n", "output": "3\n6\n9\n12\n"},
+      {"input": "1\n", "output": "3\n"},
+      {"input": "5\n", "output": "3\n6\n9\n12\n15\n"},
+      {"input": "2\n", "output": "3\n6\n"}
+    ],
+    "origem": "Exercício clássico de laço for",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-005",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["while"],
+    "enunciado": "Leia inteiros até ler o valor 0 (sentinela). Imprima a soma de todos os valores lidos antes do sentinela.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, soma = 0;\n    scanf(\"%d\", &n);\n    while (n != 0) {\n        soma += n;\n        scanf(\"%d\", &n);\n    }\n    printf(\"%d\\n\", soma);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1 2 3 0\n",    "output": "6\n"},
+      {"input": "0\n",           "output": "0\n"},
+      {"input": "-1 -2 3 0\n",   "output": "0\n"},
+      {"input": "10 20 30 0\n",  "output": "60\n"}
+    ],
+    "origem": "Exercício de laço com sentinela",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-006",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["for", "if"],
+    "enunciado": "Leia um inteiro `N` e imprima quantos números entre 1 e N são divisíveis por 2 ou por 5.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, count = 0;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++)\n        if (i % 2 == 0 || i % 5 == 0) count++;\n    printf(\"%d\\n\", count);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "10\n", "output": "6\n"},
+      {"input": "5\n",  "output": "3\n"},
+      {"input": "1\n",  "output": "0\n"},
+      {"input": "20\n", "output": "12\n"}
+    ],
+    "origem": "Exercício de contagem com condicionais em laço",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-007",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["while", "if"],
+    "enunciado": "Leia um inteiro `N`. Imprima o número de dígitos de `N`. Para `N = 0`, imprima 1.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long n;\n    scanf(\"%lld\", &n);\n    if (n == 0) { printf(\"1\\n\"); return 0; }\n    if (n < 0) n = -n;\n    int count = 0;\n    while (n > 0) { n /= 10; count++; }\n    printf(\"%d\\n\", count);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "0\n",    "output": "1\n"},
+      {"input": "9\n",    "output": "1\n"},
+      {"input": "100\n",  "output": "3\n"},
+      {"input": "-1234\n","output": "4\n"}
+    ],
+    "origem": "Exercício de contagem de dígitos",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-F-008",
+    "eixo": "controle de fluxo",
+    "nivel": "facil",
+    "estruturas": ["for", "if"],
+    "enunciado": "Leia um inteiro `N` (1 ≤ N ≤ 100) e imprima todos os divisores de `N` em ordem crescente, um por linha.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++)\n        if (n % i == 0) printf(\"%d\\n\", i);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "6\n",  "output": "1\n2\n3\n6\n"},
+      {"input": "7\n",  "output": "1\n7\n"},
+      {"input": "12\n", "output": "1\n2\n3\n4\n6\n12\n"},
+      {"input": "1\n",  "output": "1\n"}
+    ],
+    "origem": "Exercício de divisores — introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-M-001",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["for", "if"],
+    "enunciado": "Leia `N` notas reais. Imprima a maior nota, a menor nota e a média, cada uma em uma linha com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    double nota, maior, menor, soma;\n    scanf(\"%lf\", &nota);\n    maior = menor = soma = nota;\n    for (int i = 1; i < n; i++) {\n        scanf(\"%lf\", &nota);\n        soma += nota;\n        if (nota > maior) maior = nota;\n        if (nota < menor) menor = nota;\n    }\n    printf(\"%.2f\\n%.2f\\n%.2f\\n\", maior, menor, soma/n);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3\n7.0 9.0 5.0\n",      "output": "9.00\n5.00\n7.00\n"},
+      {"input": "1\n10.0\n",              "output": "10.00\n10.00\n10.00\n"},
+      {"input": "4\n6.0 8.0 4.0 10.0\n", "output": "10.00\n4.00\n7.00\n"},
+      {"input": "2\n5.5 5.5\n",           "output": "5.50\n5.50\n5.50\n"}
+    ],
+    "origem": "Exercício clássico de estatísticas simples com laço",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-M-002",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["while", "if"],
+    "enunciado": "Leia um número inteiro positivo e imprima o inverso dos dígitos. (Ex: 1234 → 4321).",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long n;\n    scanf(\"%lld\", &n);\n    long long inv = 0;\n    while (n > 0) {\n        inv = inv * 10 + n % 10;\n        n /= 10;\n    }\n    printf(\"%lld\\n\", inv);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1234\n",  "output": "4321\n"},
+      {"input": "1\n",     "output": "1\n"},
+      {"input": "100\n",   "output": "1\n"},
+      {"input": "9876\n",  "output": "6789\n"}
+    ],
+    "origem": "Exercício de inversão de dígitos",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-M-003",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["for", "if", "else"],
+    "enunciado": "Leia `N` inteiros. Imprima a contagem de positivos, negativos e zeros, cada uma em uma linha.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, v, pos = 0, neg = 0, zer = 0;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        scanf(\"%d\", &v);\n        if (v > 0) pos++;\n        else if (v < 0) neg++;\n        else zer++;\n    }\n    printf(\"%d\\n%d\\n%d\\n\", pos, neg, zer);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "5\n1 -2 0 3 -4\n", "output": "2\n2\n1\n"},
+      {"input": "3\n0 0 0\n",        "output": "0\n0\n3\n"},
+      {"input": "1\n5\n",             "output": "1\n0\n0\n"},
+      {"input": "4\n-1 -2 -3 -4\n",  "output": "0\n4\n0\n"}
+    ],
+    "origem": "Exercício de contagem classificada",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-M-004",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["for", "if"],
+    "enunciado": "Leia um inteiro `N` e imprima todos os números de 1 a N que são divisíveis por 3 e por 5 simultaneamente.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++)\n        if (i % 3 == 0 && i % 5 == 0) printf(\"%d\\n\", i);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "30\n", "output": "15\n30\n"},
+      {"input": "14\n", "output": "\n"},
+      {"input": "15\n", "output": "15\n"},
+      {"input": "60\n", "output": "15\n30\n45\n60\n"}
+    ],
+    "origem": "Exercício de FizzBuzz parcial",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-M-005",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["while", "if"],
+    "enunciado": "Um número é perfeito se a soma dos seus divisores próprios (excluindo ele mesmo) é igual a ele. Leia `N` e imprima `perfeito` ou `nao perfeito`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, soma = 0;\n    scanf(\"%d\", &n);\n    for (int i = 1; i < n; i++)\n        if (n % i == 0) soma += i;\n    printf(\"%s\\n\", soma == n ? \"perfeito\" : \"nao perfeito\");\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "6\n",   "output": "perfeito\n"},
+      {"input": "28\n",  "output": "perfeito\n"},
+      {"input": "12\n",  "output": "nao perfeito\n"},
+      {"input": "496\n", "output": "perfeito\n"}
+    ],
+    "origem": "Exercício de número perfeito",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-M-006",
+    "eixo": "controle de fluxo",
+    "nivel": "medio",
+    "estruturas": ["for", "if"],
+    "enunciado": "Leia `N` pares de inteiros `(a, b)`. Para cada par, imprima o maior. Ao final, imprima a soma de todos os maiores.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, soma = 0;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int a, b;\n        scanf(\"%d %d\", &a, &b);\n        int maior = a >= b ? a : b;\n        printf(\"%d\\n\", maior);\n        soma += maior;\n    }\n    printf(\"%d\\n\", soma);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "2\n3 5\n7 2\n",  "output": "5\n7\n12\n"},
+      {"input": "1\n4 4\n",        "output": "4\n4\n"},
+      {"input": "3\n1 2\n3 4\n5 6\n","output": "2\n4\n6\n12\n"},
+      {"input": "1\n-1 -5\n",      "output": "-1\n-1\n"}
+    ],
+    "origem": "Exercício de acumulação com condicional em laço",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-D-001",
+    "eixo": "controle de fluxo",
+    "nivel": "dificil",
+    "estruturas": ["for", "if"],
+    "enunciado": "Implemente o FizzBuzz: leia `N` e, para cada número de 1 a N, imprima `FizzBuzz` se divisível por 3 e 5, `Fizz` se só por 3, `Buzz` se só por 5, ou o próprio número.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++) {\n        if (i % 15 == 0)      printf(\"FizzBuzz\\n\");\n        else if (i % 3 == 0)  printf(\"Fizz\\n\");\n        else if (i % 5 == 0)  printf(\"Buzz\\n\");\n        else                  printf(\"%d\\n\", i);\n    }\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "15\n", "output": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz\n"},
+      {"input": "5\n",  "output": "1\n2\nFizz\n4\nBuzz\n"},
+      {"input": "1\n",  "output": "1\n"},
+      {"input": "6\n",  "output": "1\n2\nFizz\n4\nBuzz\nFizz\n"}
+    ],
+    "origem": "Exercício clássico FizzBuzz",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-D-002",
+    "eixo": "controle de fluxo",
+    "nivel": "dificil",
+    "estruturas": ["while", "if"],
+    "enunciado": "Leia inteiros até EOF. Ao final, imprima a média, o maior e o menor valor, cada um em uma linha com 2 casas decimais. Se nenhum valor for lido, imprima `vazio`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, count = 0, maior, menor;\n    double soma = 0;\n    while (scanf(\"%d\", &n) == 1) {\n        if (count == 0) maior = menor = n;\n        else {\n            if (n > maior) maior = n;\n            if (n < menor) menor = n;\n        }\n        soma += n;\n        count++;\n    }\n    if (count == 0) { printf(\"vazio\\n\"); return 0; }\n    printf(\"%.2f\\n%.2f\\n%.2f\\n\", soma/count, (double)maior, (double)menor);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1 2 3 4 5\n",  "output": "3.00\n5.00\n1.00\n"},
+      {"input": "42\n",          "output": "42.00\n42.00\n42.00\n"},
+      {"input": "-10 0 10\n",    "output": "0.00\n10.00\n-10.00\n"},
+      {"input": "",              "output": "vazio\n"}
+    ],
+    "origem": "Exercício de leitura até EOF com estatísticas",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-D-003",
+    "eixo": "controle de fluxo",
+    "nivel": "dificil",
+    "estruturas": ["for", "if", "switch"],
+    "enunciado": "Leia `N` e simule um jogo de dados: para cada número de 1 a N, se divisível por 6 marque `acerto`, por 3 (mas não 6) marque `quase`, por 2 (mas não 3) marque `metade`, caso contrário `erro`. Imprima cada rótulo e, ao final, a contagem de cada um.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, acerto=0, quase=0, metade=0, erro=0;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++) {\n        if (i % 6 == 0)      { printf(\"acerto\\n\"); acerto++; }\n        else if (i % 3 == 0) { printf(\"quase\\n\");  quase++;  }\n        else if (i % 2 == 0) { printf(\"metade\\n\"); metade++; }\n        else                 { printf(\"erro\\n\");   erro++;   }\n    }\n    printf(\"%d %d %d %d\\n\", acerto, quase, metade, erro);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "6\n",  "output": "erro\nmetade\nquase\nmetade\nerro\nacerto\n1 1 2 2\n"},
+      {"input": "1\n",  "output": "erro\n0 0 0 1\n"},
+      {"input": "12\n", "output": "erro\nmetade\nquase\nmetade\nerro\nacerto\nerro\nmetade\nquase\nmetade\nerro\nacerto\n2 2 4 4\n"},
+      {"input": "3\n",  "output": "erro\nmetade\nquase\n0 1 1 1\n"}
+    ],
+    "origem": "Exercício de múltiplas condições e contagem",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MD-001",
+    "eixo": "controle de fluxo",
+    "nivel": "muito dificil",
+    "estruturas": ["while", "for", "if"],
+    "enunciado": "Leia `N` e calcule o somatório `S = Σ 1/i` para i de 1 a N (série harmônica). Imprima com 6 casas decimais. Adicionalmente, encontre o menor `M` tal que `S_M > ln(N) + 0.5772` (usando essa estimativa para a constante de Euler). Imprima `M` na segunda linha.",
+    "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    double s = 0.0;\n    for (int i = 1; i <= n; i++) s += 1.0/i;\n    printf(\"%.6f\\n\", s);\n    double alvo = log((double)n) + 0.5772;\n    double acc = 0.0;\n    int m = 0;\n    while (acc <= alvo) { m++; acc += 1.0/m; }\n    printf(\"%d\\n\", m);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "10\n",   "output": "2.928968\n6\n"},
+      {"input": "100\n",  "output": "5.187378\n84\n"},
+      {"input": "1\n",    "output": "1.000000\n1\n"},
+      {"input": "1000\n", "output": "7.485471\n952\n"}
+    ],
+    "origem": "Exercício de série harmônica e constante de Euler",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MD-002",
+    "eixo": "controle de fluxo",
+    "nivel": "muito dificil",
+    "estruturas": ["for", "while", "if"],
+    "enunciado": "Dado `N` (1 ≤ N ≤ 10^6), calcule a soma de todos os números de Fibonacci menores ou iguais a N usando aritmética long long. Imprima o resultado.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long n, soma = 0, a = 0, b = 1;\n    scanf(\"%lld\", &n);\n    while (a <= n) { soma += a; long long t = a+b; a = b; b = t; }\n    printf(\"%lld\\n\", soma);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "10\n",     "output": "20\n"},
+      {"input": "1\n",      "output": "1\n"},
+      {"input": "100\n",    "output": "232\n"},
+      {"input": "1000000\n","output": "2178308\n"}
+    ],
+    "origem": "Exercício de soma de Fibonacci com limite",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E2-MD-003",
+    "eixo": "controle de fluxo",
+    "nivel": "muito dificil",
+    "estruturas": ["for", "if", "while"],
+    "enunciado": "Leia `T` casos de teste. Para cada caso, leia `N` e verifique se N é um número narcisista (igual à soma dos cubos de seus dígitos, ex: 153 = 1³+5³+3³). Imprima `sim` ou `nao`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int t;\n    scanf(\"%d\", &t);\n    while (t--) {\n        int n, s = 0, tmp;\n        scanf(\"%d\", &n);\n        tmp = n;\n        while (tmp > 0) { int d = tmp%10; s += d*d*d; tmp /= 10; }\n        printf(\"%s\\n\", s == n ? \"sim\" : \"nao\");\n    }\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3\n153\n370\n100\n", "output": "sim\nsim\nnao\n"},
+      {"input": "1\n1\n",             "output": "sim\n"},
+      {"input": "2\n371\n372\n",      "output": "sim\nnao\n"},
+      {"input": "1\n407\n",           "output": "sim\n"}
+    ],
+    "origem": "Exercício de número narcisista (Armstrong)",
+    "direitos_restritos": false
+  }
+]

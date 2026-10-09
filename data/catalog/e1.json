@@ -1,0 +1,418 @@
+[
+  {
+    "id": "E1-MF-001",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Leia dois números inteiros e imprima a soma deles.\n\n**Entrada:** dois inteiros `a` e `b` (uma linha).\n\n**Saída:** um inteiro, a soma.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    printf(\"%d\\n\", a + b);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "2 3\n",    "output": "5\n"},
+      {"input": "0 0\n",    "output": "0\n"},
+      {"input": "-1 5\n",   "output": "4\n"},
+      {"input": "100 200\n","output": "300\n"}
+    ],
+    "origem": "Exercício clássico de introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MF-002",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Leia um número real e imprima o seu dobro com duas casas decimais.\n\n**Entrada:** um número real `x`.\n\n**Saída:** o dobro de `x`, formatado com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double x;\n    scanf(\"%lf\", &x);\n    printf(\"%.2f\\n\", 2.0 * x);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3.5\n",  "output": "7.00\n"},
+      {"input": "0.0\n",  "output": "0.00\n"},
+      {"input": "-2.0\n", "output": "-4.00\n"},
+      {"input": "1.25\n", "output": "2.50\n"}
+    ],
+    "origem": "Exercício clássico de introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MF-003",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Leia três inteiros e imprima a média aritmética com duas casas decimais.\n\n**Entrada:** três inteiros em uma linha.\n\n**Saída:** a média com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b, c;\n    scanf(\"%d %d %d\", &a, &b, &c);\n    printf(\"%.2f\\n\", (a + b + c) / 3.0);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1 2 3\n",    "output": "2.00\n"},
+      {"input": "10 20 30\n", "output": "20.00\n"},
+      {"input": "0 0 0\n",    "output": "0.00\n"},
+      {"input": "1 1 2\n",    "output": "1.33\n"}
+    ],
+    "origem": "Exercício clássico de introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MF-004",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Converta uma temperatura em Celsius para Fahrenheit usando a fórmula `F = (9/5)*C + 32`. Leia um real e imprima o resultado com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double c;\n    scanf(\"%lf\", &c);\n    printf(\"%.2f\\n\", 9.0 / 5.0 * c + 32.0);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "0.0\n",   "output": "32.00\n"},
+      {"input": "100.0\n", "output": "212.00\n"},
+      {"input": "37.0\n",  "output": "98.60\n"},
+      {"input": "-40.0\n", "output": "-40.00\n"}
+    ],
+    "origem": "Exercício clássico de conversão de unidades",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MF-005",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Leia dois inteiros e imprima o resultado da divisão inteira e o resto da divisão, separados por espaço.\n\n**Entrada:** dois inteiros `a` e `b` (b ≠ 0).\n\n**Saída:** quociente e resto.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    printf(\"%d %d\\n\", a / b, a % b);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "10 3\n", "output": "3 1\n"},
+      {"input": "9 3\n",  "output": "3 0\n"},
+      {"input": "7 2\n",  "output": "3 1\n"},
+      {"input": "1 5\n",  "output": "0 1\n"}
+    ],
+    "origem": "Exercício clássico de aritmética inteira",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MF-006",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Leia o lado de um quadrado (inteiro) e imprima o perímetro e a área, cada um em uma linha.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int lado;\n    scanf(\"%d\", &lado);\n    printf(\"%d\\n\", 4 * lado);\n    printf(\"%d\\n\", lado * lado);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "5\n",  "output": "20\n25\n"},
+      {"input": "1\n",  "output": "4\n1\n"},
+      {"input": "10\n", "output": "40\n100\n"},
+      {"input": "3\n",  "output": "12\n9\n"}
+    ],
+    "origem": "Exercício clássico de geometria básica",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MF-007",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Leia três inteiros representando horas, minutos e segundos e converta o total para segundos. Imprima o resultado.\n\n**Entrada:** `h m s` em uma linha.\n\n**Saída:** total de segundos.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int h, m, s;\n    scanf(\"%d %d %d\", &h, &m, &s);\n    printf(\"%d\\n\", h * 3600 + m * 60 + s);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1 0 0\n", "output": "3600\n"},
+      {"input": "0 1 0\n", "output": "60\n"},
+      {"input": "0 0 1\n", "output": "1\n"},
+      {"input": "2 30 45\n","output": "9045\n"}
+    ],
+    "origem": "Exercício clássico de conversão de unidades de tempo",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MF-008",
+    "eixo": "fundamentos",
+    "nivel": "muito facil",
+    "estruturas": [],
+    "enunciado": "Leia o preço de um produto e a quantidade comprada (inteiro). Imprima o valor total com duas casas decimais.\n\n**Entrada:** um real e um inteiro.\n\n**Saída:** o total.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double preco;\n    int qtd;\n    scanf(\"%lf %d\", &preco, &qtd);\n    printf(\"%.2f\\n\", preco * qtd);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "2.50 4\n", "output": "10.00\n"},
+      {"input": "1.00 1\n", "output": "1.00\n"},
+      {"input": "3.33 3\n", "output": "9.99\n"},
+      {"input": "0.00 10\n","output": "0.00\n"}
+    ],
+    "origem": "Exercício clássico de operações comerciais",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-001",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia o raio de uma circunferência e imprima a área e o comprimento com 4 casas decimais, cada um em uma linha. Use `pi = 3.14159265`.\n\n**Entrada:** um real `r`.\n\n**Saída:** área e comprimento, nessa ordem.",
+    "solucao_referencia": "#include <stdio.h>\n\n#define PI 3.14159265\n\nint main(void) {\n    double r;\n    scanf(\"%lf\", &r);\n    printf(\"%.4f\\n\", PI * r * r);\n    printf(\"%.4f\\n\", 2.0 * PI * r);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1.0\n",  "output": "3.1416\n6.2832\n"},
+      {"input": "2.0\n",  "output": "12.5664\n12.5664\n"},
+      {"input": "0.5\n",  "output": "0.7854\n3.1416\n"},
+      {"input": "10.0\n", "output": "314.1593\n62.8319\n"}
+    ],
+    "origem": "Exercício clássico de geometria",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-002",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia quatro notas de um aluno (reais) e calcule a média ponderada com pesos 2, 3, 4 e 1, respectivamente. Imprima com 2 casas decimais.\n\n**Entrada:** quatro reais em uma linha.\n\n**Saída:** a média ponderada.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double n1, n2, n3, n4;\n    scanf(\"%lf %lf %lf %lf\", &n1, &n2, &n3, &n4);\n    printf(\"%.2f\\n\", (2*n1 + 3*n2 + 4*n3 + 1*n4) / 10.0);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "10.0 10.0 10.0 10.0\n", "output": "10.00\n"},
+      {"input": "0.0 0.0 0.0 0.0\n",     "output": "0.00\n"},
+      {"input": "5.0 7.0 8.0 6.0\n",     "output": "7.10\n"},
+      {"input": "6.0 6.0 6.0 6.0\n",     "output": "6.00\n"}
+    ],
+    "origem": "Exercício de média ponderada",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-003",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia a base e a altura de um triângulo (reais) e imprima a área com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double base, altura;\n    scanf(\"%lf %lf\", &base, &altura);\n    printf(\"%.2f\\n\", base * altura / 2.0);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3.0 4.0\n",  "output": "6.00\n"},
+      {"input": "6.0 8.0\n",  "output": "24.00\n"},
+      {"input": "1.0 1.0\n",  "output": "0.50\n"},
+      {"input": "5.5 2.0\n",  "output": "5.50\n"}
+    ],
+    "origem": "Exercício clássico de geometria básica",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-004",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia a velocidade média (km/h, real) e o tempo de viagem (horas, real). Imprima a distância percorrida com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double v, t;\n    scanf(\"%lf %lf\", &v, &t);\n    printf(\"%.2f\\n\", v * t);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "60.0 2.0\n",  "output": "120.00\n"},
+      {"input": "100.0 1.5\n", "output": "150.00\n"},
+      {"input": "0.0 5.0\n",   "output": "0.00\n"},
+      {"input": "80.5 3.0\n",  "output": "241.50\n"}
+    ],
+    "origem": "Exercício clássico de física — cinemática",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-005",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia um inteiro de 4 dígitos representando um ano e calcule quantos anos se passaram até 2026. Imprima o resultado.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int ano;\n    scanf(\"%d\", &ano);\n    printf(\"%d\\n\", 2026 - ano);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "2000\n", "output": "26\n"},
+      {"input": "1990\n", "output": "36\n"},
+      {"input": "2026\n", "output": "0\n"},
+      {"input": "1900\n", "output": "126\n"}
+    ],
+    "origem": "Exercício de aritmética básica",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-006",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia três lados de um triângulo (reais) e calcule o perímetro. Imprima com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    printf(\"%.2f\\n\", a + b + c);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3.0 4.0 5.0\n",  "output": "12.00\n"},
+      {"input": "1.0 1.0 1.0\n",  "output": "3.00\n"},
+      {"input": "2.5 3.5 4.0\n",  "output": "10.00\n"},
+      {"input": "6.0 8.0 10.0\n", "output": "24.00\n"}
+    ],
+    "origem": "Exercício clássico de geometria",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-007",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia o salário bruto de um funcionário (real) e calcule o salário líquido após descontar 11% de INSS e 7,5% de IR. Imprima o resultado com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double bruto;\n    scanf(\"%lf\", &bruto);\n    double liquido = bruto * (1.0 - 0.11 - 0.075);\n    printf(\"%.2f\\n\", liquido);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1000.00\n", "output": "815.00\n"},
+      {"input": "2000.00\n", "output": "1630.00\n"},
+      {"input": "500.00\n",  "output": "407.50\n"},
+      {"input": "0.00\n",    "output": "0.00\n"}
+    ],
+    "origem": "Exercício de cálculo salarial — introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-F-008",
+    "eixo": "fundamentos",
+    "nivel": "facil",
+    "estruturas": [],
+    "enunciado": "Leia a potência de um aparelho em watts (real) e o número de horas de uso por dia (real). Calcule o consumo em kWh por mês (30 dias). Imprima com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double potencia, horas;\n    scanf(\"%lf %lf\", &potencia, &horas);\n    printf(\"%.2f\\n\", potencia * horas * 30.0 / 1000.0);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "100.0 8.0\n",  "output": "24.00\n"},
+      {"input": "60.0 4.0\n",   "output": "7.20\n"},
+      {"input": "1000.0 1.0\n", "output": "30.00\n"},
+      {"input": "0.0 24.0\n",   "output": "0.00\n"}
+    ],
+    "origem": "Exercício de eficiência energética — introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-M-001",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia o valor principal `P`, a taxa de juros mensal `i` (em %) e o número de meses `n`. Calcule e imprima o montante final usando juros compostos (`M = P * (1 + i/100)^n`) com 2 casas decimais.\n\n**Entrada:** três reais em uma linha.\n\n**Saída:** o montante M.",
+    "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double P, i, n;\n    scanf(\"%lf %lf %lf\", &P, &i, &n);\n    printf(\"%.2f\\n\", P * pow(1.0 + i / 100.0, n));\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1000.0 1.0 12.0\n", "output": "1126.83\n"},
+      {"input": "500.0 2.0 6.0\n",   "output": "563.41\n"},
+      {"input": "100.0 0.5 24.0\n",  "output": "112.72\n"},
+      {"input": "200.0 1.5 3.0\n",   "output": "209.09\n"}
+    ],
+    "origem": "Exercício de matemática financeira — precisa de math.h",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-M-002",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia as coordenadas `(x1, y1)` e `(x2, y2)` de dois pontos no plano cartesiano e imprima a distância euclidiana entre eles com 4 casas decimais.\n\n**Entrada:** quatro reais.\n\n**Saída:** a distância.",
+    "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double x1, y1, x2, y2;\n    scanf(\"%lf %lf %lf %lf\", &x1, &y1, &x2, &y2);\n    double dist = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));\n    printf(\"%.4f\\n\", dist);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "0.0 0.0 3.0 4.0\n", "output": "5.0000\n"},
+      {"input": "1.0 1.0 1.0 1.0\n", "output": "0.0000\n"},
+      {"input": "0.0 0.0 1.0 1.0\n", "output": "1.4142\n"},
+      {"input": "-3.0 0.0 0.0 4.0\n","output": "5.0000\n"}
+    ],
+    "origem": "Exercício de geometria analítica — precisa de math.h",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-M-003",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia uma quantidade de segundos inteira e imprima o tempo no formato `HH:MM:SS`.\n\n**Entrada:** um inteiro `s` (0 ≤ s < 86400).\n\n**Saída:** o tempo formatado.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int s;\n    scanf(\"%d\", &s);\n    int hh = s / 3600;\n    int mm = (s % 3600) / 60;\n    int ss = s % 60;\n    printf(\"%02d:%02d:%02d\\n\", hh, mm, ss);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "3661\n",  "output": "01:01:01\n"},
+      {"input": "86399\n", "output": "23:59:59\n"},
+      {"input": "0\n",     "output": "00:00:00\n"},
+      {"input": "3600\n",  "output": "01:00:00\n"}
+    ],
+    "origem": "Exercício clássico de formatação de saída",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-M-004",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia a temperatura em Kelvin e converta para Celsius (`C = K - 273.15`) e Fahrenheit (`F = C * 9/5 + 32`). Imprima as duas conversões com 2 casas decimais, cada uma em uma linha.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double k;\n    scanf(\"%lf\", &k);\n    double c = k - 273.15;\n    double f = c * 9.0 / 5.0 + 32.0;\n    printf(\"%.2f\\n%.2f\\n\", c, f);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "373.15\n", "output": "100.00\n212.00\n"},
+      {"input": "273.15\n", "output": "0.00\n32.00\n"},
+      {"input": "0.0\n",    "output": "-273.15\n-459.67\n"},
+      {"input": "300.0\n",  "output": "26.85\n80.33\n"}
+    ],
+    "origem": "Exercício de conversão de unidades — termodinâmica",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-M-005",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia três medidas de um retângulo e de um cilindro reto de base retangular: comprimento, largura e altura. Calcule e imprima o volume e a área da superfície total do sólido com 2 casas decimais, cada um em uma linha.\n\nFórmulas: `V = l × w × h`, `A = 2(lw + lh + wh)`.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double l, w, h;\n    scanf(\"%lf %lf %lf\", &l, &w, &h);\n    printf(\"%.2f\\n\", l * w * h);\n    printf(\"%.2f\\n\", 2.0 * (l*w + l*h + w*h));\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "2.0 3.0 4.0\n", "output": "24.00\n52.00\n"},
+      {"input": "1.0 1.0 1.0\n", "output": "1.00\n6.00\n"},
+      {"input": "5.0 2.0 3.0\n", "output": "30.00\n62.00\n"},
+      {"input": "4.0 4.0 4.0\n", "output": "64.00\n96.00\n"}
+    ],
+    "origem": "Exercício de geometria espacial — introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-M-006",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia dois inteiros representando um número de notas de R$50 e de moedas de R$0,25. Calcule e imprima o valor total com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int notas, moedas;\n    scanf(\"%d %d\", &notas, &moedas);\n    printf(\"%.2f\\n\", notas * 50.0 + moedas * 0.25);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "2 4\n",  "output": "101.00\n"},
+      {"input": "0 0\n",  "output": "0.00\n"},
+      {"input": "1 0\n",  "output": "50.00\n"},
+      {"input": "3 8\n",  "output": "152.00\n"}
+    ],
+    "origem": "Exercício de representação monetária — introdução à programação",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-M-007",
+    "eixo": "fundamentos",
+    "nivel": "medio",
+    "estruturas": [],
+    "enunciado": "Leia os coeficientes `a`, `b` e `c` de uma equação do segundo grau. Calcule o discriminante `Δ = b² - 4ac` e as duas raízes reais (assuma que `Δ ≥ 0`). Imprima `Δ`, `x1` e `x2` com 4 casas decimais, cada um em uma linha.",
+    "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    double delta = b*b - 4.0*a*c;\n    double x1 = (-b + sqrt(delta)) / (2.0*a);\n    double x2 = (-b - sqrt(delta)) / (2.0*a);\n    printf(\"%.4f\\n%.4f\\n%.4f\\n\", delta, x1, x2);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1.0 -5.0 6.0\n",  "output": "1.0000\n3.0000\n2.0000\n"},
+      {"input": "1.0 0.0 -4.0\n",  "output": "16.0000\n2.0000\n-2.0000\n"},
+      {"input": "1.0 -2.0 1.0\n",  "output": "0.0000\n1.0000\n1.0000\n"},
+      {"input": "2.0 -7.0 3.0\n",  "output": "25.0000\n3.0000\n0.5000\n"}
+    ],
+    "origem": "Exercício de equação quadrática — precisa de math.h",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-D-001",
+    "eixo": "fundamentos",
+    "nivel": "dificil",
+    "estruturas": [],
+    "enunciado": "Leia o número de lados `n` (n ≥ 3) e o comprimento do lado `l` de um polígono regular. Calcule a área usando a fórmula `A = (n * l² / 4) * cot(π/n)` onde `cot(x) = cos(x)/sin(x)`. Imprima com 4 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define PI 3.14159265358979323846\n\nint main(void) {\n    int n;\n    double l;\n    scanf(\"%d %lf\", &n, &l);\n    double area = (n * l * l / 4.0) * (cos(PI/n) / sin(PI/n));\n    printf(\"%.4f\\n\", area);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "4 1.0\n",  "output": "1.0000\n"},
+      {"input": "6 1.0\n",  "output": "2.5981\n"},
+      {"input": "3 2.0\n",  "output": "1.7321\n"},
+      {"input": "8 1.0\n",  "output": "4.8284\n"}
+    ],
+    "origem": "Exercício de geometria de polígonos regulares — precisa de math.h",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-D-002",
+    "eixo": "fundamentos",
+    "nivel": "dificil",
+    "estruturas": [],
+    "enunciado": "Leia os coeficientes `a`, `b` e `c` de uma parábola `y = ax² + bx + c`. Encontre o vértice `(xv, yv)` e o eixo de simetria. Imprima `xv` e `yv` com 4 casas decimais, cada um em uma linha.",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    double xv = -b / (2.0 * a);\n    double yv = c - b*b / (4.0*a);\n    printf(\"%.4f\\n%.4f\\n\", xv, yv);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1.0 -4.0 3.0\n", "output": "2.0000\n-1.0000\n"},
+      {"input": "1.0 0.0 0.0\n",  "output": "0.0000\n0.0000\n"},
+      {"input": "2.0 4.0 1.0\n",  "output": "-1.0000\n-1.0000\n"},
+      {"input": "-1.0 2.0 0.0\n", "output": "1.0000\n1.0000\n"}
+    ],
+    "origem": "Exercício de análise de parábola — geometria analítica",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MD-001",
+    "eixo": "fundamentos",
+    "nivel": "muito dificil",
+    "estruturas": [],
+    "enunciado": "Leia dois inteiros `A` e `B` (ambos positivos, até 10^9). Imprima quantos inteiros entre `A` e `B` (inclusive) são divisíveis por 3 ou por 7, usando aritmética de inclusão-exclusão (sem laço).",
+    "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long a, b;\n    scanf(\"%lld %lld\", &a, &b);\n    long long div3  = b/3  - (a-1)/3;\n    long long div7  = b/7  - (a-1)/7;\n    long long div21 = b/21 - (a-1)/21;\n    printf(\"%lld\\n\", div3 + div7 - div21);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "1 21\n",  "output": "9\n"},
+      {"input": "1 7\n",   "output": "4\n"},
+      {"input": "7 7\n",   "output": "1\n"},
+      {"input": "1 100\n", "output": "43\n"}
+    ],
+    "origem": "Exercício de combinatória — inclusão-exclusão",
+    "direitos_restritos": false
+  }
+]
