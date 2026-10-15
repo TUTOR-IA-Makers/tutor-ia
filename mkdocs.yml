@@ -145,6 +145,7 @@ nav:
       - Evolução até 30/11: product/roadmap.md
       - Plano de entrega 30/11: product/plano-30-11.md
       - Plataforma-alvo: product/index.md
+      - Taxonomia e Catalogação: product/taxonomy.md
       - Arquitetura-alvo (SAD): product/target-architecture.md
       - Backlog da plataforma: product/mvp-backlog.md
   - Referência:
