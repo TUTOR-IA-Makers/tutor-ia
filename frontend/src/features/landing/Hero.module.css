@@ -1,0 +1,74 @@
+.band {
+  background: var(--color-primary);
+  color: var(--color-on-fill);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  align-items: start;
+  gap: var(--space-12);
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-6) var(--space-24);
+}
+
+.copy {
+  display: grid;
+  gap: var(--space-6);
+  justify-items: start;
+}
+
+.eyebrow {
+  padding-left: var(--space-3);
+  border-left: var(--border-width-strong) solid var(--color-on-fill);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+}
+
+.title {
+  font-size: var(--text-display);
+  line-height: var(--leading-display);
+}
+
+.text {
+  max-width: var(--width-prose);
+  font-size: var(--text-lg);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-6);
+  padding-top: var(--space-2);
+}
+
+.link {
+  color: var(--color-on-fill);
+  font-weight: var(--weight-semibold);
+}
+
+/* Anchored from the header; keeps the window clear of the sticky bar. */
+.demo {
+  min-width: 0;
+  scroll-margin-top: calc(var(--header-height) + var(--space-4));
+}
+
+@media (width < 1024px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--space-12) var(--space-6) var(--space-16);
+  }
+}
+
+@media (width < 640px) {
+  .hero {
+    padding: var(--space-8) var(--space-4) var(--space-12);
+  }
+
+  .text {
+    font-size: var(--text-md);
+  }
+}

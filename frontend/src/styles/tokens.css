@@ -46,6 +46,9 @@
   --text-lg: 1.25rem;
   --text-xl: 1.5rem;
   --text-2xl: 1.875rem;
+  --text-3xl: 2.25rem;
+  --text-display: clamp(2.25rem, 1.25rem + 3vw, 3.75rem);
+  --leading-display: 1.1;
   --leading-tight: 1.2;
   --leading-body: 1.5;
   --leading-code: 1.6;
@@ -60,6 +63,8 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
   --size-control-min: 24px;
   --size-control: 40px;
   --size-control-lg: 48px;

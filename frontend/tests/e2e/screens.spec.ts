@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 const SCREENS = [
+  ['landing', '/'],
   ['biblioteca', '/biblioteca'],
   ['gerar', '/gerar'],
   ['progresso', '/questoes/q-0143'],
