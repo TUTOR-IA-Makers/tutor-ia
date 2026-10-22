@@ -34,6 +34,18 @@
   padding: var(--space-6);
 }
 
+.controls button {
+  background: var(--color-demo-button);
+  border-color: var(--color-demo-button);
+  color: var(--color-on-fill);
+  font-weight: var(--weight-semibold);
+}
+
+.controls button:hover:not(:disabled) {
+  background: var(--color-demo-button-hover);
+  border-color: var(--color-demo-button-hover);
+}
+
 .contents {
   min-width: 0;
   margin: 0;
@@ -58,7 +70,6 @@
   display: inline-flex;
 }
 
-/* The native radio stays in the page for keyboard and screen readers; the pill shows it. */
 .radio {
   position: absolute;
   inset: 0;
@@ -81,9 +92,13 @@
 }
 
 .radio:checked + .optionLabel {
-  border-color: var(--color-primary);
-  background: var(--color-primary);
-  color: var(--color-on-fill);
+  background: linear-gradient(
+    135deg,
+    var(--color-demo-selected-start),
+    var(--color-demo-selected-end)
+  );
+  border: var(--border-width-strong) solid var(--color-demo-selected-border);
+  color: var(--color-text);
   font-weight: var(--weight-semibold);
 }
 
@@ -108,11 +123,10 @@
 }
 
 .stepCount {
-  color: var(--color-primary);
+  color: var(--color-accent-text);
   font-family: var(--font-mono);
 }
 
-/* A fixed floor keeps the page from jumping while the stage content changes. */
 .stage {
   min-height: var(--height-code-max);
   padding: var(--space-6);
@@ -212,4 +226,4 @@
   .table td {
     padding: var(--space-2);
   }
-}
+} /* Selected content: light blue gradient with dark text. */

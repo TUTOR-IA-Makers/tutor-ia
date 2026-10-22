@@ -1,5 +1,10 @@
 .band {
-  background: var(--color-primary);
+  background: linear-gradient(
+    110deg,
+    var(--color-primary-hover) 0%,
+    var(--color-primary) 45%,
+    var(--color-closing-blue) 100%
+  );
   color: var(--color-on-fill);
 }
 

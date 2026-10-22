@@ -13,7 +13,6 @@ import {
 import styles from './LiveGenerator.module.css'
 import { Pill } from './Pill'
 
-// Pacing of the replay: about seven seconds from click to finished question.
 const STEP_MS = 1100
 const LINE_MS = 45
 
@@ -90,7 +89,7 @@ function Stage({ state, question }: { state: GeneratorState; question: DemoQuest
       <div className={styles.result}>
         <p className={styles.resultTitle}>{question.title}</p>
         <div className={styles.pills}>
-          <Pill tone="primary">{question.content}</Pill>
+          <Pill tone="accent">{question.content}</Pill>
           <Pill mono>{question.difficulty}</Pill>
         </div>
         <p className={styles.verified}>{passedText(question)}</p>
@@ -104,6 +103,7 @@ function Stage({ state, question }: { state: GeneratorState; question: DemoQuest
   }
 
   const stepId = GENERATION_STEPS[state.completed]?.id
+
   if (stepId === 'statement') {
     return (
       <div className={styles.result}>
@@ -112,6 +112,7 @@ function Stage({ state, question }: { state: GeneratorState; question: DemoQuest
       </div>
     )
   }
+
   if (stepId === 'solution') {
     return (
       <CodeViewer
@@ -121,7 +122,11 @@ function Stage({ state, question }: { state: GeneratorState; question: DemoQuest
       />
     )
   }
-  if (stepId === 'testcases') return <CasesTable question={question} executed={false} />
+
+  if (stepId === 'testcases') {
+    return <CasesTable question={question} executed={false} />
+  }
+
   if (stepId === 'verification') {
     return (
       <div className={styles.result}>
@@ -133,6 +138,7 @@ function Stage({ state, question }: { state: GeneratorState; question: DemoQuest
       </div>
     )
   }
+
   return (
     <div className={styles.result}>
       <p className={styles.file}>
@@ -149,18 +155,23 @@ function Stage({ state, question }: { state: GeneratorState; question: DemoQuest
 
 export function LiveGenerator() {
   const [state, dispatch] = useReducer(generatorReducer, DEMO_QUESTIONS[0]?.id ?? '', initialState)
+
   const question = DEMO_QUESTIONS.find((item) => item.id === state.questionId) ?? DEMO_QUESTIONS[0]
+
   const totalLines = question ? solutionLines(question).length : 0
 
   useEffect(() => {
     if (state.phase !== 'running') return
+
     const typing = state.completed === SOLUTION_STEP && state.lines < totalLines
+
     const timer = setTimeout(
       () => {
         dispatch({ type: typing ? 'reveal' : 'tick' })
       },
       typing ? LINE_MS : STEP_MS,
     )
+
     return () => {
       clearTimeout(timer)
     }
@@ -171,6 +182,7 @@ export function LiveGenerator() {
   const running = state.phase === 'running'
   const current = GENERATION_STEPS[state.completed]
   const position = Math.min(state.completed + 1, STEP_COUNT)
+
   const status =
     state.phase === 'done'
       ? `Questão pronta. ${passedText(question)}`
@@ -206,8 +218,9 @@ export function LiveGenerator() {
             ))}
           </div>
         </fieldset>
+
         <Button
-          variant="primary"
+          variant="accent"
           size="lg"
           icon={state.phase === 'done' ? RotateCcw : Play}
           isLoading={running}
@@ -234,7 +247,9 @@ export function LiveGenerator() {
           }
         />
         <p className={styles.statusText} aria-live="polite">
-          {running && <span className={styles.stepCount}>{`${String(position)}/${String(STEP_COUNT)} `}</span>}
+          {running && (
+            <span className={styles.stepCount}>{`${String(position)}/${String(STEP_COUNT)} `}</span>
+          )}
           {status}
         </p>
       </div>

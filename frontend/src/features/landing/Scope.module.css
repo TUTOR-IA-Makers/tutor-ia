@@ -50,7 +50,7 @@
 }
 
 .doesNot {
-  border-top: var(--border-width-strong) solid var(--color-primary);
+  border-top: var(--border-width-strong) solid var(--color-danger);
 }
 
 .columnTitle {
@@ -86,8 +86,8 @@
 }
 
 .markerDoesNot {
-  background: var(--color-primary-tint);
-  color: var(--color-primary);
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
 }
 
 @media (width < 1024px) {

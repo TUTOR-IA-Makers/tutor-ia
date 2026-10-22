@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LiveGenerator } from './LiveGenerator'
 
@@ -38,14 +38,14 @@ describe('LiveGenerator', () => {
     expect(progress()).toHaveAttribute('aria-valuenow', '0')
   })
 
-  it('gera a questão do conteúdo escolhido, etapa por etapa', async () => {
+  it('gera a questão do conteúdo escolhido, etapa por etapa', () => {
     vi.useFakeTimers()
     stubReducedMotion(false)
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime.bind(vi) })
+
     render(<LiveGenerator />)
 
-    await user.click(screen.getByRole('radio', { name: 'Laços' }))
-    await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Laços' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Gerar questão' }))
 
     expect(screen.getByText('Escrevendo o enunciado')).toBeInTheDocument()
     expect(screen.getByText('Fatorial')).toBeInTheDocument()
@@ -64,13 +64,13 @@ describe('LiveGenerator', () => {
     expect(screen.getByRole('button', { name: 'Gerar de novo' })).toBeEnabled()
   })
 
-  it('mostra a solução sendo escrita durante a etapa da solução', async () => {
+  it('mostra a solução sendo escrita durante a etapa da solução', () => {
     vi.useFakeTimers()
     stubReducedMotion(false)
-    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime.bind(vi) })
+
     render(<LiveGenerator />)
 
-    await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Gerar questão' }))
     act(() => {
       vi.advanceTimersByTime(1100)
     })
@@ -79,7 +79,7 @@ describe('LiveGenerator', () => {
         vi.advanceTimersByTime(45)
       })
     }
-    const code = screen.getByLabelText(/Solução de referência/).textContent ?? ''
+    const code = screen.getByLabelText(/Solução de referência/).textContent
     expect(code).toContain('#include <stdio.h>')
     expect(code).not.toContain('return 0;')
   })

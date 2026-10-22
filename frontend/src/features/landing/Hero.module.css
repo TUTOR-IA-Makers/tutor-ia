@@ -1,5 +1,11 @@
 .band {
-  background: var(--color-primary);
+  background: linear-gradient(
+    110deg,
+    var(--color-primary-hover) 0%,
+    var(--color-primary) 25%,
+    var(--color-accent-hover) 65%,
+    var(--color-accent) 100%
+  );
   color: var(--color-on-fill);
 }
 
@@ -17,24 +23,34 @@
   display: grid;
   gap: var(--space-6);
   justify-items: start;
+  min-width: 0;
 }
 
 .eyebrow {
   padding-left: var(--space-3);
   border-left: var(--border-width-strong) solid var(--color-on-fill);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-md);
   font-weight: var(--weight-medium);
+  line-height: var(--leading-body);
 }
 
 .title {
+  margin: 0;
+  font-family: var(--font-heading);
   font-size: var(--text-display);
-  line-height: var(--leading-display);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
 }
 
 .text {
+  margin: 0;
   max-width: var(--width-prose);
-  font-size: var(--text-lg);
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-body);
 }
 
 .actions {
@@ -48,9 +64,9 @@
 .link {
   color: var(--color-on-fill);
   font-weight: var(--weight-semibold);
+  text-underline-offset: var(--space-1);
 }
 
-/* Anchored from the header; keeps the window clear of the sticky bar. */
 .demo {
   min-width: 0;
   scroll-margin-top: calc(var(--header-height) + var(--space-4));
@@ -61,14 +77,19 @@
     grid-template-columns: minmax(0, 1fr);
     padding: var(--space-12) var(--space-6) var(--space-16);
   }
+
+  .text {
+    font-size: var(--text-lg);
+  }
 }
 
 @media (width < 640px) {
   .hero {
+    gap: var(--space-8);
     padding: var(--space-8) var(--space-4) var(--space-12);
   }
 
-  .text {
-    font-size: var(--text-md);
+  .title {
+    font-size: var(--text-3xl);
   }
 }
