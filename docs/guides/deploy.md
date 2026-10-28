@@ -49,4 +49,13 @@ flowchart LR
 
 ## Chave do modelo
 
-Sem `CODEEXPERT_LLM_API_KEY` o serviço sobe e responde `GET /health`, mas a geração responde `503` ([configuração](../reference/configuration.md#variaveis-de-ambiente)). Levar a chave à VPS como arquivo é o [G0-3](../product/plano-30-11.md#g0-3), <span class="ce-badge ce-status--planned">Planejado</span>.
+Sem `CODEEXPERT_LLM_API_KEY` o serviço sobe e responde `GET /health`, mas a geração responde `503` ([configuração](../reference/configuration.md#variaveis-de-ambiente)).
+
+<span class="ce-badge ce-status--done">Implementado</span> A aplicação lê a chave de `/run/secrets/codeexpert_llm_api_key` quando a variável não está definida ([Segredos em arquivo](../reference/configuration.md#segredos-em-arquivo)).
+
+<span class="ce-badge ce-status--planned">Planejado</span> O lado da VPS, que depende do Compose do [G0-9](../product/plano-30-11.md#g0-9). Nada disto foi testado numa máquina:
+
+- O arquivo fica num diretório do root com permissão `0700`. O Compose monta o arquivo no container sem copiá-lo, então ele mantém dono e permissões do host. Como o container roda como o usuário `app` (uid `1000`, ver `Dockerfile`), o arquivo pertence ao uid `1000` e tem permissão `0400`. *A confirmar na VPS.*
+- No `compose.yaml`, o segredo é declarado com `file:` apontando para esse arquivo e entra no serviço `api` com `target: codeexpert_llm_api_key`. `CODEEXPERT_LLM_API_KEY` não aparece em `environment:` nem num `env_file:`.
+- A senha do banco segue o mesmo caminho quando existir o campo dela em `Settings` ([G1-1](../product/plano-30-11.md#g1-1)).
+- A demonstração do [G0-3](../product/plano-30-11.md#g0-3) é mostrar que `docker inspect` e `/proc/1/environ` do container não contêm a chave e que uma geração funciona.
