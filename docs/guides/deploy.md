@@ -1,105 +1,52 @@
-# Deploy no Cloud Run
+# Deploy
 
-<p class="lead">Todo merge em <code>main</code> que passa no portão vira uma revisão nova no Cloud Run, sem ninguém rodar comando. Esta página explica o que o workflow faz, o que impede um deploy e a configuração do GCP que precisa existir, uma vez, antes do primeiro.</p>
+<p class="lead">Onde o serviço vai rodar e como um merge em <code>main</code> chega lá. A equipe trocou o Cloud Run por uma VPS da Hostinger; esta página separa o que existe no repositório do que ainda vai ser feito.</p>
 
-<span class="ce-badge ce-status--wip">Em desenvolvimento</span> `.github/workflows/deploy.yml` existe; o projeto GCP ainda não foi configurado, então nenhum deploy rodou e não há URL de produção ([G0-2](../product/roadmap.md#infraestrutura-e-deploy)).
+<span class="ce-badge ce-status--planned">Planejado</span> Não há deploy em produção nem URL pública. A hospedagem na Hostinger está proposta no [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md) e o workflow que a usa ainda não existe ([G0-9](../product/plano-30-11.md#g0-9)).
 
 !!! danger "A imagem não é um sandbox"
-    O serviço compila e roda o código gerado sem isolamento além de tempo e tamanho de saída ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). O workflow **não** torna o serviço público: quem pode chamá-lo é configurado no próprio serviço, por uma pessoa. Veja [Quem pode chamar o serviço](#quem-pode-chamar).
+    O serviço compila e roda o código gerado sem isolamento além de tempo e tamanho de saída ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). Na VPS, só o proxy publica portas, e a URL não deve ser divulgada antes do acesso por convite ([G8-1](../product/roadmap.md#acesso-e-custo)). As [regras de segurança](https://github.com/TUTOR-IA-Makers/tutor-ia/blob/main/.agents/rules/security.md) pedem que o serviço não fique exposto à internet sem autenticação.
 
-## O que acontece num merge
+## O que existe hoje
 
-1. O `ci.yml` roda o portão, o mesmo `./scripts/check.sh` de sempre.
-2. Quando ele termina, o `deploy.yml` é disparado (`workflow_run`). O job só roda se o CI **passou** e foi um push em `main`; falha, cancelamento ou PR não chegam ao deploy.
-3. Faz checkout do commit exato que o CI verificou, constrói a imagem com o [`Dockerfile`](docker.md) e a envia ao Artifact Registry com o SHA como tag.
-4. Publica a imagem no serviço do Cloud Run com `--port=8000` e `CODEEXPERT_COMMIT_SHA=<sha>`. As outras variáveis do serviço são mantidas.
-5. Chama `GET /health` na URL do serviço e falha se `commit` não for o SHA publicado.
+`.github/workflows/deploy.yml` publica no **Cloud Run** ([ADR-0010](../adr/0010-continuous-deployment-after-the-gate.md)). Ele dispara quando o `ci.yml` termina em `main`, mas o projeto GCP nunca foi configurado: sem as variáveis `GCP_*` o job para com erro antes de construir a imagem, e cada merge em `main` deixa uma execução vermelha do *Deploy* no Actions. Esse workflow vai ser substituído, não configurado.
 
-Deploys nunca são cancelados no meio. O GitHub guarda **um** deploy pendente por vez, então, se vários merges chegam em sequência, os do meio são descartados. Antes de construir, um job confere se o commit ainda é a ponta de `main`; se não for, o deploy é pulado (não falha), porque o commit mais novo publica a si mesmo depois do próprio CI.
+O que dele continua valendo, e o G0-9 mantém:
 
-## Conferir o que está no ar
+- O deploy só roda se o CI **passou** num push em `main` (`workflow_run`). Falha, cancelamento ou PR não chegam ao deploy, e o portão não é repetido ([ADR-0008](../adr/0008-one-gate-for-people-agents-and-ci.md)).
+- Um deploy nunca é cancelado no meio. Se o commit deixou de ser a ponta de `main` enquanto esperava, ele é pulado.
+- A imagem é marcada com o SHA do commit, e `CODEEXPERT_COMMIT_SHA` recebe o mesmo valor.
+- No fim, `GET /health` precisa devolver esse SHA em `commit`, ou o job falha.
 
-```bash
-curl https://SERVICO-XXXX.a.run.app/health
-# {"status":"ok","version":"0.2.0","commit":"<sha do último merge em main>"}
+## Como vai ficar na Hostinger
+
+Resumo do [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md). Nada disto está configurado.
+
+```mermaid
+flowchart LR
+    GH["GitHub Actions<br/><small>CI verde em main</small>"] -->|push da imagem :sha| GHCR[("GitHub Container<br/>Registry")]
+    GH -->|SSH, comando forçado| VPS
+    subgraph VPS["VPS Hostinger — Docker Compose"]
+        PX["proxy<br/><small>Caddy, 80/443, TLS</small>"] --> API["api<br/><small>imagem do ADR-0009</small>"]
+        API --> DB[("db<br/><small>Postgres 16, volume</small>")]
+    end
+    GHCR -.->|pull| VPS
+    P["Professor"] -->|HTTPS| PX
 ```
 
-`commit` deve ser igual a `git rev-parse origin/main`. Se o serviço não for público, acrescente `-H "Authorization: Bearer $(gcloud auth print-identity-token)"`.
-
-## Configuração única do GCP {#configuracao-gcp}
-
-Feita uma vez, à mão, por quem tem acesso ao projeto. O workflow não cria infraestrutura.
-
-**Não há chave de conta de serviço.** O GitHub emite um token OIDC de curta duração para o job, e o GCP o troca por credenciais via Workload Identity Federation. Nada secreto fica no repositório nem nos *secrets* do GitHub.
-
-Os valores abaixo são fictícios; troque pelos do projeto.
-
-```bash
-PROJECT_ID=meu-projeto
-REGION=southamerica-east1
-REPO=TUTOR-IA-Makers/tutor-ia
-PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format='value(projectNumber)')
-# O id numérico não muda se o repositório for renomeado, apagado e recriado.
-REPO_ID=$(gh api "repos/$REPO" --jq .id)
-
-gcloud services enable run.googleapis.com artifactregistry.googleapis.com \
-  iamcredentials.googleapis.com --project "$PROJECT_ID"
-
-# Onde as imagens ficam
-gcloud artifacts repositories create codeexpert --repository-format=docker \
-  --location="$REGION" --project "$PROJECT_ID"
-
-# Quem faz o deploy
-gcloud iam service-accounts create github-deploy --project "$PROJECT_ID"
-SA="github-deploy@$PROJECT_ID.iam.gserviceaccount.com"
-gcloud projects add-iam-policy-binding "$PROJECT_ID" --member="serviceAccount:$SA" --role=roles/run.developer
-gcloud artifacts repositories add-iam-policy-binding codeexpert --location="$REGION" \
-  --project "$PROJECT_ID" --member="serviceAccount:$SA" --role=roles/artifactregistry.writer
-# Necessário para publicar uma revisão que roda como a conta de serviço do serviço
-gcloud iam service-accounts add-iam-policy-binding \
-  "$PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
-  --project "$PROJECT_ID" --member="serviceAccount:$SA" --role=roles/iam.serviceAccountUser
-
-# Confiança no GitHub, restrita ao ambiente "production" deste repositório
-gcloud iam workload-identity-pools create github --location=global --project "$PROJECT_ID"
-gcloud iam workload-identity-pools providers create-oidc tutor-ia \
-  --location=global --workload-identity-pool=github --project "$PROJECT_ID" \
-  --issuer-uri=https://token.actions.githubusercontent.com \
-  --attribute-mapping="google.subject=assertion.sub,attribute.repository_id=assertion.repository_id" \
-  --attribute-condition="assertion.sub == 'repo:$REPO:environment:production' && assertion.repository_id == '$REPO_ID'"
-gcloud iam service-accounts add-iam-policy-binding "$SA" --project "$PROJECT_ID" \
-  --role=roles/iam.workloadIdentityUser \
-  --member="principal://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github/subject/repo:$REPO:environment:production"
-```
-
-A condição restringe o acesso a jobs do ambiente `production` **do repositório com aquele id**. Checar só o nome (`sub`) não basta: se o repositório for renomeado ou apagado e alguém recriar o mesmo nome, o `sub` seria idêntico e herdaria o acesso; o `repository_id` não se repete. Em **Settings → Environments → production** do GitHub, limite o ambiente à branch `main`; assim nem um workflow de outra branch obtém credenciais.
-
-*A confirmar:* se `roles/iam.workloadIdentityUser` basta para o passo que gera o token de identidade usado na verificação do `/health`, ou se a conta também precisa de `roles/iam.serviceAccountTokenCreator` sobre si mesma.
-
-### Variáveis do repositório
-
-Em **Settings → Secrets and variables → Actions → Variables** (são identificadores, não segredos). O workflow para com erro se alguma faltar.
-
-| Variável | Exemplo |
+| Peça | Como |
 | --- | --- |
-| `GCP_PROJECT_ID` | `meu-projeto` |
-| `GCP_REGION` | `southamerica-east1` |
-| `GCP_ARTIFACT_REPOSITORY` | `codeexpert` |
-| `CLOUD_RUN_SERVICE` | `codeexpert` |
-| `GCP_WORKLOAD_IDENTITY_PROVIDER` | `projects/123456789/locations/global/workloadIdentityPools/github/providers/tutor-ia` |
-| `GCP_DEPLOY_SERVICE_ACCOUNT` | `github-deploy@meu-projeto.iam.gserviceaccount.com` |
+| Máquina | Uma VPS KVM com Ubuntu e Docker Compose, ≥ 2 vCPU. Plano e datacenter *A confirmar* |
+| Portas | Só o proxy publica, 80 e 443. API e Postgres ficam na rede interna do Compose. Firewall libera 22, 80 e 443 |
+| Imagem | GitHub Container Registry, tag = SHA. O job envia com o `GITHUB_TOKEN`; a VPS baixa. Como a imagem não contém segredo, o pacote pode ser público |
+| Deploy | O job, no ambiente `production` restrito a `main`, entra por SSH com uma chave cujo `authorized_keys` só permite rodar o script de deploy. A chave do host fica fixada numa variável do repositório |
+| Segredos | Chave do LLM e senha do banco ficam só na VPS, como arquivos montados pelo Compose em `/run/secrets`. Nunca passam pelo GitHub ([G0-3](../product/plano-30-11.md#g0-3)) |
+| Banco | Postgres no mesmo Compose, migrações aplicadas por um serviço que roda antes da API, `pg_dump` diário copiado para fora da VPS ([G1-1](../product/plano-30-11.md#g1-1)) |
+| Estado da geração | Até o [G0-4](../product/plano-30-11.md#g0-4), `var/` num volume Docker. Sobrevive a reinício e a deploy, porque há uma máquina só |
 
-## Quem pode chamar o serviço {#quem-pode-chamar}
-
-O workflow não passa `--allow-unauthenticated`, então o primeiro deploy cria um serviço **privado** e os seguintes não mudam isso. Tornar a URL pública é decisão da equipe, não do pipeline: as [regras de segurança](https://github.com/TUTOR-IA-Makers/tutor-ia/blob/main/.agents/rules/security.md) pedem que o serviço não fique exposto à internet enquanto não houver autenticação (G8-1).
-
-Com o serviço privado, a conta `github-deploy` precisa de `roles/run.invoker` para a verificação do `/health` passar. Concedido no projeto, vale já no primeiro deploy, antes de o serviço existir:
-
-```bash
-gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-  --member="serviceAccount:$SA" --role=roles/run.invoker
-```
+!!! warning "O que a troca custa"
+    Somos nós que operamos a máquina: atualizações do sistema e do Docker, disco, renovação do TLS, rotação de logs. Uma VPS é um ponto único de falha, e o backup só vale depois de um restore testado. A lista completa está nas consequências do [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md#consequences).
 
 ## Chave do modelo
 
-O workflow não toca na chave. Sem `CODEEXPERT_LLM_API_KEY` o serviço sobe e responde `GET /health`, mas a geração responde `503` ([configuração](../reference/configuration.md#variaveis-de-ambiente)). Levar a chave ao Secret Manager é o G0-3, <span class="ce-badge ce-status--planned">Planejado</span>.
+Sem `CODEEXPERT_LLM_API_KEY` o serviço sobe e responde `GET /health`, mas a geração responde `503` ([configuração](../reference/configuration.md#variaveis-de-ambiente)). Levar a chave à VPS como arquivo é o [G0-3](../product/plano-30-11.md#g0-3), <span class="ce-badge ce-status--planned">Planejado</span>.

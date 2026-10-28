@@ -3,7 +3,7 @@
 <p class="lead">Resumo do SAD v0.1, a arquitetura da plataforma completa. Serve para saber quais decisões já foram tomadas antes de escrever código novo. Nada aqui está implementado neste repositório, exceto onde indicado.</p>
 
 !!! warning "Rascunho"
-    O SAD está em v0.1. Várias ADRs estão como *proposta*, e há provas de conceito pendentes. Trate como direção. A arquitetura prevista para 30/11 — bem menor — está em [Roadmap](roadmap.md#arquitetura-esperada-em-3011).
+    O SAD está em v0.1. Várias ADRs estão como *proposta*, e há provas de conceito pendentes. Trate como direção. A arquitetura prevista para 30/11 — bem menor, e numa VPS da Hostinger em vez do GCP ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) — está em [Roadmap](roadmap.md#arquitetura-esperada-em-3011).
 
 ## Contexto — C4 nível 1
 
