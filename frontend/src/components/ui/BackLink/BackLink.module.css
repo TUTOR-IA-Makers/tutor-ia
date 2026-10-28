@@ -1,0 +1,15 @@
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-self: start;
+  min-height: var(--size-control-min);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}

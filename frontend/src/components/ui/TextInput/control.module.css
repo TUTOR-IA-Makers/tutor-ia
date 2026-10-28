@@ -1,0 +1,29 @@
+.control {
+  width: 100%;
+  min-height: var(--size-control);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border-control);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition-property: border-color;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-enter);
+}
+
+.control::placeholder {
+  color: var(--color-text-muted);
+}
+
+.control:disabled {
+  background: var(--color-page);
+  cursor: not-allowed;
+}
+
+.control:hover:not(:disabled) {
+  border-color: var(--color-text-muted);
+}
+
+.control[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}

@@ -1,0 +1,40 @@
+.field,
+.group {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.label {
+  padding: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.required {
+  margin-left: var(--space-1);
+  color: var(--color-danger);
+}
+
+.optional {
+  margin-left: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-regular);
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}

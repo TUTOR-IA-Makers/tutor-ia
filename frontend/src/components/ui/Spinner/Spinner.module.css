@@ -1,0 +1,42 @@
+.spinner {
+  flex: none;
+  animation-name: spin;
+  animation-duration: var(--dur-spin);
+  animation-timing-function: var(--ease-linear);
+  animation-iteration-count: infinite;
+}
+
+.sm {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+}
+
+.md {
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+}
+
+.lg {
+  width: var(--size-control);
+  height: var(--size-control);
+}
+
+.track {
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 3;
+  opacity: 0.2;
+}
+
+.arc {
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

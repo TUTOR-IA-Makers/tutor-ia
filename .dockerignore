@@ -37,6 +37,13 @@ dist/
 .coverage.*
 htmlcov/
 
+# ── Front-end dependencies and test output ──────────────────────────────────
+# node_modules alone is ~300 MB; the image does not build the front-end yet.
+frontend/node_modules/
+frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+
 # ── Not needed at runtime ────────────────────────────────────────────────────
 tests/
 docs/

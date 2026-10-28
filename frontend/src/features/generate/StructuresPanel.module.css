@@ -1,0 +1,38 @@
+.group {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.required {
+  color: var(--color-accent-text);
+}
+
+.allowed {
+  color: var(--color-primary);
+}
+
+.forbidden {
+  color: var(--color-danger);
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
