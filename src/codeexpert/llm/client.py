@@ -60,11 +60,14 @@ class OpenAIChatClient:
                     timeout=settings.llm_timeout_seconds,
                 )
             except httpx.RequestError as exc:
-                last_error = f"request failed: {exc}"
+                last_error = f"request failed: {_redact(str(exc), api_key)}"
             else:
                 if response.status_code == httpx.codes.OK:
                     return _extract_content(response.json())
-                last_error = f"HTTP {response.status_code}: {response.text[:300]}"
+                # Redact before truncating: a cut through the key would leave a
+                # prefix that no longer matches it.
+                body = _redact(response.text, api_key)[:300]
+                last_error = f"HTTP {response.status_code}: {body}"
                 if response.status_code not in RETRYABLE_STATUS:
                     break
 
@@ -80,6 +83,14 @@ class OpenAIChatClient:
                 time.sleep(backoff)
 
         raise LLMError(f"Call to the model provider failed — {last_error}")
+
+
+def _redact(text: str, secret: str) -> str:
+    """Remove the key from provider text bound for a log line and a client's `detail`.
+
+    Some OpenAI-compatible providers echo the submitted key back in a 401 body.
+    """
+    return text.replace(secret, "[redacted]")
 
 
 def _extract_content(body: dict) -> str:
