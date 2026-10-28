@@ -97,7 +97,7 @@ planejamento. O desconto de capacidade acima já assume que não.
 
 | Dupla | Foco | Épicos donos |
 | --- | --- | --- |
-| **A — Backend & Infra** | Pipeline, banco de dados, Cloud Run, CI/CD | G0, G1, G2, G3 |
+| **A — Backend & Infra** | Pipeline, banco de dados, VPS da Hostinger, CI/CD | G0, G1, G2, G3 |
 | **B — Front-end, identidade & comunicação** | Interface do professor, design, landing, docs de usuário | G4, G5, G9 |
 | **C — Acervo, catalogação & harness da IA** | Taxonomia, banco de referência, prompts, métricas, exposição segura | G6, G7, G8 |
 
@@ -152,36 +152,61 @@ Personas: **Professor** (quem gera e aprova) · **Monitor** (quem cataloga o ace
 #### G0-1 · Imagem única com a API e o compilador — `5 SP · A · S0 · P0`
 
 **Como** Equipe, **quero** uma imagem Docker que sirva a API e tenha `gcc` dentro,
-**para que** o mesmo artefato rode na máquina de qualquer um e no Cloud Run.
+**para que** o mesmo artefato rode na máquina de qualquer um e em produção.
 
 - [ ] `docker build` produz imagem que responde `GET /health` e compila um `.c` de teste.
 - [ ] A imagem não contém `.env`, chave nem nada de `var/`.
 - [ ] `docker run` com as variáveis de ambiente corretas gera uma questão de ponta a ponta.
 
-#### G0-2 · Deploy contínuo a partir de `main` — `5 SP · A · S0 · P0`
+#### G0-2 · Deploy contínuo a partir de `main` — `5 SP · A · S0 · P0` {#g0-2}
 
 **Como** Equipe, **quero** que todo merge em `main` suba para o Cloud Run sozinho,
 **para que** ninguém precise saber deployar e a URL nunca fique velha.
 
-- [ ] Workflow no GitHub Actions: `make check` → build → push → deploy.
-- [ ] `make check` vermelho não deploya.
+- [x] Workflow no GitHub Actions: `make check` → build → push → deploy.
+- [x] `make check` vermelho não deploya.
 - [ ] A URL de produção está no `README.md` e responde `GET /health` com a versão que está em `main`.
 
-#### G0-3 · Segredos fora do repositório — `3 SP · A · S1 · P0`
+> Fechada com o workflow para o Cloud Run ([ADR-0010](../adr/0010-continuous-deployment-after-the-gate.md)).
+> O projeto GCP nunca foi configurado, e a equipe trocou de hospedagem
+> ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)). O critério que faltou passa para o G0-9.
 
-**Como** Equipe, **quero** a chave do provedor de LLM no Secret Manager,
-**para que** ninguém a veja no repositório, nos logs ou no painel do Cloud Run.
+#### G0-9 · Deploy contínuo na VPS da Hostinger — `5 SP · A · sem sprint · P0` {#g0-9}
 
-- [ ] Chave lida do Secret Manager pela conta de serviço do Cloud Run.
+**Como** Equipe, **quero** que todo merge em `main` suba sozinho para a VPS da Hostinger,
+**para que** exista uma URL de produção e ela nunca fique velha.
+
+- [ ] VPS provisionada com Docker Compose (`api`, `db`, `proxy`). Só o proxy publica portas
+      (80 e 443, com TLS); o firewall libera 22, 80 e 443.
+- [ ] `deploy.yml` reescrito: mantém o disparo por CI verde em `main`, a fila sem cancelamento e a
+      conferência do SHA em `GET /health`; troca o GCP por imagem no GitHub Container Registry e
+      deploy por SSH.
+- [ ] A chave SSH do deploy só executa o script de deploy (comando forçado em `authorized_keys`),
+      fica nos segredos do ambiente `production`, restrito a `main`, e a chave do host é fixada.
+- [ ] A URL de produção está no `README.md` e responde `GET /health` com o SHA de `main`.
+- [ ] `docs/guides/deploy.md` descreve a configuração única da VPS, testada do zero uma vez.
+
+> Nova, por causa da troca de hospedagem ([#25](https://github.com/TUTOR-IA-Makers/tutor-ia/issues/25)). Bloqueia a demonstração pela URL de produção de
+> G0-3, G0-4 e G1-1. Sprint a definir pelo PO.
+
+#### G0-3 · Segredos fora do repositório — `3 SP · A · S1 · P0` {#g0-3}
+
+**Como** Equipe, **quero** a chave do provedor de LLM guardada só na VPS, como arquivo,
+**para que** ninguém a veja no repositório, no GitHub, nos logs ou em `docker inspect`.
+
+- [ ] Na VPS, a chave e a senha do banco ficam em arquivos de um diretório do root, com
+      permissão mínima, e chegam ao container pelos `secrets` do Compose, em `/run/secrets`.
+      Não são variáveis de ambiente do container, e não passam pelo GitHub.
+- [ ] `Settings` lê o segredo do arquivo quando a variável não existe; o `.env` local continua
+      funcionando como hoje.
 - [ ] Um teste automatizado falha se uma chave aparecer em log ou em resposta de erro.
 - [ ] `.env.example` continua com valores falsos, e `scripts/check.sh` continua caçando segredos.
 
-#### G0-4 · A fonte de verdade sai do disco — `5 SP · A · S1 · P0`
+#### G0-4 · A fonte de verdade sai do disco — `5 SP · A · S1 · P0` {#g0-4}
 
-**Como** Equipe, **quero** que o estado de uma geração viva no Postgres e não no disco da
-instância, **para que** o pipeline não quebre quando duas requisições caírem em instâncias
-diferentes — e para que a questão de um cliente não desapareça quando o Cloud Run reciclar
-o contêiner.
+**Como** Equipe, **quero** que o estado de uma geração viva no Postgres e não em arquivos,
+**para que** a biblioteca possa ser consultada, uma geração interrompida não deixe questão
+pela metade, e o banco de questões de um cliente tenha um único lugar para backup.
 
 - [ ] ADR escrita, com a alternativa recusada e o que nos faria mudar de ideia.
 - [ ] Um protocolo `ArtifactStore`, no mesmo espírito do `CodeRunner` do
@@ -191,28 +216,32 @@ o contêiner.
       criada por outro processo, com o diretório local apagado, e as cinco etapas terminam.
 - [ ] O disco passa a ser rascunho de **uma** etapa: `/tmp/<run_id>` só para o `.c` e o
       binário, apagado ao fim. **Absorve a antiga história G1-3.**
+- [ ] `GET /questions/{id}` devolve tudo o que a tela de revisão precisa, numa chamada.
+- [ ] Uma geração que falha no meio não deixa questão pela metade visível na biblioteca.
 
-!!! danger "Esta é a armadilha técnica do plano, e o mecanismo exato é este"
+!!! info "Com a VPS, isto deixou de ser a armadilha do plano"
     Cada etapa lê `var/runs/<run_id>/`, trabalha e escreve de volta
     ([ADR-0003](../adr/0003-one-workspace-per-run.md)). `RunWorkspace.open()` faz
     `root.is_dir()` e, se não achar, levanta `RunNotFoundError` — que
     `api/errors.py` mapeia para **404**.
 
-    No Cloud Run cada instância tem o seu próprio sistema de arquivos, em memória, que morre
-    com ela. Logo: `POST /gen_statement` cai na instância 1 e escreve `statement.json`;
-    `POST /gen_code` com o mesmo `run_id` cai na instância 2 e responde **404 — Run not
-    found**. Sem escala nenhuma isto também acontece: `min-instances=0` mata a instância
-    ociosa, e o primeiro passo de amanhã não encontra o de hoje.
+    No Cloud Run isso quebrava em produção: cada instância tinha o seu disco, e a etapa 2
+    noutra instância respondia 404. Numa VPS só, com `var/` num volume Docker, o estado
+    sobrevive a reinício e a deploy, e o código de hoje funciona
+    ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)).
 
-    Resolver na S1 é barato. Descobrir em 25/11 não é.
+    O G0-4 continua P0 porque G1-5 (filtrar a biblioteca), G0-8 (estado do job) e G3
+    (aprovação) precisam de consulta e de transação, que arquivos não dão. Mas deixa de
+    ser urgente para o deploy, e o PO pode reavaliar a ordem de corte da S1.
 
 #### G0-5 · Logs estruturados com `run_id` — `3 SP · A · sem sprint · P1`
 
-**Como** Equipe, **quero** rastrear uma geração inteira pelo `run_id` no Cloud Logging,
+**Como** Equipe, **quero** rastrear uma geração inteira pelo `run_id` nos logs da VPS,
 **para que** eu descubra em que etapa uma falha aconteceu sem reproduzir o problema.
 
-- [ ] Todo log de uma geração carrega `run_id`, etapa e duração.
-- [ ] Uma consulta salva mostra as gerações que falharam nas últimas 24 h.
+- [ ] Todo log de uma geração carrega `run_id`, etapa e duração, em JSON no `stdout`.
+- [ ] Um comando documentado mostra as gerações que falharam nas últimas 24 h, e os logs do
+      Docker têm rotação, para não encherem o disco da VPS.
 - [ ] Nenhum log contém a chave de API nem o código gerado inteiro.
 
 #### G0-6 · Teto de custo — `3 SP · C · S3 · P0`
@@ -220,7 +249,8 @@ o contêiner.
 **Como** Equipe, **quero** um limite duro de gasto com o provedor de LLM,
 **para que** um bug em loop, ou um visitante curioso, não consuma o orçamento num fim de semana.
 
-- [ ] Alerta de orçamento no GCP e no provedor de LLM, em 50% e 80%, para o canal da equipe.
+- [ ] Alerta de orçamento no provedor de LLM, em 50% e 80%, para o canal da equipe. A VPS tem
+      preço fixo e não precisa de alerta.
 - [ ] Limite diário de gerações no serviço; ao atingir, responde `429` com mensagem clara.
 - [ ] O limite é configurável por variável de ambiente, e o teste cobre o caso de estouro.
 
@@ -254,33 +284,37 @@ reiniciado, **para que** eu não descubra pelo silêncio que tenho de começar d
 
 ### G1 — Banco de questões
 
-#### G1-1 · Postgres com migrações versionadas — `5 SP · A · S1 · P0`
+#### G1-1 · Postgres com migrações versionadas — `5 SP · A · S1 · P0` {#g1-1}
 
-**Como** Equipe, **quero** um Postgres gerenciado e migrações no repositório,
-**para que** o esquema seja o mesmo em qualquer máquina e a mudança dele passe por PR.
+**Como** Equipe, **quero** um Postgres na VPS, com backup, e migrações no repositório,
+**para que** o esquema seja o mesmo em qualquer máquina, a mudança dele passe por PR e um
+disco perdido não leve o banco de questões junto.
 
-- [ ] Instância provisionada e alcançável pelo Cloud Run; credenciais no Secret Manager.
-- [ ] Migrações versionadas (Alembic) aplicadas no deploy, não à mão.
+- [ ] Postgres 16 como serviço do Compose, com volume nomeado, alcançável só pela rede
+      interna (a porta 5432 não é publicada); senha como segredo do G0-3.
+- [ ] Migrações versionadas (Alembic) aplicadas no deploy, por um serviço que roda antes da
+      API, não à mão.
+- [ ] `pg_dump` diário copiado para fora da VPS, e um restore feito uma vez e registrado.
 - [ ] Os testes rodam contra um banco descartável, e `make check` continua funcionando offline.
 
-#### G1-2 · O modelo de dados — `5 SP · A · S1 · P0`
+> A Hostinger não oferece Postgres gerenciado. A alternativa (Neon, Supabase) está no
+> [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md#alternatives-considered).
 
-**Como** Equipe, **quero** questão, versão, caso de teste e execução modelados,
+#### G1-2 · O modelo de dados — `5 SP · A · S1 · P0` {#g1-2}
+
+**Como** Equipe, **quero** questão, caso de teste e execução modelados,
 **para que** uma questão gerada deixe de viver apenas num diretório temporário.
 
 - [ ] Tabelas para questão, caso de teste e execução de geração, com o `run_id` como ligação.
 - [ ] A questão guarda: enunciado, solução de referência, restrições pedidas, nível, eixo, estado.
-- [ ] A execução guarda: modelo, versão de prompt, tokens, custo e horário de cada etapa —
-      o que hoje está em `meta.json`.
+- [ ] A execução guarda o que hoje está em `meta.json` — modelo, versão de prompt e horário de
+      cada etapa — e tem colunas para tokens e custo, vazias até o G2-4.
 
 #### G1-3 · A questão gerada é persistida — *absorvida por G0-4*
 
 Era uma história separada — "no fim da geração, gravar no banco". Deixou de ser: se o
 `ArtifactStore` do G0-4 é o Postgres, a questão está no banco **a cada etapa**, não no fim.
-Os critérios que importavam migraram para lá. Ficam aqui dois, que continuam valendo:
-
-- [ ] `GET /questions/{id}` devolve tudo o que a tela de revisão precisa, numa chamada.
-- [ ] Uma geração que falha no meio não deixa questão pela metade visível na biblioteca.
+Todos os critérios, inclusive os dois que ficavam aqui, estão no [G0-4](#g0-4).
 
 #### G1-4 · Casos de teste com categoria e visibilidade — `3 SP · A · S2 · P1`
 
@@ -328,8 +362,8 @@ privados do aluno e eu possa dar pesos diferentes depois.
 
     Não acontece hoje por acidente — o endpoint é `async def` executando código síncrono, o
     que serializa tudo dentro de um processo. **É uma proteção que desaparece no primeiro
-    `--workers 2` ou na segunda instância do Cloud Run.** E um arquivo em `var/questions/`
-    dentro de um contêiner efêmero não é lugar para o banco de questões de um cliente.
+    `--workers 2`.** E um arquivo em `var/questions/` não é lugar para o banco de questões
+    de um cliente.
 
 #### G1-7 · Versionamento da questão — `5 SP · P2`
 
@@ -744,14 +778,15 @@ combinação, **para que** o começo do zero seja uma barra de progresso e não 
 **para que** não descubramos o problema pelo cartão de crédito.
 
 - [ ] Checklist: nenhum segredo em log ou resposta; `/config` não devolve chave; CORS fechado;
-      conta de serviço com o mínimo de permissão; imagem com sistema de arquivos read-only
+      chave SSH do deploy só com o comando forçado; imagem com sistema de arquivos read-only
       fora de `/tmp`.
 - [ ] Os limites reais de `execution/local.py` conferidos no contêiner: tempo de compilação,
       tempo de execução, teto de saída e morte do grupo de processos. **Não há limite de
-      memória nem de número de processos** — com `--concurrency` alto, um `malloc` em laço no
-      código gerado derruba a instância e, com ela, toda requisição em voo naquela instância.
-- [ ] `--concurrency` do Cloud Run baixo (4–8) e CPU ≥ 2, porque compilar e executar dentro
-      da requisição não convive com 80 requisições por instância.
+      memória nem de número de processos** — um `malloc` em laço no código gerado derruba a
+      API e, com ela, toda requisição em voo.
+- [ ] Container da API com `mem_limit`, `pids_limit` e concorrência baixa (4–8 requisições), e
+      VPS com CPU ≥ 2. Isso protege a máquina, não a API: o limite estoura e o container
+      reinicia.
 - [ ] Registrado na documentação que **executamos código gerado por modelo sem isolamento
       real** ([lacuna 4](roadmap.md#lacunas-conhecidas)), o risco aceito e porquê. Isto **não** é FEAT-033
       cumprida.
@@ -816,7 +851,7 @@ Backlog importado no GitHub Projects, com labels por épico e dupla.
 
 !!! tip "Por que infra primeiro"
     Porque "deployar" é a tarefa que sempre revela um problema de duas semanas quando é
-    feita na última. Se o container com `gcc` não subir no Cloud Run, queremos saber em
+    feita na última. Se o container com `gcc` não subir em produção, queremos saber em
     02/10 — quando ainda há oito semanas para escolher outra coisa.
 
 ---
@@ -837,8 +872,8 @@ fica no banco. ≥ 16 questões de referência importadas. Primeiro lote do gold
 com métricas — o número de referência contra o qual tudo depois é comparado.
 
 **Risco da sprint:** G0-4. Se o `ArtifactStore` exigir redesenho maior que os 5 SP estimados,
-corta-se G4-4 e G5-2 da sprint, **nunca o G0-4** — todo o resto do plano assume que o estado
-sobreviveu ao Cloud Run.
+corta-se G4-4 e G5-2 da sprint, **nunca o G0-4** — G1-5, G0-8 e G3 assumem o estado no banco.
+Com a VPS ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)), o deploy já não depende dele.
 
 ---
 
@@ -1012,10 +1047,10 @@ Doze critérios verificáveis. Não é "está bonito" — é passa ou não passa
 | **Versionamento de questão, aprovador ≠ solicitante** | Exigem atividade e papéis, que não existem aqui | Ondas 0 e 1 |
 
 !!! danger "A dívida que assumimos com nome e sobrenome"
-    Vamos **compilar e executar código gerado por um modelo, dentro do processo do Cloud Run,
+    Vamos **compilar e executar código gerado por um modelo, dentro do container da API,
     sem isolamento real** — com tempo-limite de compilação e de execução, teto de saída e
     morte do grupo de processos, mas **sem limite de memória, sem limite de número de
-    processos e sem restrição de rede ou de sistema de arquivos**. É contenção, não
+    processos por execução e sem restrição de rede ou de sistema de arquivos**. É contenção, não
     isolamento. Ver [ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)
     e [lacuna 4](roadmap.md#lacunas-conhecidas).
 
@@ -1030,13 +1065,13 @@ Doze critérios verificáveis. Não é "está bonito" — é passa ou não passa
 
 | Risco | Impacto | Mitigação | Dono |
 | --- | --- | --- | --- |
-| Estado no sistema de arquivos não sobrevive ao Cloud Run | Alto | G0-4 na S1, com ADR. Descobrir em outubro, não em novembro | A |
+| A VPS cai ou perde o disco, e o banco de questões vai junto | Alto | Backup diário fora da VPS e restore testado (G1-1). Uma máquina só, sem réplica | A |
+| Operar a VPS (atualizações, TLS, disco) come a capacidade da Dupla A | Médio | Compose versionado, configuração única documentada e testada do zero (G0-9) | A |
 | `tree-sitter-c` não distingue algum caso de escopo | Alto | Conjunto adversarial escrito **antes** do parser (G2-2). Plano B: aviso na tela em vez de rejeição automática | A |
 | Novembro come a capacidade (provas, trabalhos finais) | Alto | Desconto já aplicado; S4 a 72%; ordem de sacrifício decidida antes de doer | PO |
 | Custo de LLM estoura | Médio | G0-6 e G8-2, teto duro, alerta em 50% | C |
 | Catalogar 32 questões é mais lento que o estimado | Médio | Começa na S0, distribuído em três sprints. Se atrasar, reduz de 4 eixos para 2 e diz isso na documentação | C |
 | Uma dupla fica bloqueada esperando outra | Médio | Backend entrega API antes da tela; front trabalha contra mock até a API existir | Todos |
-| `gcc` não roda no Cloud Run como esperado | Médio | G0-1 e G0-2 na S0. É a primeira coisa que testamos | A |
 | Geração ancorada piora a qualidade em vez de melhorar | Médio | G7-2 dá o número antes e depois. Se piorar, reverte — o prompt é versionado | C |
 | Professor piloto não aparece | Médio | Convidar na S1, não na S4. Segundo nome de reserva | PO |
 | Uma pessoa desaparece por duas semanas | Médio | Duplas, não indivíduos. Arquivo de tarefa por branch carrega o contexto | Todos |

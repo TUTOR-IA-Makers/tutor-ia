@@ -68,7 +68,7 @@ Lidas pelo Vite no build e no `make front-dev`, a partir de `frontend/.env.local
 - `make check` recusa arquivos versionados com formato de chave (`sk-…` longo, `AIza…`, chave privada PEM) e qualquer coisa versionada em `var/`, `cache/`, `Questions/`, `.env` ou `config/LLM_Config.txt`.
 - **Se uma chave vazar:** revogue e gere outra primeiro; depois reescreva o histórico.
 
-Até 30/11 a chave de produção vai para o Secret Manager (G0-3, <span class="ce-badge ce-status--planned">Planejado</span>).
+Até 30/11 a chave de produção vai para a VPS como arquivo montado em `/run/secrets`, sem passar pelo GitHub nem aparecer em `docker inspect` ([G0-3](../product/plano-30-11.md#g0-3), <span class="ce-badge ce-status--planned">Planejado</span>).
 
 ## Portas e caminhos
 
