@@ -85,7 +85,7 @@ Todos <span class="ce-badge ce-status--planned">Planejados</span>. Aprovador ≠
 | Sem identidade visual de produto | **G5-1** nome, logo, paleta e tipografia; tokens num arquivo consumido pelo front (S0) · **G5-2** landing pública (S1) | — |
 | Pedido montado em JSON no `curl` | **G4-2** formulário · **G4-3** progresso da geração · **G4-4** estados de erro (S1) · **G4-5** tela de revisão · **G4-6** biblioteca · **G4-9** entrada por convite (S2) · **G4-7** edição inline · **G4-8** download com instruções (S3) · **G4-10** polimento e mobile (S4) | Um professor gera, revisa, aprova e baixa o XML sem terminal |
 
-G4-1 e G5-1 <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o resto <span class="ce-badge ce-status--planned">Planejado</span>. A stack do front ainda não foi decidida.
+G4-1, G5-1 e G5-2 <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o resto <span class="ce-badge ce-status--planned">Planejado</span>. A stack do front ainda não foi decidida.
 
 ### Acervo de referência {#acervo-de-referencia}
 

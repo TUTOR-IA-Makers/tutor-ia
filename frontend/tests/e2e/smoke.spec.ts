@@ -1,8 +1,21 @@
 import { expect, test } from '@playwright/test'
 
-test('abre na biblioteca com a navbar padrão', async ({ page }) => {
+test('abre na landing pública com pedido de acesso e documentação', async ({ page }) => {
   await page.goto('/')
-  await expect(page).toHaveURL('/biblioteca')
+  await expect(page).toHaveTitle('CodeExpert')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Questões de C verificadas por execução, prontas para o Moodle.',
+  )
+  await expect(page.getByRole('link', { name: 'Pedir acesso' }).first()).toBeInViewport()
+  await expect(page.getByRole('link', { name: 'Ler a documentação' }).first()).toHaveAttribute(
+    'href',
+    'https://tutor-ia-makers.github.io/tutor-ia/',
+  )
+  await expect(page.getByRole('navigation', { name: 'Principal' })).toHaveCount(0)
+})
+
+test('abre na biblioteca com a navbar padrão', async ({ page }) => {
+  await page.goto('/biblioteca')
   await expect(page).toHaveTitle('Biblioteca de questões · CodeExpert')
   const nav = page.getByRole('navigation', { name: 'Principal' })
   await expect(nav.getByRole('link', { name: 'Biblioteca' })).toHaveAttribute(
@@ -35,7 +48,14 @@ test('build publica CSP restritiva e não gera erros de console', async ({ page 
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(message.text())
   })
-  for (const path of ['/biblioteca', '/gerar', '/questoes/q-0142', '/questoes/q-0143', '/ajuda']) {
+  for (const path of [
+    '/',
+    '/biblioteca',
+    '/gerar',
+    '/questoes/q-0142',
+    '/questoes/q-0143',
+    '/ajuda',
+  ]) {
     await page.goto(path)
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   }
@@ -47,7 +67,7 @@ test('build publica CSP restritiva e não gera erros de console', async ({ page 
   expect(errors).toEqual([])
 })
 
-for (const path of ['/biblioteca', '/gerar', '/questoes/q-0142', '/ajuda']) {
+for (const path of ['/', '/biblioteca', '/gerar', '/questoes/q-0142', '/ajuda']) {
   test(`sem rolagem horizontal em ${path}`, async ({ page }) => {
     await page.goto(path)
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()

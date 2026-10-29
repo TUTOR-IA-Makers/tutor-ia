@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 
 const ROUTES = [
+  '/',
   '/biblioteca',
   '/gerar',
   '/questoes/q-0142',
@@ -33,6 +34,28 @@ test('modal de exportação sem violações', async ({ page }) => {
   await page.getByRole('button', { name: 'Exportar XML' }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
   const { violations } = await new AxeBuilder({ page }).include('dialog').analyze()
+  expect(
+    violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+  ).toEqual([])
+})
+
+test('landing com reduced motion mostra a questão pronta no clique', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Gerar questão' }).click()
+  await expect(page.getByText('Questão pronta. 4 de 4 casos de teste passaram.')).toBeVisible()
+})
+
+test('demonstração da landing roda as cinco etapas sem violações', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('radio', { name: 'Vetores' }).check()
+  await page.getByRole('button', { name: 'Gerar questão' }).click()
+  await expect(page.getByText('Questão pronta. 3 de 3 casos de teste passaram.')).toBeVisible({
+    timeout: 15_000,
+  })
+  const { violations } = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze()
   expect(
     violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
   ).toEqual([])

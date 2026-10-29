@@ -123,6 +123,7 @@ nav:
       - Rodar com Docker: guides/docker.md
       - Deploy: guides/deploy.md
       - Importar no Moodle: guides/import-into-moodle.md
+      - Pedir acesso: guides/request-access.md
   - Arquitetura:
       - architecture/index.md
       - Pipeline de geração: architecture/pipeline.md

@@ -10,10 +10,10 @@
   --color-primary: #243c8c;
   --color-primary-hover: #1b2f6e;
   --color-primary-tint: #e8ecf7;
-  --color-accent: #1b7a70;
-  --color-accent-hover: #12635a;
-  --color-accent-tint: #e3f2ef;
-  --color-accent-text: #12635a;
+  --color-accent: #047857;
+  --color-accent-hover: #065f46;
+  --color-accent-tint: #ecfdf5;
+  --color-accent-text: #065f46;
   --color-danger: #b42318;
   --color-danger-tint: #fdecea;
   --color-backdrop: #14161a99;
@@ -39,6 +39,7 @@
   --code-success: #8fd6a8;
   --code-error: #f5a3a3;
   --font-sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading: 'Trebuchet MS', arial, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', menlo, consolas, monospace;
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
@@ -46,6 +47,9 @@
   --text-lg: 1.25rem;
   --text-xl: 1.5rem;
   --text-2xl: 1.875rem;
+  --text-3xl: 2.25rem;
+  --text-display: clamp(2.25rem, 1.25rem + 3vw, 3.75rem);
+  --leading-display: 1.1;
   --leading-tight: 1.2;
   --leading-body: 1.5;
   --leading-code: 1.6;
@@ -60,6 +64,8 @@
   --space-6: 24px;
   --space-8: 32px;
   --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
   --size-control-min: 24px;
   --size-control: 40px;
   --size-control-lg: 48px;
@@ -98,6 +104,17 @@
   --ease-enter: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
   --ease-linear: linear;
+  --color-demo-action: #5d9cbd;
+  --color-demo-action-hover: #4e8baa;
+  --color-demo-action-tint: #eaf3f8;
+  --color-demo-action-text: #102a43;
+  --color-demo-action-border: #3c6f8b;
+  --color-demo-selected-start: #edf6ff;
+  --color-demo-selected-end: #b8d8f5;
+  --color-demo-selected-border: #3978ad;
+  --color-demo-button: #047857;
+  --color-demo-button-hover: #065f46;
+  --color-closing-blue: #355da8;
 }
 
 @media (prefers-reduced-motion: reduce) {

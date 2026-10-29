@@ -1,12 +1,22 @@
-import { Navigate, type RouteObject } from 'react-router'
+import type { RouteObject } from 'react-router'
 import { NotFoundPage } from '@/routes/not-found'
+import { PublicLayout } from './layout/PublicLayout'
 import { RootLayout } from './layout/RootLayout'
 
 export const routes: RouteObject[] = [
   {
+    path: '/',
+    element: <PublicLayout />,
+    children: [
+      {
+        index: true,
+        lazy: async () => ({ Component: (await import('@/routes/landing')).LandingPage }),
+      },
+    ],
+  },
+  {
     element: <RootLayout />,
     children: [
-      { index: true, element: <Navigate to="/biblioteca" replace /> },
       {
         path: 'biblioteca',
         lazy: async () => ({ Component: (await import('@/routes/library')).LibraryPage }),

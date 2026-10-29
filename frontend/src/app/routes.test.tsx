@@ -8,12 +8,18 @@ import { MAIN_CONTENT_ID } from './layout/RootLayout'
 import { routes } from './routes'
 
 describe('rotas da aplicação', () => {
-  it('redireciona a raiz para a biblioteca', async () => {
+  it('a raiz mostra a landing pública, sem a navbar do app', async () => {
     const { router } = renderRoutes(routes, '/')
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'Biblioteca de questões' }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: 'Questões de C verificadas por execução, prontas para o Moodle.',
+      }),
     ).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/biblioteca')
+    expect(router.state.location.pathname).toBe('/')
+    expect(screen.getByRole('navigation', { name: 'Seções da página' })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Principal' })).toBeNull()
+    expect(screen.getByRole('main')).toHaveAttribute('id', MAIN_CONTENT_ID)
   })
 
   it('a navbar é a mesma em todas as telas e marca a página ativa', async () => {
@@ -101,6 +107,7 @@ describe('rotas da aplicação', () => {
   }, 15_000)
 
   it.each([
+    '/',
     '/biblioteca',
     '/gerar',
     '/ajuda',

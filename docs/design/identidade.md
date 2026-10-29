@@ -142,7 +142,7 @@ Entradas e saídas dos casos de teste continuam em fundo claro, com fonte mono.
 
 ### 4.6 Contraste verificado (WCAG 2.2)
 
-Cada amostra abaixo é o texto real sobre o fundo real. O `make check` recalcula 32 pares a partir de `tokens.css` com `npm run contrast` e falha abaixo de 4.5 para texto ou 3 para elementos que não são texto.
+Cada amostra abaixo é o texto real sobre o fundo real. O `make check` recalcula 36 pares a partir de `tokens.css` com `npm run contrast` e falha abaixo de 4.5 para texto ou 3 para elementos que não são texto.
 
 | Amostra | Par | Razão | Mínimo | Resultado |
 |---|---|---|---|---|
@@ -158,6 +158,9 @@ Cada amostra abaixo é o texto real sobre o fundo real. O `make check` recalcula
 | <span class="ce-id-pair" style="color:#FFFFFF;background:#1B7A70">Aa 123</span> | Branco / botão verde<br><span class="ce-id-mono">#FFFFFF / #1B7A70</span> | 5.17 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#FFFFFF;background:#12635A">Aa 123</span> | Branco / botão verde, hover<br><span class="ce-id-mono">#FFFFFF / #12635A</span> | 7.10 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#12635A;background:#E3F2EF">Aa 123</span> | Verde texto / fundo verde<br><span class="ce-id-mono">#12635A / #E3F2EF</span> | 6.16 | 4.5 | <span class="ce-id-pass">AA</span> |
+| <span class="ce-id-pair" style="color:#12635A;background:#FFFFFF">Aa 123</span> | Verde texto / superfície<br><span class="ce-id-mono">#12635A / #FFFFFF</span> | 7.10 | 4.5 | <span class="ce-id-pass">AA</span> |
+| <span class="ce-id-pair" style="color:#12635A;background:#F5F7FA">Aa 123</span> | Verde texto / página<br><span class="ce-id-mono">#12635A / #F5F7FA</span> | 6.61 | 4.5 | <span class="ce-id-pass">AA</span> |
+| <span class="ce-id-pair" style="color:#243C8C;background:#F5F7FA">Aa 123</span> | Azul / página<br><span class="ce-id-mono">#243C8C / #F5F7FA</span> | 9.32 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#B42318;background:#FFFFFF">Aa 123</span> | Erro / superfície<br><span class="ce-id-mono">#B42318 / #FFFFFF</span> | 6.57 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#B42318;background:#FDECEA">Aa 123</span> | Erro / fundo de erro<br><span class="ce-id-mono">#B42318 / #FDECEA</span> | 5.75 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#FFFFFF;background:#1E3557">Aa 123</span> | Branco / rodapé<br><span class="ce-id-mono">#FFFFFF / #1E3557</span> | 12.34 | 4.5 | <span class="ce-id-pass">AA</span> |
@@ -187,6 +190,8 @@ Duas famílias, com papéis que não se misturam. As amostras abaixo usam os mes
 </div>
 
 <div class="ce-id-type">
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-display<br>36 a 60px · 600</div><div class="ce-id-type__sample" style="font-size:48px;font-weight:600;line-height:1.1;color:#243C8C">Questões de C verificadas</div></div>
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-3xl<br>36px · 600</div><div class="ce-id-type__sample" style="font-size:36px;font-weight:600">Como funciona</div></div>
 <div class="ce-id-type__row"><div class="ce-id-type__meta">--text-2xl<br>30px · 600</div><div class="ce-id-type__sample" style="font-size:30px;font-weight:600;color:#243C8C">Biblioteca de questões</div></div>
 <div class="ce-id-type__row"><div class="ce-id-type__meta">--text-xl<br>24px · 600</div><div class="ce-id-type__sample" style="font-size:24px;font-weight:600;color:#243C8C">Verificando a solução</div></div>
 <div class="ce-id-type__row"><div class="ce-id-type__meta">--text-lg<br>20px · 600</div><div class="ce-id-type__sample" style="font-size:20px;font-weight:600">Etapas da geração</div></div>
@@ -199,6 +204,8 @@ Duas famílias, com papéis que não se misturam. As amostras abaixo usam os mes
 |---|---|
 | Entrelinha do texto | 1.5 |
 | Entrelinha de títulos | 1.2 |
+| Landing page | texto explicativo em `--color-text` (contraste 18:1 sobre branco, acima do AAA) e nada abaixo de 16px fora do editor de código |
+| Tamanhos de destaque | `--text-display` (escala com a largura da tela, de 36 a 60px, entrelinha 1.1) e `--text-3xl` só na landing page; as telas do app param em `--text-2xl` |
 | Largura máxima de linha | cerca de 75 caracteres (`--width-prose`, 47rem) |
 | Caixa | frase normal; sem rótulos em caixa alta |
 | Carregamento | 4 arquivos woff2, subset latin, servidos pelo próprio projeto, `font-display: swap` |
@@ -207,7 +214,7 @@ Duas famílias, com papéis que não se misturam. As amostras abaixo usam os mes
 
 ## 6. Espaçamento e grid
 
-Escala de 4px. Todo espaçamento da interface usa um destes tokens.
+Escala de 4px. Todo espaçamento da interface usa um destes tokens. `--space-16` e `--space-24` separam as seções da landing page.
 
 <div class="ce-id-scale">
 <div class="ce-id-scale__row"><code>--space-1</code><span>4px</span><div class="ce-id-scale__bar" style="width:4px"></div></div>
@@ -217,6 +224,8 @@ Escala de 4px. Todo espaçamento da interface usa um destes tokens.
 <div class="ce-id-scale__row"><code>--space-6</code><span>24px</span><div class="ce-id-scale__bar" style="width:24px"></div></div>
 <div class="ce-id-scale__row"><code>--space-8</code><span>32px</span><div class="ce-id-scale__bar" style="width:32px"></div></div>
 <div class="ce-id-scale__row"><code>--space-12</code><span>48px</span><div class="ce-id-scale__bar" style="width:48px"></div></div>
+<div class="ce-id-scale__row"><code>--space-16</code><span>64px</span><div class="ce-id-scale__bar" style="width:64px"></div></div>
+<div class="ce-id-scale__row"><code>--space-24</code><span>96px</span><div class="ce-id-scale__bar" style="width:96px"></div></div>
 </div>
 
 <div class="ce-id-radii">
@@ -269,7 +278,8 @@ Escala de 4px. Todo espaçamento da interface usa um destes tokens.
 | Etapa atual | indicador giratório discreto ao lado do título, sem pulsar a tela |
 | Selecionar card na biblioteca | borda e fundo mudam para o verde-azulado; a barra de exportação desliza de cima |
 | Aprovar questão | o badge muda de "Aguardando revisão" para "Aprovada" e um aviso confirma |
-| Landing (G5-2) | <span class="ce-badge ce-status--planned">Planejado</span> vídeo controlado pelo scroll |
+| Landing (G5-2) | o visitante escolhe um conteúdo e clica em "Gerar questão": as cinco etapas avançam com a barra de progresso, a solução aparece linha a linha e os casos de teste ficam verdes. Nada começa sozinho; com "reduzir movimento" ativo, a questão pronta aparece direto |
+| Vídeo de demonstração (G5-3) | <span class="ce-badge ce-status--planned">Planejado</span> embutido na landing page |
 
 ## 9. Princípios de UX
 
@@ -479,6 +489,14 @@ Teste com leitor de tela e com professor de fora da equipe continuam <span class
     | Alternativas | quatro abas; índice lateral com seções numeradas |
     | Decisão | "Enunciado e solução" (solução logo abaixo, no editor) e "Casos de teste e restrições" |
     | Consequências | menos troca de contexto; a aba fica no endereço (`?aba=testes`) |
+
+??? note "D8: Landing com gerador de demonstração, sem vídeo"
+    | Campo | Valor |
+    |---|---|
+    | Contexto | G5-2 pede que o visitante entenda o produto em 30 segundos; o vídeo de demonstração é a G5-3, de uma sprint posterior |
+    | Alternativas | vídeo em loop no fundo do hero; etapas marcadas conforme a rolagem (testada e descartada por chamar pouca atenção) |
+    | Decisão | hero em azul sólido com um gerador de demonstração: o visitante escolhe Condicionais, Laços ou Vetores e vê as cinco etapas rodarem com uma questão pronta, cujas saídas esperadas foram obtidas compilando e executando a solução |
+    | Consequências | sem arquivo pesado nem dependência de gravação; a demonstração usa os componentes do app; a animação só começa com o clique, como pede a seção 8; nova escala de destaque (`--text-display`, `--text-3xl`) e espaçamentos `--space-16` e `--space-24`, sem cor nova |
 
 ## 14. Como mudar a identidade
 
