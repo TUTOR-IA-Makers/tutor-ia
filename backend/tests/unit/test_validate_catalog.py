@@ -12,13 +12,13 @@ import sys
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 # Make scripts/ importable without installing the package.
 SCRIPTS_DIR = Path(__file__).parent.parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
-from validate_catalog import CatalogEntry, CatalogTestCase, validate_catalog  # noqa: E402
-
+from validate_catalog import CatalogEntry, validate_catalog  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -57,45 +57,45 @@ def test_valid_entry_passes() -> None:
 def test_missing_enunciado_fails() -> None:
     bad = {**VALID_ENTRY}
     del bad["enunciado"]
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
 
 def test_invalid_eixo_fails() -> None:
     bad = {**VALID_ENTRY, "eixo": "algebra"}
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
 
 def test_invalid_nivel_fails() -> None:
     bad = {**VALID_ENTRY, "nivel": "impossivel"}
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
 
 def test_invalid_structure_fails() -> None:
     bad = {**VALID_ENTRY, "estruturas": ["goto"]}
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
 
 def test_empty_casos_teste_fails() -> None:
     bad = {**VALID_ENTRY, "casos_teste": []}
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
 
 def test_missing_origem_fails() -> None:
     bad = {**VALID_ENTRY}
     del bad["origem"]
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
 
 def test_missing_direitos_restritos_fails() -> None:
     bad = {**VALID_ENTRY}
     del bad["direitos_restritos"]
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
 
@@ -127,7 +127,7 @@ def test_non_list_root_returns_one_error(tmp_path: Path) -> None:
 
 
 def test_coverage_count_accumulates(tmp_path: Path) -> None:
-    """Two valid entries with the same axis×level must each be counted."""
+    """Two valid entries with the same axisXlevel must each be counted."""
     second = {**VALID_ENTRY, "id": "E1-MF-002"}
     catalog_dir = _write_catalog(tmp_path, [VALID_ENTRY, second])
     # No errors means both entries were parsed and counted.
@@ -154,4 +154,3 @@ def test_real_e2_catalog_is_valid() -> None:
         pytest.skip("e2.json not found")
     errors = validate_catalog(catalog_dir)
     assert errors == 0
-
