@@ -6,6 +6,8 @@ import {
   Button,
   Callout,
   Field,
+  ErrorState,
+  LoadingState,
   NumberStepper,
   Panel,
   Select,
@@ -24,6 +26,7 @@ import {
   TEST_CASES_MIN,
   type GenerateFormValues,
 } from './schema'
+import { useStructureCatalog } from './useStructureCatalog'
 import { StructuresPanel } from './StructuresPanel'
 import styles from './GenerateForm.module.css'
 
@@ -36,14 +39,28 @@ export interface GenerateFormProps {
 export function GenerateForm({ defaultValues = DEFAULT_VALUES }: GenerateFormProps) {
   const navigate = useNavigate()
   const create = useCreateQuestion()
+  const catalog = useStructureCatalog()
   const {
     control,
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<GenerateFormValues>({ resolver: zodResolver(generateSchema), defaultValues })
 
   const submit = handleSubmit((draft) => {
+    if (!catalog.data?.length || catalog.isError) return
+    const known = new Set(catalog.data.map(({ id }) => id))
+    if (
+      Object.values(draft.structures)
+        .flat()
+        .some((id) => !known.has(id))
+    ) {
+      setError('structures', {
+        message: 'Há uma estrutura fora do catálogo atual. Revise as seleções.',
+      })
+      return
+    }
     create.mutate(draft, {
       onSuccess: ({ id }) => {
         void navigate(questionPath(id))
@@ -146,17 +163,40 @@ export function GenerateForm({ defaultValues = DEFAULT_VALUES }: GenerateFormPro
             )}
           </Field>
         </Panel>
-        <Controller
-          control={control}
-          name="structures"
-          render={({ field, fieldState }) => (
-            <StructuresPanel
-              value={field.value}
-              onChange={field.onChange}
-              error={fieldState.error?.message}
+        <div>
+          {catalog.isPending ? (
+            <LoadingState label="Carregando estruturas disponíveis…" />
+          ) : catalog.isError ? (
+            <ErrorState
+              title="Não foi possível carregar as estruturas"
+              message="Confira sua conexão e tente novamente antes de gerar a questão."
+              onRetry={() => {
+                void catalog.refetch()
+              }}
+            />
+          ) : !catalog.data.length ? (
+            <ErrorState
+              title="Catálogo de estruturas vazio"
+              message="Tente carregar novamente. Se continuar vazio, avise a equipe."
+              onRetry={() => {
+                void catalog.refetch()
+              }}
+            />
+          ) : (
+            <Controller
+              control={control}
+              name="structures"
+              render={({ field, fieldState }) => (
+                <StructuresPanel
+                  options={catalog.data}
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={fieldState.error?.message}
+                />
+              )}
             />
           )}
-        />
+        </div>
       </div>
       {failure && (
         <Callout tone="danger" title={failure.title} role="alert">
@@ -165,7 +205,13 @@ export function GenerateForm({ defaultValues = DEFAULT_VALUES }: GenerateFormPro
       )}
       <div className={styles.footer}>
         <BackLink to="/biblioteca">Voltar à biblioteca</BackLink>
-        <Button type="submit" variant="primary" size="lg" isLoading={create.isPending}>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          disabled={!catalog.data?.length || catalog.isError}
+          isLoading={create.isPending}
+        >
           Gerar questão
         </Button>
       </div>

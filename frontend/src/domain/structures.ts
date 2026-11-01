@@ -30,50 +30,30 @@ export const STRUCTURE_LABELS: Readonly<Record<string, string>> = {
   'bibliotecas-externas': 'bibliotecas externas',
 }
 
+export interface StructureOption {
+  id: string
+  label: string
+}
+
 export const STRUCTURE_GROUPS: readonly {
   kind: StructureRuleKind
   title: string
   hint: string
-  options: readonly string[]
 }[] = [
   {
     kind: 'required',
     title: 'Estruturas obrigatórias',
-    hint: 'Pelo menos uma precisa aparecer na solução.',
-    options: [
-      'if-else',
-      'switch',
-      'for',
-      'while',
-      'do-while',
-      'funcoes',
-      'vetores',
-      'matrizes',
-      'strings',
-      'ponteiros',
-      'structs',
-      'recursao',
-    ],
+    hint: 'Todas as selecionadas precisam aparecer na solução.',
   },
   {
     kind: 'allowed',
     title: 'Estruturas permitidas',
     hint: 'O aluno pode usar, mas não é obrigado.',
-    options: [
-      'operadores-logicos',
-      'tipos-primitivos',
-      'scanf-printf',
-      'math-h',
-      'switch',
-      'funcoes',
-      'vetores',
-    ],
   },
   {
     kind: 'forbidden',
     title: 'Estruturas proibidas',
-    hint: 'A questão falha na verificação se a solução usar.',
-    options: ['lacos', 'goto', 'recursao', 'ponteiros', 'vetores', 'bibliotecas-externas'],
+    hint: 'A solução não pode usar as estruturas selecionadas.',
   },
 ]
 
@@ -91,7 +71,7 @@ function covered(forbiddenId: string): readonly string[] {
 
 export function conflicts(rules: StructureRules): [string, string][] {
   return rules.forbidden.flatMap((forbidden) =>
-    rules.required
+    [...rules.required, ...rules.allowed]
       .filter((required) => covered(forbidden).includes(required))
       .map((required): [string, string] => [required, forbidden]),
   )
@@ -102,13 +82,12 @@ export function blockedBy(
   id: string,
   rules: StructureRules,
 ): string | null {
-  if (kind === 'required') {
+  if (kind === 'required' || kind === 'allowed') {
     return rules.forbidden.find((forbidden) => covered(forbidden).includes(id)) ?? null
   }
-  if (kind === 'forbidden') {
-    return rules.required.find((required) => covered(id).includes(required)) ?? null
-  }
-  return null
+  return (
+    [...rules.required, ...rules.allowed].find((required) => covered(id).includes(required)) ?? null
+  )
 }
 
 export function toggleRule(

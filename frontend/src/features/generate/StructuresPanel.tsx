@@ -1,11 +1,11 @@
 import { CircleCheck, ListChecks, Ban } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useId } from 'react'
-import { Callout, Chip, Icon, Panel, type ChipTone } from '@/components/ui'
+import { Button, Callout, Chip, Icon, Panel, type ChipTone } from '@/components/ui'
 import {
   blockedBy,
   STRUCTURE_GROUPS,
-  structureLabel,
+  type StructureOption,
   toggleRule,
   type StructureRuleKind,
   type StructureRules,
@@ -20,18 +20,39 @@ const PRESENTATION: Record<StructureRuleKind, { tone: ChipTone; icon: LucideIcon
 }
 
 export interface StructuresPanelProps {
+  options: readonly StructureOption[]
   value: StructureRules
   onChange: (value: StructureRules) => void
   error?: string | undefined
 }
 
-export function StructuresPanel({ value, onChange, error }: StructuresPanelProps) {
+export function StructuresPanel({ options, value, onChange, error }: StructuresPanelProps) {
   const ruleId = useId()
+  const known = new Set(options.map(({ id }) => id))
+  const hasUnknown = [...value.required, ...value.allowed, ...value.forbidden].some(
+    (id) => !known.has(id),
+  )
   return (
     <Panel
       title="Estruturas em C"
       description="Defina o que a solução precisa usar, pode usar ou não pode usar."
     >
+      {hasUnknown && (
+        <Callout tone="danger" title="Seleções desatualizadas">
+          Algumas estruturas selecionadas não existem mais no catálogo.
+          <Button
+            onClick={() => {
+              onChange({
+                required: value.required.filter((id) => known.has(id)),
+                allowed: value.allowed.filter((id) => known.has(id)),
+                forbidden: value.forbidden.filter((id) => known.has(id)),
+              })
+            }}
+          >
+            Remover estruturas fora do catálogo
+          </Button>
+        </Callout>
+      )}
       {STRUCTURE_GROUPS.map((group) => {
         const { tone, icon } = PRESENTATION[group.kind]
         return (
@@ -42,20 +63,20 @@ export function StructuresPanel({ value, onChange, error }: StructuresPanelProps
             </legend>
             <p className={styles.hint}>{group.hint}</p>
             <div className={styles.chips}>
-              {group.options.map((id) => {
+              {options.map(({ id, label }) => {
                 const blocker = blockedBy(group.kind, id, value)
                 return (
                   <Chip
                     key={id}
                     tone={tone}
                     pressed={value[group.kind].includes(id)}
-                    disabled={blocker !== null}
+                    disabled={blocker !== null && !value[group.kind].includes(id)}
                     aria-describedby={blocker ? ruleId : undefined}
                     onToggle={() => {
                       onChange(toggleRule(value, group.kind, id))
                     }}
                   >
-                    {structureLabel(id)}
+                    {label}
                   </Chip>
                 )
               })}
@@ -69,7 +90,7 @@ export function StructuresPanel({ value, onChange, error }: StructuresPanelProps
           title="Regra de consistência"
           role={error ? 'alert' : undefined}
         >
-          {error ?? 'Uma estrutura não pode ser obrigatória e proibida ao mesmo tempo.'}
+          {error ?? 'Uma estrutura proibida não pode ser obrigatória nem permitida.'}
         </Callout>
       </div>
     </Panel>

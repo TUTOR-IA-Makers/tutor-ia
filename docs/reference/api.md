@@ -204,3 +204,17 @@ Para acrescentar um tipo de erro: uma classe em `errors.py` e uma linha em `STAT
 | O enunciado ignora o formato de blocos | `200`, com o texto todo como corpo |
 
 Diagnóstico de cada um em [Problemas comuns](troubleshooting.md).
+
+## Catálogo de estruturas para o formulário
+
+`GET /api/v1/structures` retorna uma lista de objetos `id` e `label`, derivada de
+`CStructure` em `src/codeexpert/domain.py`. As três listas do formulário usam esse
+catálogo, sem uma lista de opções própria no componente. O envio fica bloqueado
+enquanto o catálogo carrega, falha ou está vazio; a tela permite tentar novamente.
+Estruturas desconhecidas e combinações conflitantes são bloqueadas antes do envio.
+
+No modo `mock`, o serviço usa uma resposta de exemplo em
+`frontend/src/services/mock/structures.json`, conferida contra a API por teste.
+A geração e os demais endpoints `/api/v1/questions` continuam sendo o contrato
+planejado do frontend: esta alteração não conecta as listas ao pipeline legado.
+A demonstração completa do formulário deve usar o modo `mock` até essa integração.

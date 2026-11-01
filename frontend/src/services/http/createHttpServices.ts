@@ -2,6 +2,7 @@ import { createHttpClient, type HttpClient } from '@/lib/http'
 import type { Services } from '../contracts'
 import {
   createdDto,
+  structureCatalogDto,
   emptyDto,
   generationDto,
   healthDto,
@@ -26,6 +27,9 @@ export function createHttpServices({
   const root: HttpClient = createHttpClient(config)
 
   return {
+    catalog: {
+      structures: (options = {}) => api.get(ENDPOINTS.structures, structureCatalogDto, options),
+    },
     questions: {
       list: async (filters, options = {}) => {
         const { items } = await api.get(ENDPOINTS.questions, questionListDto, {
