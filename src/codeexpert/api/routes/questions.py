@@ -21,12 +21,14 @@ from codeexpert.api.schemas import (
     ExportResponse,
     InputRequest,
     InputResponse,
+    QuestionDetail,
     RunRequest,
     StatementRequest,
     StatementResponse,
     TestCaseResponse,
 )
-from codeexpert.domain import Constraints
+from codeexpert.domain import Constraints, Statement, TestCase
+from codeexpert.errors import RunNotFoundError
 from codeexpert.export import export_question
 from codeexpert.generation import (
     create_question,
@@ -35,6 +37,7 @@ from codeexpert.generation import (
     generate_statement,
     generate_testcases,
 )
+from codeexpert.workspace import INPUTS, SOLUTION, STATEMENT, TESTCASES
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["generation"])
@@ -121,4 +124,26 @@ async def create_question_endpoint(
             file_path=str(result.export.file_path),
             question_count=result.export.question_count,
         ),
+    )
+
+
+@router.get("/questions/{run_id}", response_model=QuestionDetail)
+async def get_question(run_id: str, store: StoreDep) -> QuestionDetail:
+    """Everything the review screen needs, in one call.
+
+    A run that has not finished step 5 is a draft and answers 404, so a generation
+    that failed halfway never shows up as a question. See docs/adr/0012.
+    """
+    workspace = open_run(run_id, store)
+    if not workspace.is_complete():
+        raise RunNotFoundError(f"Question '{run_id}' is not complete. Finish the run to see it.")
+    return QuestionDetail(
+        run_id=run_id,
+        statement=Statement.model_validate(workspace.read_json(STATEMENT)),
+        code=workspace.read_text(SOLUTION),
+        inputs=workspace.read_json(INPUTS)["inputs"],
+        testcases=[
+            TestCase.model_validate(item) for item in workspace.read_json(TESTCASES)["testcases"]
+        ],
+        metadata=workspace.read_metadata(),
     )

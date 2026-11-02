@@ -9,11 +9,13 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 
 from codeexpert.domain import Constraints
 from codeexpert.errors import CodeExpertError, RunNotFoundError
 from codeexpert.export import export_question
 from codeexpert.generation import (
+    create_question,
     generate_code,
     generate_inputs,
     generate_statement,
@@ -100,6 +102,7 @@ def test_a_run_started_elsewhere_finishes_without_its_local_directory(
 
     assert len(testcases) == 2
     assert export.question_count == 1
+    assert second_process.is_complete()
     assert not (tmp_path / "runs" / first_process.run_id).exists()
 
 
@@ -132,3 +135,53 @@ def test_the_scratch_directory_is_deleted_when_the_step_fails(workspace: RunWork
         generate_testcases(workspace, runner)
 
     assert not runner.compiled[0].parent.exists()
+
+
+# ── A generation that fails midway is not a question ──────────────────────────
+
+
+def test_a_failed_run_is_not_visible_and_can_be_resumed(
+    workspace: RunWorkspace, statement_response: str, tmp_path: Path
+) -> None:
+    llm = FakeLLM([statement_response, SOLUTION_SOURCE, INPUTS_RESPONSE])
+    with pytest.raises(CodeExpertError):
+        create_question(workspace, Constraints(), 2, llm, FakeRunner(timeout_on="1\n2\n"))
+    assert not workspace.is_complete()
+
+    # The client resumes by run id: the runner is fixed, the earlier steps are kept.
+    generate_testcases(workspace, FakeRunner())
+    export_question(workspace, output_dir=tmp_path / "out")
+    assert workspace.is_complete()
+
+
+def test_get_question_hides_a_draft_and_shows_it_once_complete(
+    client: TestClient, statement_response: str
+) -> None:
+    client.fake_llm._responses.extend([statement_response, SOLUTION_SOURCE, INPUTS_RESPONSE])
+    run_id = client.post("/gen_statement", json={}).json()["run_id"]
+    client.post("/gen_code", json={"run_id": run_id})
+    client.post("/gen_inputs", json={"run_id": run_id, "qty": 2})
+    client.post("/gen_testcases", json={"run_id": run_id})
+
+    assert client.get(f"/questions/{run_id}").status_code == 404
+
+    client.post("/export_moodle_xml_question", json={"run_id": run_id})
+    response = client.get(f"/questions/{run_id}")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["run_id"] == run_id
+    assert body["statement"]["name"] == "Soma de dois numeros"
+    assert body["code"] == SOLUTION_SOURCE
+    assert body["inputs"] == ["1\n2\n", "10\n20\n"]
+    assert [case["input"] for case in body["testcases"]] == ["1\n2\n", "10\n20\n"]
+    assert [step["step"] for step in body["metadata"]["steps"]] == [
+        "statement",
+        "code",
+        "inputs",
+        "testcases",
+    ]
+
+
+def test_get_question_for_an_unknown_run_is_404(client: TestClient) -> None:
+    assert client.get("/questions/20260918T120000Z-deadbeef").status_code == 404

@@ -7,7 +7,7 @@ so a client can drive the pipeline one step at a time.
 
 from pydantic import BaseModel, Field
 
-from codeexpert.domain import Constraints, Difficulty, Statement, TestCase
+from codeexpert.domain import Constraints, Difficulty, RunMetadata, Statement, TestCase
 
 
 class StatementRequest(Constraints):
@@ -87,6 +87,17 @@ class CreateQuestionResponse(BaseModel):
     export: ExportResponse
 
 
+class QuestionDetail(BaseModel):
+    """Everything the review screen needs, in one response."""
+
+    run_id: str
+    statement: Statement
+    code: str
+    inputs: list[str]
+    testcases: list[TestCase]
+    metadata: RunMetadata
+
+
 __all__ = [
     "CodeResponse",
     "ConfigResponse",
@@ -98,6 +109,7 @@ __all__ = [
     "HealthResponse",
     "InputRequest",
     "InputResponse",
+    "QuestionDetail",
     "RunRequest",
     "StatementRequest",
     "StatementResponse",
