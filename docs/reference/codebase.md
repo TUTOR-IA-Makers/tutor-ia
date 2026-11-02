@@ -11,7 +11,12 @@ src/codeexpert/
 ├── settings.py          Settings: configuração, só do ambiente
 ├── errors.py            exceções de domínio
 ├── domain.py            Difficulty, Constraints, Statement, TestCase, RunMetadata
-├── workspace.py         RunWorkspace: um diretório por execução
+├── workspace.py         RunWorkspace: os artefatos de uma execução, via ArtifactStore
+├── store/
+│   ├── base.py          ArtifactStore (protocolo)
+│   ├── local.py         LocalFilesystemStore: um diretório por execução
+│   ├── postgres.py      PostgresStore
+│   └── schema.sql       tabelas runs e run_artifacts
 ├── llm/client.py        LLMClient (protocolo), OpenAIChatClient
 ├── execution/
 │   ├── runner.py        CodeRunner (protocolo), RunOutcome
