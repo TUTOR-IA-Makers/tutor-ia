@@ -5,6 +5,7 @@ and skips itself when `CODEEXPERT_TEST_DATABASE_URL` is unset, the same way the
 gcc tests skip without a compiler.
 """
 
+import os
 from collections.abc import Callable
 from pathlib import Path
 
@@ -33,7 +34,7 @@ INPUTS_RESPONSE = '["1\\n2\\n", "10\\n20\\n"]'
 StoreFactory = Callable[[], ArtifactStore]
 
 
-@pytest.fixture(params=["local", "memory"])
+@pytest.fixture(params=["local", "memory", "postgres"])
 def make_store(request: pytest.FixtureRequest, tmp_path: Path) -> StoreFactory:
     """A factory, because the point of most tests is two stores on the same data."""
     if request.param == "local":
@@ -41,6 +42,13 @@ def make_store(request: pytest.FixtureRequest, tmp_path: Path) -> StoreFactory:
     if request.param == "memory":
         shared = MemoryStore()
         return lambda: shared
+    url = os.environ.get("CODEEXPERT_TEST_DATABASE_URL")
+    if not url:
+        pytest.skip("CODEEXPERT_TEST_DATABASE_URL is not set")
+
+    from codeexpert.store.postgres import PostgresStore
+
+    return lambda: PostgresStore(url)
 
 
 # ── The contract every backend keeps ──────────────────────────────────────────
