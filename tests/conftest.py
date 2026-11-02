@@ -20,6 +20,7 @@ from codeexpert.execution import get_code_runner
 from codeexpert.execution.runner import RunOutcome
 from codeexpert.llm import get_llm_client
 from codeexpert.settings import get_settings, reset_settings_cache
+from codeexpert.store import LocalFilesystemStore
 from codeexpert.workspace import RunWorkspace
 
 GCC_AVAILABLE = shutil.which("gcc") is not None
@@ -62,6 +63,43 @@ class FakeRunner:
         return RunOutcome(f"out:{stdin.strip()}\n", "", 0, timed_out=False, truncated=False)
 
 
+class MemoryStore:
+    """An `ArtifactStore` with no disk at all.
+
+    Two workspaces sharing one instance stand in for two processes sharing a
+    database: neither has a run directory, and `RunWorkspace.open()` still works.
+    """
+
+    def __init__(self) -> None:
+        self._artefacts: dict[tuple[str, str], str] = {}
+        self._runs: dict[str, bool] = {}
+
+    def create_run(self, run_id: str) -> None:
+        if run_id in self._runs:
+            raise FileExistsError(run_id)
+        self._runs[run_id] = False
+
+    def run_exists(self, run_id: str) -> bool:
+        return run_id in self._runs
+
+    def put(self, run_id: str, name: str, content: str) -> None:
+        self._artefacts[(run_id, name)] = content
+
+    def get(self, run_id: str, name: str) -> str | None:
+        return self._artefacts.get((run_id, name))
+
+    def delete_run(self, run_id: str) -> None:
+        self._runs.pop(run_id, None)
+        for key in [key for key in self._artefacts if key[0] == run_id]:
+            del self._artefacts[key]
+
+    def mark_complete(self, run_id: str) -> None:
+        self._runs[run_id] = True
+
+    def is_complete(self, run_id: str) -> bool:
+        return self._runs.get(run_id, False)
+
+
 @pytest.fixture(autouse=True)
 def isolated_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Point every path at tmp_path and guarantee a key is never read from disk."""
@@ -77,8 +115,7 @@ def isolated_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
 
 @pytest.fixture
 def workspace(isolated_settings) -> RunWorkspace:
-    isolated_settings.workspace_root.mkdir(parents=True, exist_ok=True)
-    return RunWorkspace.create(isolated_settings.workspace_root)
+    return RunWorkspace.create(LocalFilesystemStore(isolated_settings.workspace_root))
 
 
 @pytest.fixture

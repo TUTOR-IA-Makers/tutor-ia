@@ -1,21 +1,24 @@
-"""One directory per generation run.
+"""The scope of a single generation run.
 
 The previous design kept every intermediate artefact in a single `cache/`
 directory, cleared at the start of each run. Two concurrent requests corrupted
 each other's state, and the directory was tracked by git. Both problems go away
-when the run id is part of the path. See docs/adr/0003.
+when the run id scopes every read and write. See docs/adr/0003.
+
+Where the artefacts live is the `ArtifactStore`'s business, not this class's:
+a workspace never holds a path, so a run can be opened by a process that never
+saw its files. See docs/adr/0012.
 """
 
 import json
 import re
-import shutil
 from datetime import UTC, datetime
-from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
 from codeexpert.domain import RunMetadata
 from codeexpert.errors import MissingArtefactError, RunNotFoundError
+from codeexpert.store import ArtifactStore
 
 STATEMENT = "statement.json"
 SOLUTION = "solution.c"
@@ -43,77 +46,73 @@ def new_run_id() -> str:
 
 
 class RunWorkspace:
-    """The filesystem scope of a single generation run."""
+    """The artefacts of a single generation run, read and written through a store."""
 
-    def __init__(self, run_id: str, root: Path) -> None:
+    def __init__(self, run_id: str, store: ArtifactStore) -> None:
         self.run_id = run_id
-        self.root = root
+        self._store = store
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
     @classmethod
-    def create(cls, workspace_root: Path) -> "RunWorkspace":
+    def create(cls, store: ArtifactStore) -> "RunWorkspace":
         run_id = new_run_id()
-        root = workspace_root / run_id
-        root.mkdir(parents=True, exist_ok=False)
-        workspace = cls(run_id, root)
+        store.create_run(run_id)
+        workspace = cls(run_id, store)
         workspace.write_metadata(
             RunMetadata(run_id=run_id, created_at=datetime.now(UTC).isoformat())
         )
         return workspace
 
     @classmethod
-    def open(cls, workspace_root: Path, run_id: str) -> "RunWorkspace":
+    def open(cls, store: ArtifactStore, run_id: str) -> "RunWorkspace":
         if not RUN_ID_PATTERN.match(run_id):
             raise RunNotFoundError(f"'{run_id}' is not a valid run id.")
-        root = workspace_root / run_id
-        if not root.is_dir():
+        if not store.run_exists(run_id):
             raise RunNotFoundError(
                 f"Run '{run_id}' not found. Start a new one with POST /gen_statement."
             )
-        return cls(run_id, root)
+        return cls(run_id, store)
 
     def delete(self) -> None:
-        shutil.rmtree(self.root, ignore_errors=True)
+        self._store.delete_run(self.run_id)
+
+    def complete(self) -> None:
+        """Mark the run finished. Until then it is a draft and no question is shown."""
+        self._store.mark_complete(self.run_id)
+
+    def is_complete(self) -> bool:
+        return self._store.is_complete(self.run_id)
 
     # ── Artefacts ─────────────────────────────────────────────────────────────
 
-    def path(self, name: str) -> Path:
-        return self.root / name
-
     def exists(self, name: str) -> bool:
-        return self.path(name).exists()
-
-    def require(self, name: str) -> Path:
-        """Return an artefact's path, or say which step has not run yet."""
-        path = self.path(name)
-        if not path.exists():
-            hint = _HINTS.get(name, "A previous pipeline step has not run.")
-            raise MissingArtefactError(f"'{name}' not found in run {self.run_id}. {hint}")
-        return path
-
-    def write_text(self, name: str, content: str) -> Path:
-        path = self.path(name)
-        path.write_text(content, encoding="utf-8")
-        return path
+        return self._store.get(self.run_id, name) is not None
 
     def read_text(self, name: str) -> str:
-        return self.require(name).read_text(encoding="utf-8")
+        """Return an artefact, or say which step has not run yet."""
+        content = self._store.get(self.run_id, name)
+        if content is None:
+            hint = _HINTS.get(name, "A previous pipeline step has not run.")
+            raise MissingArtefactError(f"'{name}' not found in run {self.run_id}. {hint}")
+        return content
 
-    def write_json(self, name: str, payload: Any) -> Path:
-        path = self.path(name)
-        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        return path
+    def write_text(self, name: str, content: str) -> None:
+        self._store.put(self.run_id, name, content)
 
     def read_json(self, name: str) -> Any:
         return json.loads(self.read_text(name))
 
+    def write_json(self, name: str, payload: Any) -> None:
+        self.write_text(name, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+
     # ── Traceability ──────────────────────────────────────────────────────────
 
     def read_metadata(self) -> RunMetadata:
-        if not self.exists(META):
+        content = self._store.get(self.run_id, META)
+        if content is None:
             return RunMetadata(run_id=self.run_id, created_at=datetime.now(UTC).isoformat())
-        return RunMetadata.model_validate_json(self.read_text(META))
+        return RunMetadata.model_validate_json(content)
 
     def write_metadata(self, metadata: RunMetadata) -> None:
         self.write_text(META, metadata.model_dump_json(indent=2) + "\n")
