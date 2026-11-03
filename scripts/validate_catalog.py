@@ -103,6 +103,9 @@ def validate_catalog(catalog_dir: Path) -> int:
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     catalog_dir = ROOT / "data" / "catalog"
     if not catalog_dir.exists():
         print(f"ERROR  data/catalog/ not found at {catalog_dir}.")
@@ -118,4 +121,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
