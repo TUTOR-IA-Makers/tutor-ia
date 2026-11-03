@@ -36,24 +36,24 @@ Distribuição por dupla, estimativas e ordem de corte em [Plano de entrega](pla
 
 | Hoje | Mudança planejada | Estado esperado |
 | --- | --- | --- |
-| Roda com `make run` ou na imagem Docker com `gcc` (**G0-1**, [guia](../guides/docker.md)). Sem deploy | **G0-2** GitHub Actions: `make check` → build → push → deploy no Cloud Run a cada merge em `main` | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
-| Chave no `.env` local | **G0-3** chave no Secret Manager, lida pela conta de serviço (S1) | Nenhuma chave no repositório, nos logs ou no painel do Cloud Run |
-| Logs em `stdout`, sem `run_id` | **G0-5** logs estruturados com `run_id`, etapa e duração (P1, sem sprint) | Uma geração inteira rastreável no Cloud Logging |
+| Roda com `make run` ou na imagem Docker com `gcc` (**G0-1**, [guia](../guides/docker.md)). Sem deploy: o workflow do **G0-2** publica no Cloud Run e nunca rodou | **G0-9** VPS da Hostinger com Docker Compose (API, Postgres, proxy com TLS); imagem no GitHub Container Registry e deploy por SSH a cada merge em `main` ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
+| Chave no `.env` local | **G0-3** chave só na VPS, como arquivo montado em `/run/secrets` (S1) | Nenhuma chave no repositório, no GitHub, nos logs ou em `docker inspect` |
+| Logs em `stdout`, sem `run_id` | **G0-5** logs estruturados com `run_id`, etapa e duração (P1, sem sprint) | Uma geração inteira rastreável nos logs da VPS |
 
-S0 e S1. G0-1 está <span class="ce-badge ce-status--done">Implementado</span>; G0-2 está <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o resto, <span class="ce-badge ce-status--planned">Planejado</span>. Ambiente de staging (G0-7) fica fora do recorte.
+S0 e S1. G0-1 está <span class="ce-badge ce-status--done">Implementado</span>; G0-2 foi fechada sem URL de produção, e o que faltou passou para o G0-9; o resto, <span class="ce-badge ce-status--planned">Planejado</span>. Ambiente de staging (G0-7) fica fora do recorte.
 
 ### Estado da geração e banco de questões {#estado-da-geracao}
 
 | Hoje | Mudança planejada | Estado esperado |
 | --- | --- | --- |
-| Estado em `var/runs/<run_id>/`. `RunWorkspace.open()` faz `root.is_dir()`; no Cloud Run cada instância tem seu disco, então a etapa 2 em outra instância responde `404` | **G0-4** protocolo `ArtifactStore`: `LocalFilesystemStore` em dev/testes, `PostgresStore` em produção, com ADR (S1) | Estado no Postgres a cada etapa. Disco só como rascunho de uma etapa (`/tmp/<run_id>` para o `.c` e o binário) |
-| Nenhum banco | **G1-1** Postgres gerenciado com migrações Alembic aplicadas no deploy · **G1-2** tabelas de questão, caso de teste e execução (S1) | O que hoje está em `meta.json` (modelo, versão de prompt) vira coluna, junto com tokens e custo |
+| Estado em `var/runs/<run_id>/`. Numa VPS só, com `var/` num volume, isso funciona em produção; mas arquivos não dão consulta (G1-5) nem transação (G0-8, G3) | **G0-4** protocolo `ArtifactStore`: `LocalFilesystemStore` em dev/testes, `PostgresStore` em produção, com ADR (S1) | Estado no Postgres a cada etapa. Disco só como rascunho de uma etapa (`/tmp/<run_id>` para o `.c` e o binário) |
+| Nenhum banco | **G1-1** Postgres no Compose da VPS, com backup diário fora dela e migrações Alembic aplicadas no deploy · **G1-2** tabelas de questão, caso de teste e execução (S1) | O que hoje está em `meta.json` (modelo, versão de prompt) vira coluna; tokens e custo ficam vazios até o G2-4 |
 | Pedido HTTP síncrono, aberto por dezenas de segundos | **G0-8** `POST /questions` responde `202` com id; as etapas rodam numa `BackgroundTask`; `GET /questions/{id}` mostra progresso (S2) | Job interrompido fica `INTERROMPIDO`, com as etapas pagas preservadas. Não é fila distribuída |
 | XML acumulado em um arquivo, lido e reescrito a cada exportação | **G1-8** `export_question` vira função pura: recebe questões, devolve XML (S2) · **G1-6** `POST /export` com ids selecionados (S4) | Exportação sem arquivo compartilhado; só questões aprovadas |
 | Sem listagem | **G1-5** `GET /questions` com filtros por eixo, nível, estado e texto, paginado (S2) | Biblioteca do professor |
 | Os 3 primeiros casos são exemplo, por ordem | **G1-4** categoria (típico, limite, borda, inválido) e visibilidade (público, privado) (S4, P1) | Casos privados ocultos no XML; ≥ 1 público e 1 privado para aprovar |
 
-Todos <span class="ce-badge ce-status--planned">Planejados</span>. G0-4 é o risco técnico do plano: se estourar, corta-se outra coisa da S1, nunca ele.
+Todos <span class="ce-badge ce-status--planned">Planejados</span>. G0-4 era o risco técnico do plano por causa do Cloud Run; na VPS deixou de bloquear o deploy, mas continua antes de G1-5, G0-8 e G3.
 
 ### Verificação de escopo {#verificacao-de-escopo}
 
@@ -118,7 +118,7 @@ Todos <span class="ce-badge ce-status--planned">Planejados</span>. G8-1, G8-2 e 
 
 | Hoje | Mudança planejada | Estado esperado |
 | --- | --- | --- |
-| `LocalGccRunner` no processo da API: limite de tempo e de saída, `SIGKILL` no grupo de processos. Sem limite de memória, processos, rede ou disco | **G8-3** revisão de segurança antes de expor: limites conferidos no container, `--concurrency` 4–8, CPU ≥ 2, sistema de arquivos read-only fora de `/tmp` (S4) | **Igual a hoje**, rodando no Cloud Run, com o risco aceito e documentado |
+| `LocalGccRunner` no processo da API: limite de tempo e de saída, `SIGKILL` no grupo de processos. Sem limite de memória, processos, rede ou disco | **G8-3** revisão de segurança antes de expor: limites conferidos no container, `mem_limit` e `pids_limit` no container da API, concorrência 4–8, CPU ≥ 2, sistema de arquivos read-only fora de `/tmp` (S4) | **Igual a hoje**, rodando na VPS, com o risco aceito e documentado. Os limites do container protegem a máquina, não a API |
 
 O sandbox Judge0 (FEAT-033) fica **fora do recorte**. É aceitável porque o código vem de um modelo, nenhum código de aluno roda aqui e o acesso é por convite; se qualquer uma dessas condições mudar, o sandbox passa a bloquear. Ver [Plano § 11](plano-30-11.md#11-o-que-fica-fora-e-porque).
 
@@ -132,24 +132,29 @@ Montada a partir das histórias acima. Nomes de endpoints e tabelas são os do p
 
 ```mermaid
 flowchart TD
-    P["Professor<br/><small>navegador</small>"] -->|HTTPS| CR
+    P["Professor<br/><small>navegador</small>"] -->|HTTPS| PX
 
-    subgraph CR["Cloud Run — uma imagem (G0-1)"]
-        FE["Front-end estático<br/><small>stack em ADR (G4-1)</small>"]
-        API["FastAPI<br/><small>convite, cota (G8)</small>"]
-        JOB["Job de geração<br/><small>BackgroundTask (G0-8)</small>"]
-        SC["Verificação de escopo<br/><small>tree-sitter-c (G2-2)</small>"]
-        RUN["LocalGccRunner<br/><small>/tmp, sem sandbox</small>"]
-        API --> JOB --> SC
-        JOB --> RUN
+    subgraph VPS["VPS Hostinger — Docker Compose (G0-9)"]
+        PX["Proxy<br/><small>Caddy, TLS</small>"] --> API
+        subgraph CR["Container da API — imagem do G0-1"]
+            FE["Front-end estático<br/><small>stack em ADR (G4-1)</small>"]
+            API["FastAPI<br/><small>convite, cota (G8)</small>"]
+            JOB["Job de geração<br/><small>BackgroundTask (G0-8)</small>"]
+            SC["Verificação de escopo<br/><small>tree-sitter-c (G2-2)</small>"]
+            RUN["LocalGccRunner<br/><small>/tmp, sem sandbox</small>"]
+            API --> JOB --> SC
+            JOB --> RUN
+        end
+        DB[("Postgres<br/><small>questões, casos, execuções,<br/>estado do job (G0-4, G1)</small>")]
+        SM["/run/secrets<br/><small>chave do LLM, senha do banco (G0-3)</small>"]
     end
 
     FE -.-> API
-    JOB --> DB[("Postgres<br/><small>questões, casos, execuções,<br/>estado do job (G0-4, G1)</small>")]
+    JOB --> DB
     API --> DB
+    SM -.-> CR
     JOB -->|HTTPS| LLM["Provedor de modelos"]
-    SM["Secret Manager<br/><small>chave do LLM, credenciais (G0-3)</small>"] -.-> CR
-    GH["GitHub Actions<br/><small>make check → build → deploy (G0-2)</small>"] -.-> CR
+    GH["GitHub Actions<br/><small>make check → build → GHCR → SSH (G0-9)</small>"] -.-> VPS
 ```
 
 | Aspecto | Hoje | 30/11 |
@@ -160,7 +165,8 @@ flowchart TD
 | Verificação | Compila e executa | Compila, executa **e** verifica escopo |
 | Saída | XML acumulado num arquivo | XML gerado sob demanda a partir de questões aprovadas |
 | Acesso | Aberto, local | Convite, cota, teto de custo, URL pública |
-| Execução do C | Local, sem sandbox | A mesma, dentro do Cloud Run, risco documentado |
+| Execução do C | Local, sem sandbox | A mesma, dentro do container da API na VPS, com limite de memória e de processos no container, risco documentado |
+| Hospedagem | Nenhuma | Uma VPS da Hostinger, operada pela equipe ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) |
 
 O que continua igual: a direção das dependências, `LLMClient` e `CodeRunner` como protocolos, a regra de que a saída esperada vem da execução, e o gate único.
 

@@ -13,12 +13,21 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from codeexpert.errors import ConfigurationError
 
+# Where Compose mounts `secrets`. A file named after the variable, lower case
+# (`codeexpert_llm_api_key`), supplies that setting when neither the environment
+# nor `.env` does — so on the VPS the key never enters the container's
+# environment, where `docker inspect` would show it. See docs/adr/0011.
+SECRETS_DIR = Path("/run/secrets")
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="CODEEXPERT_",
         env_file=".env",
         env_file_encoding="utf-8",
+        # pydantic-settings warns on every instantiation when the directory is
+        # missing, which it is on every laptop and in CI.
+        secrets_dir=SECRETS_DIR if SECRETS_DIR.is_dir() else None,
         extra="ignore",
     )
 
@@ -58,7 +67,8 @@ class Settings(BaseSettings):
         if self.llm_api_key is None or not self.llm_api_key.get_secret_value().strip():
             raise ConfigurationError(
                 "CODEEXPERT_LLM_API_KEY is not set. Copy .env.example to .env and "
-                "fill it in, or export the variable in your shell."
+                "fill it in, export the variable in your shell, or mount it as "
+                f"{SECRETS_DIR}/codeexpert_llm_api_key."
             )
         return self.llm_api_key.get_secret_value()
 

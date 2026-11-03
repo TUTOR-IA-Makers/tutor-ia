@@ -1,0 +1,17 @@
+.track {
+  overflow: hidden;
+  height: var(--size-progress);
+  border-radius: var(--radius-round);
+  background: var(--color-surface);
+}
+
+.fill {
+  height: 100%;
+  border-radius: var(--radius-round);
+  background: var(--color-accent);
+  transform: scaleX(var(--progress));
+  transform-origin: left;
+  transition-property: transform;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-enter);
+}

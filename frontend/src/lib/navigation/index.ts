@@ -1,0 +1,1 @@
+export { safeNextPath } from './safeNextPath'

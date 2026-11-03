@@ -16,7 +16,12 @@ O `Makefile` só chama os scripts em `scripts/`, então pessoas, agentes e CI ro
 | `make test` | `pytest` com cobertura | — |
 | `make docs` | Este site em <http://127.0.0.1:8001>, com recarga | — |
 | `make task T=feat I=42 S=slug` | Cria a branch `feat/42-slug` a partir de `main` atualizada e o arquivo `.agents/tasks/42-slug.md` | `scripts/new-task.sh` |
-| `make clean` | Apaga `var/`, `.dist/`, caches de ferramentas e `__pycache__` | — |
+| `make front-install` | `npm ci` em `frontend/`, a partir do `package-lock.json` | — |
+| `make front-dev` | Vite em <http://127.0.0.1:5173>, com proxy de `/api`, `/health`, `/docs` e `/openapi.json` para a API do `make run` | — |
+| `make front-build` | Build de produção em `frontend/dist` | — |
+| `make front-check` | Gate do front-end, também chamado pelo `make check` | `scripts/front-check.sh` |
+| `make front-e2e` | Playwright com axe-core contra o build de produção, em 1280px e 320px | — |
+| `make clean` | Apaga `var/`, `.dist/`, caches de ferramentas, `__pycache__` e as saídas de build e teste do front-end | — |
 
 Outras formas de iniciar a API, sem recarga: `.venv/bin/codeexpert`, `python -m codeexpert` ou `python main.py` — as três escutam em `0.0.0.0:8000`. Em container: [Rodar com Docker](../guides/docker.md).
 
@@ -40,6 +45,15 @@ Lidas por `Settings` em `src/codeexpert/settings.py`, com prefixo `CODEEXPERT_`.
 
 Caminhos relativos são resolvidos a partir do diretório onde o servidor foi iniciado.
 
+### Front-end
+
+Lidas pelo Vite no build e no `make front-dev`, a partir de `frontend/.env.local` (ignorado pelo Git; modelo em `frontend/.env.example`). Só variáveis com prefixo `VITE_PUBLIC_` chegam ao navegador, então nenhuma delas pode ser segredo.
+
+| Variável | Padrão | O que controla |
+| --- | --- | --- |
+| `VITE_PUBLIC_API_MODE` | `mock` no `make front-dev`, `http` no build | `mock` usa dados simulados em memória; `http` chama a API real. O build só usa `mock` quando pedido explicitamente, como faz o `make front-e2e` |
+| `VITE_PUBLIC_API_BASE_URL` | `/api/v1` | Prefixo das rotas da API no modo `http`. O prefixo `/api/v1` é uma proposta e ainda não existe no backend |
+
 !!! warning "Nome errado é ignorado sem aviso"
     Variáveis desconhecidas são aceitas em silêncio: `CODEEXPERT_LLM_MODELO=...` não faz nada. Confira o que está em uso com `curl http://127.0.0.1:8000/config`.
 
@@ -50,11 +64,21 @@ Caminhos relativos são resolvidos a partir do diretório onde o servidor foi in
 ## Segredos
 
 - `.env` está no `.gitignore`; `.env.example` só tem valores falsos (`sk-XXXX…`).
-- A chave é um `SecretStr`: não aparece em `repr`, logs nem em `GET /config`. Um teste garante isso.
+- A chave é um `SecretStr`: não aparece em `repr`. Se o provedor devolver a chave no corpo de um erro, o cliente a troca por `[redacted]` antes de registrar o erro no log e de devolvê-lo em `detail`. Os testes em `tests/integration/test_secret_leaks.py` falham se a chave, ou qualquer trecho de 10 caracteres dela, aparecer no log ou na resposta de um erro de geração ou de `GET /config?verify=true`.
 - `make check` recusa arquivos versionados com formato de chave (`sk-…` longo, `AIza…`, chave privada PEM) e qualquer coisa versionada em `var/`, `cache/`, `Questions/`, `.env` ou `config/LLM_Config.txt`.
 - **Se uma chave vazar:** revogue e gere outra primeiro; depois reescreva o histórico.
 
-Até 30/11 a chave de produção vai para o Secret Manager (G0-3, <span class="ce-badge ce-status--planned">Planejado</span>).
+### Segredos em arquivo {#segredos-em-arquivo}
+
+Qualquer variável da tabela acima também pode vir de um arquivo em `/run/secrets`, que é onde o Docker Compose monta seus `secrets`. O nome do arquivo é o nome da variável em minúsculas, e o conteúdo é o valor; espaços e quebra de linha no fim são descartados:
+
+```text
+/run/secrets/codeexpert_llm_api_key     →  CODEEXPERT_LLM_API_KEY
+```
+
+A ordem de precedência é: variável de ambiente, depois `.env`, depois o arquivo, depois o padrão. O arquivo só é lido quando nenhuma das duas primeiras fontes define a variável. Se `/run/secrets` não existe, como num notebook ou no CI, essa fonte é ignorada e nada muda em relação ao `.env`.
+
+É assim que a chave chega ao container sem virar variável de ambiente, e por isso não aparece em `docker inspect` nem em `/proc/1/environ`. Montar o arquivo na VPS é parte do [deploy](../guides/deploy.md#chave-do-modelo), <span class="ce-badge ce-status--planned">Planejado</span>.
 
 ## Portas e caminhos
 

@@ -2,7 +2,7 @@
 
 <p class="lead">A API e o <code>gcc</code> numa imagem só, para que o mesmo artefato rode na máquina de qualquer pessoa. Esta página mostra como construir a imagem, subir o container, conferir que ela está limpa e gerar uma questão de ponta a ponta.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` na raiz do repositório. O [deploy no Cloud Run](deploy.md) está <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o front-end na mesma imagem, <span class="ce-badge ce-status--planned">Planejado</span> ([Roadmap](../product/roadmap.md#infraestrutura-e-deploy)).
+<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` na raiz do repositório. O [deploy na VPS da Hostinger](deploy.md) está <span class="ce-badge ce-status--planned">Planejado</span>; o front-end na mesma imagem, <span class="ce-badge ce-status--planned">Planejado</span> ([Roadmap](../product/roadmap.md#infraestrutura-e-deploy)).
 
 !!! danger "A imagem não é um sandbox"
     O container não acrescenta isolamento à execução do código gerado: o serviço continua só limitando tempo e tamanho de saída ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). Sem autenticação, não exponha a porta à internet. Veja [Arquitetura](../architecture/index.md).
@@ -109,7 +109,7 @@ O esperado: `/app` com `LICENSE`, `README.md`, `pyproject.toml`, `src` e `var`; 
 
 | Tema | Hoje |
 | --- | --- |
-| Porta | Fixa em `8000` (`src/codeexpert/__main__.py`). O Cloud Run injeta `PORT=8080` por padrão, então ali é preciso configurar a porta do serviço como `8000` — <span class="ce-badge ce-status--planned">Planejado</span> no G0-2 |
+| Porta | Fixa em `8000` (`src/codeexpert/__main__.py`). Na VPS o proxy encaminha para ela pela rede do Compose, sem publicá-la — <span class="ce-badge ce-status--planned">Planejado</span> no [G0-9](../product/plano-30-11.md#g0-9) |
 | Recarga automática | Não há. Para desenvolver, use `make run` |
 | Estado | Em `/app/var` dentro do container, em disco local; cada container tem o seu |
 | Front-end | Não está na imagem — <span class="ce-badge ce-status--planned">Planejado</span> no G4-1 |

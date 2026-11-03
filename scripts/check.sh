@@ -65,11 +65,20 @@ run_docs() {
   "$PY" -m mkdocs build --strict 2>&1 | { grep -v '^INFO' || true; }
 }
 
+run_front() {
+  if ! command -v npm >/dev/null 2>&1 || [[ ! -d frontend/node_modules ]]; then
+    echo "  front-end not installed — skipping (make front-install)"
+    return 0
+  fi
+  ./scripts/front-check.sh
+}
+
 step "no runtime artefacts or secrets tracked" guard_artifacts
 step "no credentials in the working tree"      guard_secrets
 step "formatting"                              run_format
 step "lint"                                    run_lint
 step "tests"                                   run_tests
+step "front-end"                               run_front
 [[ $FAST -eq 1 ]] || step "documentation builds in strict mode" run_docs
 
 printf '\n'

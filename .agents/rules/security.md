@@ -5,8 +5,12 @@ it compiles and runs code it did not write.
 
 ## Credentials
 
-- Configuration comes from the environment. `Settings` in
+- Configuration comes from the environment, or from files in `/run/secrets`
+  when no variable sets it (docs/adr/0011). `Settings` in
   `src/codeexpert/settings.py` is the only reader.
+- Provider text that can reach a log or a client's `detail` goes through
+  `_redact` in `llm/client.py`. `tests/integration/test_secret_leaks.py` fails
+  if the key gets past it.
 - `.env` is git-ignored. `.env.example` contains fake values only.
 - The key is a `SecretStr`: it does not appear in `repr`, in logs, or in
   `GET /config`. A test asserts this. Keep it that way.

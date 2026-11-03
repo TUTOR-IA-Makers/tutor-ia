@@ -1,0 +1,8 @@
+[
+  {
+    "name": "JS inicial do app (entrada)",
+    "path": "dist/assets/index-*.js",
+    "limit": "150 KB",
+    "gzip": true
+  }
+]

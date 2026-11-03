@@ -1,0 +1,11 @@
+questao_id,enunciado_resumido,avaliador_a_eixo,avaliador_a_nivel,avaliador_a_estruturas,avaliador_b_eixo,avaliador_b_nivel,avaliador_b_estruturas,resultado,tipo_divergencia
+Q01,Soma simples de dois inteiros,E1,Muito Fácil,"-",E1,Muito Fácil,"-",Consenso,Nenhuma
+Q02,Somatório de N números com for,E2,Fácil,"for",E2,Fácil,"for",Consenso,Nenhuma
+Q03,Maior de dois inteiros com operador ternário,E1,Muito Fácil,"ternario",E1,Muito Fácil,"ternario",Consenso,Nenhuma
+Q04,Fatorial recursivo com caso base,E4,Fácil,"funcao, if, recursao",E4,Fácil,"funcao, if, recursao",Consenso,Nenhuma
+Q05,Média aritmética de vetor de 10 inteiros,E3,Médio,"for, vetor",E3,Médio,"for, vetor",Consenso,Nenhuma
+Q06,Função que zera variáveis via passagem por referência,E4,Médio,"funcao, passagem por referencia",E4,Médio,"funcao, passagem por referencia, ponteiro",Divergência,Estruturas
+Q07,Preenchimento da diagonal principal de matriz 3x3,E3,Médio,"for, matriz",E3,Médio,"for, matriz",Consenso,Nenhuma
+Q08,Função para ordenação de vetor (Bubble Sort),E3,Difícil,"for, funcao, if, vetor",E3,Difícil,"for, funcao, if, vetor",Consenso,Nenhuma
+Q09,Cadastro de alunos em vetor de struct e busca por maior nota,E3,Difícil,"string, struct, vetor",E3,Médio,"string, struct, vetor",Divergência,Dificuldade
+Q10,Comprimento de string com while sem strlen,E3,Médio,"string, while",E3,Médio,"string, while",Consenso,Nenhuma

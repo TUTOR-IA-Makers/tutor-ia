@@ -1,0 +1,29 @@
+.page {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--width-sidebar);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.main {
+  min-width: 0;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+}
+
+.stack {
+  display: grid;
+  gap: var(--space-8);
+}
+
+@media (width < 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

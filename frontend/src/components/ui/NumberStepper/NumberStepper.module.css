@@ -1,0 +1,43 @@
+.stepper {
+  display: inline-flex;
+  justify-self: start;
+  align-items: stretch;
+  border: var(--border-width) solid var(--color-border-control);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+}
+
+.button {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--size-control);
+  min-height: var(--size-control);
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.button:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--color-page);
+}
+
+.input {
+  width: 4ch;
+  border: 0;
+  background: transparent;
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  appearance: textfield;
+}
+
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}

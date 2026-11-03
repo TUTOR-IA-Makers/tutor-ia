@@ -31,7 +31,7 @@ scripts/check.sh              o gate
 .github/
   workflows/ci.yml            gate + convenções do PR
   workflows/docs.yml          build e publicação deste site
-  workflows/deploy.yml        build, push e deploy no Cloud Run após o CI
+  workflows/deploy.yml        build, push e deploy no Cloud Run após o CI (a substituir)
   CODEOWNERS                  revisores obrigatórios por área
   PULL_REQUEST_TEMPLATE.md
   ISSUE_TEMPLATE/             feature.yml, bug.yml, chore.yml
@@ -66,9 +66,13 @@ Um arquivo de tarefa em `main` significa trabalho em andamento ou branch abandon
 | 3 | Formatação | `ruff format --check src tests main.py` |
 | 4 | Lint | `ruff check src tests main.py` |
 | 5 | Testes | `pytest -q` |
-| 6 | Documentação | `mkdocs build --strict` (pulado se o `mkdocs` não estiver instalado, e com `make check-fast`) |
+| 6 | Front-end | `scripts/front-check.sh`: Prettier, ESLint, Stylelint, `tsc`, contraste dos tokens, Vitest com cobertura mínima de 80%, build, busca de segredos em `dist/`, orçamento de 150 KB gzip e `npm audit` das dependências de produção. Pulado se `npm` ou `frontend/node_modules` não existirem |
+| 7 | Documentação | `mkdocs build --strict` (pulado se o `mkdocs` não estiver instalado, e com `make check-fast`) |
 
 Falha que "parece não ter nada a ver" continua sendo falha: o CI vai falhar igual.
+
+!!! warning "Front-end ainda fora do CI"
+    O `ci.yml` não instala Node nem roda `npm ci`, então no CI o passo 6 é pulado. Incluir `actions/setup-node` e o job do Playwright é uma mudança em `.github/workflows/` e precisa de aprovação humana.
 
 ## CI
 
@@ -76,7 +80,7 @@ Falha que "parece não ter nada a ver" continua sendo falha: o CI vai falhar igu
 | --- | --- | --- |
 | `ci.yml` | Push em `main`, todo PR, manual | **gate**: instala `.[dev,docs]` em Python 3.13 e roda `./scripts/check.sh`, depois mostra a cobertura. **conventions** (só em PR): título em Conventional Commits; corpo com `Closes/Fixes/Resolves/Refs #N` |
 | `docs.yml` | Push em `main`, todo PR, manual | **build**: `mkdocs build --strict`. **deploy** (só push em `main`): publica no GitHub Pages — ver [Documentação](docs.md#publicacao) |
-| `deploy.yml` | `ci.yml` concluído em `main` | **deploy** (só se o CI passou e foi push): build da imagem, push no Artifact Registry, deploy no Cloud Run, confere `GET /health` — ver [Deploy](../guides/deploy.md) |
+| `deploy.yml` | `ci.yml` concluído em `main` | **deploy** (só se o CI passou e foi push): build da imagem, push no Artifact Registry, deploy no Cloud Run, confere `GET /health`. Nunca rodou: o GCP não foi configurado e a hospedagem passou para a Hostinger ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) — ver [Deploy](../guides/deploy.md) |
 
 ## CODEOWNERS e o que um agente não decide sozinho {#o-que-um-agente-nao-decide-sozinho}
 
