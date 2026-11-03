@@ -74,7 +74,7 @@ def test_invalid_nivel_fails() -> None:
 
 
 def test_invalid_structure_fails() -> None:
-    bad = {**VALID_ENTRY, "estruturas": ["goto"]}
+    bad = {**VALID_ENTRY, "estruturas": ["estrutura_inexistente"]}
     with pytest.raises(ValidationError):
         CatalogEntry.model_validate(bad)
 
