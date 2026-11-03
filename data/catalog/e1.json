@@ -367,7 +367,6 @@
     "origem": "Exercício de equação quadrática — precisa de math.h",
     "direitos_restritos": false
   },
-
   {
     "id": "E1-M-008",
     "eixo": "fundamentos",
@@ -384,7 +383,6 @@
     "origem": "Exercício clássico de aritmética modular",
     "direitos_restritos": false
   },
-
   {
     "id": "E1-D-001",
     "eixo": "fundamentos",
@@ -418,6 +416,22 @@
     "direitos_restritos": false
   },
   {
+    "id": "E1-D-003",
+    "eixo": "fundamentos",
+    "nivel": "dificil",
+    "estruturas": [],
+    "enunciado": "Leia as coordenadas de 3 pontos no plano cartesiano: `(x1, y1)`, `(x2, y2)` e `(x3, y3)`. Calcule a área do triângulo formado por eles usando a fórmula de determinantes (Shoelace): `Area = |x1(y2 - y3) + x2(y3 - y1) + x3(y1 - y2)| / 2`. Imprima a área com 3 casas decimais. Utilize `fabs()` para o valor absoluto.",
+    "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double x1, y1, x2, y2, x3, y3;\n    scanf(\"%lf %lf %lf %lf %lf %lf\", &x1, &y1, &x2, &y2, &x3, &y3);\n    double area = fabs(x1*(y2 - y3) + x2*(y3 - y1) + x3*(y1 - y2)) / 2.0;\n    printf(\"%.3f\\n\", area);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "0.0 0.0 4.0 0.0 0.0 3.0\n", "output": "6.000\n"},
+      {"input": "-1.0 -1.0 2.0 3.0 4.0 -2.0\n", "output": "12.500\n"},
+      {"input": "1.0 1.0 2.0 2.0 3.0 3.0\n", "output": "0.000\n"},
+      {"input": "0.0 0.0 10.0 0.0 5.0 5.0\n", "output": "25.000\n"}
+    ],
+    "origem": "Exercício de geometria analítica — Fórmula de Shoelace",
+    "direitos_restritos": false
+  },
+  {
     "id": "E1-MD-001",
     "eixo": "fundamentos",
     "nivel": "muito dificil",
@@ -431,6 +445,38 @@
       {"input": "1 100\n", "output": "43\n"}
     ],
     "origem": "Exercício de combinatória — inclusão-exclusão",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MD-002",
+    "eixo": "fundamentos",
+    "nivel": "muito dificil",
+    "estruturas": [],
+    "enunciado": "Leia a latitude e longitude (em graus) de dois pontos na Terra. Calcule a distância do círculo máximo entre eles usando a fórmula de Haversine: `d = 2 * R * arcsin(sqrt(sin²(Δlat/2) + cos(lat1)*cos(lat2)*sin²(Δlon/2)))`. Considere o raio da Terra `R = 6371.0` km. Você deve converter as entradas de graus para radianos multiplicando por `PI/180.0` (utilize `PI = 3.14159265`). Imprima a distância em km com 2 casas decimais.",
+    "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define PI 3.14159265\n#define R 6371.0\n\nint main(void) {\n    double lat1, lon1, lat2, lon2;\n    scanf(\"%lf %lf %lf %lf\", &lat1, &lon1, &lat2, &lon2);\n    \n    lat1 = lat1 * PI / 180.0;\n    lon1 = lon1 * PI / 180.0;\n    lat2 = lat2 * PI / 180.0;\n    lon2 = lon2 * PI / 180.0;\n    \n    double dlat = lat2 - lat1;\n    double dlon = lon2 - lon1;\n    \n    double a = sin(dlat/2.0)*sin(dlat/2.0) + cos(lat1)*cos(lat2)*sin(dlon/2.0)*sin(dlon/2.0);\n    double c = 2.0 * asin(sqrt(a));\n    \n    printf(\"%.2f\\n\", R * c);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "-23.55 -46.63 -22.90 -43.20\n", "output": "358.30\n"},
+      {"input": "0.0 0.0 0.0 0.0\n", "output": "0.00\n"},
+      {"input": "51.50 -0.12 48.85 2.35\n", "output": "343.47\n"},
+      {"input": "90.0 0.0 -90.0 0.0\n", "output": "20015.09\n"}
+    ],
+    "origem": "Exercício avançado de trigonometria espacial — Fórmula de Haversine",
+    "direitos_restritos": false
+  },
+  {
+    "id": "E1-MD-003",
+    "eixo": "fundamentos",
+    "nivel": "muito dificil",
+    "estruturas": [],
+    "enunciado": "Utilizando apenas operadores matemáticos (sem usar `if`, `else`, `while`, operador ternário ou qualquer outra estrutura de fluxo), leia três números inteiros `A`, `B` e `C` e imprima o maior deles. Utilize a fórmula matemática `Maior(a,b) = (a + b + abs(a - b)) / 2` incluída na biblioteca padrão `stdlib.h`.",
+    "solucao_referencia": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n    int a, b, c;\n    scanf(\"%d %d %d\", &a, &b, &c);\n    int maiorAB = (a + b + abs(a - b)) / 2;\n    int maiorABC = (maiorAB + c + abs(maiorAB - c)) / 2;\n    printf(\"%d\\n\", maiorABC);\n    return 0;\n}\n",
+    "casos_teste": [
+      {"input": "5 2 9\n", "output": "9\n"},
+      {"input": "10 10 10\n", "output": "10\n"},
+      {"input": "-5 -2 -10\n", "output": "-2\n"},
+      {"input": "1 100 50\n", "output": "100\n"}
+    ],
+    "origem": "Exercício de manipulação algébrica extrema e limite de eixo sem desvios lógicos",
     "direitos_restritos": false
   }
 ]
