@@ -48,6 +48,19 @@ Today `/` only redirects to `/biblioteca`.
 - "Para quem é" lives in the hero eyebrow and the closing call, not in a separate
   section, to avoid repeating the hero.
 
+## Redesign pass (2026-11-03)
+
+Landing reorganised as a narrative: hero, problem, pinned product flow, execution proof,
+live demo, scope, FAQ, closing call. Decisions:
+
+- No new dependency. Scroll behaviour is `IntersectionObserver` + CSS `position: sticky`;
+  motion is opacity/translate only, once, and off with reduced motion.
+- Identity constraints kept (no glow, no shadows, no new colours). Not built on purpose:
+  GSAP/parallax/morphing, magnetic buttons, cursor spotlight, animated counters.
+- No social-proof section: there are no testimonials, institutions or numbers to show, and none are invented.
+- No access form: access is still manual by e-mail (see `request-access.md`), so the CTA stays a link.
+- `analytics.ts` publishes `codeexpert:analytics` events on `window`; nothing is sent anywhere.
+
 ## Verification
 
 <make check / make front-e2e output>

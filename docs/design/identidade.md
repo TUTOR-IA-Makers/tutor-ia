@@ -279,6 +279,9 @@ Escala de 4px. Todo espaçamento da interface usa um destes tokens. `--space-16`
 | Selecionar card na biblioteca | borda e fundo mudam para o verde-azulado; a barra de exportação desliza de cima |
 | Aprovar questão | o badge muda de "Aguardando revisão" para "Aprovada" e um aviso confirma |
 | Landing (G5-2) | o visitante escolhe um conteúdo e clica em "Gerar questão": as cinco etapas avançam com a barra de progresso, a solução aparece linha a linha e os casos de teste ficam verdes. Nada começa sozinho; com "reduzir movimento" ativo, a questão pronta aparece direto |
+| Landing: seções ao rolar | os cartões do problema e do escopo entram uma vez, com opacidade e deslocamento de 16px, quando a seção aparece na tela; na seção "O produto em ação" a interface fica fixa e o conteúdo muda conforme a etapa que cruza o meio da tela. Com "reduzir movimento" ativo ou sem `IntersectionObserver`, tudo aparece direto |
+| Landing: prova de execução | o botão "Compilar e executar" percorre Código, Compilação, Execução e Saída esperada. A sequência reproduz uma execução gravada, identificada como exemplo na própria tela |
+| Landing: profundidade 3D | o hero empilha enunciado, código e testes em perspectiva (CSS `transform`, sem biblioteca) e inclina com o ponteiro; as etapas soltas convergem em um fluxo conforme a rolagem. Só em telas com ponteiro de hover e sem "reduzir movimento"; a página landing é a única que usa sombra de profundidade (`--shadow-float`, `--shadow-depth`) |
 | Vídeo de demonstração (G5-3) | <span class="ce-badge ce-status--planned">Planejado</span> embutido na landing page |
 
 ## 9. Princípios de UX
