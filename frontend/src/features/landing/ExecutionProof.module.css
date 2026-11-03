@@ -1,0 +1,139 @@
+.band {
+  background: var(--color-primary-tint);
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-12);
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: var(--space-24) var(--space-6);
+}
+
+.flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.stage {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--color-border-control);
+  border-radius: var(--radius-round);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-semibold);
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--dur-base);
+  transition-timing-function: var(--ease-enter);
+}
+
+.reached {
+  border-color: var(--color-accent);
+  background: var(--color-accent-tint);
+  color: var(--color-accent-text);
+}
+
+.arrow {
+  color: var(--color-text-muted);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--space-6);
+  perspective: var(--perspective);
+}
+
+.terminal {
+  display: grid;
+  overflow: hidden;
+  border: var(--border-width) solid var(--code-border);
+  border-radius: var(--radius-panel);
+  background: var(--code-bg);
+  color: var(--code-text);
+  transform: rotateY(-8deg);
+  transform-origin: left center;
+}
+
+.terminalBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--code-bg-raised);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.output {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-height: 16rem;
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.line {
+  color: var(--code-text);
+}
+
+.muted {
+  color: var(--code-comment);
+}
+
+.result {
+  color: var(--code-success);
+}
+
+.note {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--border-width) solid var(--code-border);
+  color: var(--code-comment);
+  font-size: var(--text-sm);
+}
+
+@media (width < 1024px) {
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width < 640px) {
+  .inner {
+    gap: var(--space-8);
+    padding: var(--space-16) var(--space-4);
+  }
+
+  .output {
+    min-height: 10rem;
+  }
+}
+
+/* Code and terminal face each other, as two screens angled in toward the middle. */
+.columns > * {
+  box-shadow: var(--shadow-depth);
+}
+
+.columns > :first-child {
+  transform: rotateY(8deg);
+  transform-origin: right center;
+}
+
+@media (width < 1024px) {
+  .columns > :first-child,
+  .terminal {
+    transform: none;
+  }
+}

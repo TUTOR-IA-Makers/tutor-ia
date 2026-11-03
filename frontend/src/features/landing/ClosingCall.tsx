@@ -14,13 +14,13 @@ export function ClosingCall() {
             Dá aulas de programação em C e usa o Aprender3?
           </h2>
           <p className={styles.text}>
-            Durante o piloto, o acesso é liberado pela equipe do projeto. A documentação explica
-            como pedir e o que informar.
+            Durante o piloto, o acesso é liberado manualmente pela equipe do projeto, e não é
+            imediato. A página de solicitação explica o que informar e o que acontece depois.
           </p>
         </div>
         <div className={styles.actions}>
-          <ExternalButtonLink href={ACCESS_URL} size="lg" icon={ArrowRight}>
-            Pedir acesso
+          <ExternalButtonLink href={ACCESS_URL} size="lg" icon={ArrowRight} location="final">
+            Solicitar acesso ao CodeExpert
           </ExternalButtonLink>
           <a href={DOCS_URL} className={styles.link}>
             Ler a documentação

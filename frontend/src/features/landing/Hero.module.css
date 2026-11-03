@@ -1,4 +1,5 @@
 .band {
+  overflow-x: clip;
   background: linear-gradient(
     110deg,
     var(--color-primary-hover) 0%,
@@ -12,7 +13,7 @@
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  align-items: start;
+  align-items: center;
   gap: var(--space-12);
   max-width: var(--width-content);
   margin: 0 auto;
@@ -61,15 +62,21 @@
   padding-top: var(--space-2);
 }
 
+.keyword {
+  color: var(--code-string);
+}
+
+.linkIcon {
+  display: inline-block;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  vertical-align: text-bottom;
+}
+
 .link {
   color: var(--color-on-fill);
   font-weight: var(--weight-semibold);
   text-underline-offset: var(--space-1);
-}
-
-.demo {
-  min-width: 0;
-  scroll-margin-top: calc(var(--header-height) + var(--space-4));
 }
 
 @media (width < 1024px) {

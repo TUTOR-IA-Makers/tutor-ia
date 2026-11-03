@@ -1,68 +1,60 @@
-import { Check, X } from 'lucide-react'
+import { Check, UserCheck } from 'lucide-react'
 import { Icon } from '@/components/ui'
 import { cx } from '@/lib/cx'
 import styles from './Scope.module.css'
+import { SectionHeader } from './SectionHeader'
+import { useReveal } from './useReveal'
 
-const DOES = [
-  'Gera o enunciado, a solução de referência em C e as entradas dos casos de teste.',
-  'Compila e executa a solução para obter a saída esperada de cada caso.',
-  'Mostra tudo para você revisar antes de virar questão.',
-  'Exporta as questões em XML no formato CodeRunner, pronto para importar no Moodle.',
+const PREPARES = [
+  'Enunciados.',
+  'Soluções de referência em C.',
+  'Casos de teste.',
+  'Saídas verificadas por execução.',
+  'Arquivos XML para Moodle/CodeRunner.',
 ]
 
-const DOES_NOT = [
-  {
-    title: 'Não é juiz automático.',
-    text: 'Não recebe nem corrige o código dos alunos. Quem corrige as respostas é o CodeRunner, dentro do seu Moodle.',
-  },
-  {
-    title: 'Não dá nota.',
-    text: 'Não avalia alunos nem turmas. A nota continua sendo definida por você no questionário.',
-  },
-  {
-    title: 'Não publica nada sozinho.',
-    text: 'Nenhuma questão chega à turma sem que você revise e importe o XML.',
-  },
+const CONTROL = [
+  'Revisão das questões.',
+  'Publicação dos exercícios.',
+  'Configuração dos questionários.',
+  'Correção das respostas, feita pelo CodeRunner no seu Moodle.',
+  'Avaliação e atribuição de notas.',
 ]
 
 export function Scope() {
+  const { ref, revealed } = useReveal<HTMLDivElement>()
+
   return (
     <section id="o-que-nao-faz" className={styles.section} aria-labelledby="escopo-titulo">
-      <header className={styles.header}>
-        <p className={styles.eyebrow}>Escopo</p>
-        <h2 id="escopo-titulo" className={styles.title}>
-          O que o CodeExpert faz e o que não faz
-        </h2>
-        <p className={styles.lead}>
-          Ele prepara questões para você. A sala de aula, a correção e a nota continuam com você e
-          com o Moodle.
-        </p>
-      </header>
-      <div className={styles.columns}>
-        <div className={cx(styles.column, styles.does)}>
-          <h3 className={styles.columnTitle}>Faz</h3>
+      <SectionHeader
+        id="escopo-titulo"
+        eyebrow="Escopo"
+        title="Uma ferramenta para preparar suas questões. O controle continua com você."
+        lead="O CodeExpert não corrige respostas de alunos e não atribui notas: isso continua no Moodle e com você."
+      />
+      <div ref={ref} className={styles.columns}>
+        <div className={cx(styles.column, styles.prepares, revealed && styles.revealed)}>
+          <h3 className={styles.columnTitle}>O CodeExpert prepara</h3>
           <ul className={styles.list}>
-            {DOES.map((item) => (
+            {PREPARES.map((item) => (
               <li key={item} className={styles.item}>
-                <span className={styles.markerDoes}>
+                <span className={styles.markerPrepares}>
                   <Icon icon={Check} />
                 </span>
-                <span>{item}</span>
+                {item}
               </li>
             ))}
           </ul>
         </div>
-        <div className={cx(styles.column, styles.doesNot)}>
-          <h3 className={styles.columnTitle}>Não faz</h3>
+        <div className={cx(styles.column, styles.control, revealed && styles.revealed)}>
+          <h3 className={styles.columnTitle}>Você mantém o controle sobre</h3>
           <ul className={styles.list}>
-            {DOES_NOT.map((item) => (
-              <li key={item.title} className={styles.item}>
-                <span className={styles.markerDoesNot}>
-                  <Icon icon={X} />
+            {CONTROL.map((item) => (
+              <li key={item} className={styles.item}>
+                <span className={styles.markerControl}>
+                  <Icon icon={UserCheck} />
                 </span>
-                <span>
-                  <strong>{item.title}</strong> {item.text}
-                </span>
+                {item}
               </li>
             ))}
           </ul>

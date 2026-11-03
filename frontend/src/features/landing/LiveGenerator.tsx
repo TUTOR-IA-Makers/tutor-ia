@@ -2,6 +2,7 @@ import { Check, FileDown, Play, RotateCcw } from 'lucide-react'
 import { useEffect, useReducer } from 'react'
 import { Button, CodeViewer, Icon, ProgressBar } from '@/components/ui'
 import { GENERATION_STEPS } from '@/domain'
+import { trackEvent } from './analytics'
 import { DEMO_COMPILE_COMMAND, DEMO_QUESTIONS, type DemoQuestion } from './demoQuestions'
 import {
   generatorReducer,
@@ -177,6 +178,11 @@ export function LiveGenerator() {
     }
   }, [state.phase, state.completed, state.lines, totalLines])
 
+  const finished = state.phase === 'done'
+  useEffect(() => {
+    if (finished) trackEvent('demo_complete', { content: state.questionId })
+  }, [finished, state.questionId])
+
   if (!question) return null
 
   const running = state.phase === 'running'
@@ -225,6 +231,7 @@ export function LiveGenerator() {
           icon={state.phase === 'done' ? RotateCcw : Play}
           isLoading={running}
           onClick={() => {
+            trackEvent('demo_start', { content: state.questionId })
             dispatch({
               type: 'start',
               instant: prefersReducedMotion(),

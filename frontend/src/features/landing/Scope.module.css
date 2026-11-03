@@ -6,29 +6,6 @@
   padding: var(--space-24) var(--space-6);
 }
 
-.header {
-  display: grid;
-  gap: var(--space-4);
-  max-width: var(--width-prose);
-}
-
-.eyebrow {
-  padding-left: var(--space-3);
-  border-left: var(--border-width-strong) solid var(--color-accent);
-  color: var(--color-accent-text);
-  font-family: var(--font-mono);
-  font-size: var(--text-md);
-  font-weight: var(--weight-medium);
-}
-
-.title {
-  font-size: var(--text-3xl);
-}
-
-.lead {
-  font-size: var(--text-lg);
-}
-
 .columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -43,14 +20,25 @@
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-panel);
   background: var(--color-surface);
+  opacity: 0;
+  transform: translateY(var(--space-4));
+  transition-property: opacity, transform;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-enter);
 }
 
-.does {
+.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+.prepares {
   border-top: var(--border-width-strong) solid var(--color-accent);
 }
 
-.doesNot {
-  border-top: var(--border-width-strong) solid var(--color-danger);
+.control {
+  border-top: var(--border-width-strong) solid var(--color-primary);
+  transition-delay: var(--dur-base);
 }
 
 .columnTitle {
@@ -66,12 +54,12 @@
 
 .item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-3);
 }
 
-.markerDoes,
-.markerDoesNot {
+.markerPrepares,
+.markerControl {
   display: inline-grid;
   place-items: center;
   flex: none;
@@ -80,14 +68,14 @@
   border-radius: var(--radius-round);
 }
 
-.markerDoes {
+.markerPrepares {
   background: var(--color-accent-tint);
   color: var(--color-accent-text);
 }
 
-.markerDoesNot {
-  background: var(--color-danger-tint);
-  color: var(--color-danger);
+.markerControl {
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
 }
 
 @media (width < 1024px) {
@@ -100,14 +88,6 @@
   .section {
     gap: var(--space-8);
     padding: var(--space-16) var(--space-4);
-  }
-
-  .title {
-    font-size: var(--text-2xl);
-  }
-
-  .lead {
-    font-size: var(--text-md);
   }
 
   .column {

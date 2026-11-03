@@ -1,45 +1,50 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowDown, ArrowRight } from 'lucide-react'
+import { trackEvent } from './analytics'
 import { ExternalButtonLink } from './ExternalButtonLink'
 import styles from './Hero.module.css'
-import { ACCESS_URL, DOCS_URL } from './links'
-import { LiveGenerator } from './LiveGenerator'
+import { HeroScene } from './HeroScene'
+import { ACCESS_URL } from './links'
 
 export function Hero() {
   return (
     <section className={styles.band} aria-labelledby="landing-titulo">
       <div className={styles.hero}>
         <div className={styles.copy}>
-          <p className={styles.eyebrow}>
-            Para professores de Algoritmos e Programação de Computadores
-          </p>
+          <p className={styles.eyebrow}>Para professores de Algoritmos e Programação</p>
 
           <h1 id="landing-titulo" className={styles.title}>
-            Questões de C verificadas por execução, prontas para o Moodle.
+            Menos tempo criando questões.{' '}
+            <span className={styles.keyword}>Mais tempo ensinando.</span>
           </h1>
 
           <p className={styles.text}>
-            Preparar exercícios leva horas. O CodeExpert gera enunciados, soluções e casos de teste.
-            Você revisa e exporta o XML para o Moodle / Aprender3.
-          </p>
-
-          <p className={styles.text}>
-            A saída esperada vem da execução da solução compilada, nunca de um palpite do modelo.
+            Questões de C testadas por execução, prontas para o Moodle. Você revisa e exporta.
           </p>
 
           <div className={styles.actions}>
-            <ExternalButtonLink href={ACCESS_URL} variant="secondary" size="lg" icon={ArrowRight}>
-              Pedir acesso
+            <ExternalButtonLink
+              href={ACCESS_URL}
+              variant="secondary"
+              size="lg"
+              icon={ArrowRight}
+              location="hero"
+            >
+              Solicitar acesso ao CodeExpert
             </ExternalButtonLink>
 
-            <a href={DOCS_URL} className={styles.link}>
-              Ler a documentação
+            <a
+              href="#como-funciona"
+              className={styles.link}
+              onClick={() => {
+                trackEvent('hero_cta_click', { cta: 'ver-demonstracao' })
+              }}
+            >
+              Ver demonstração <ArrowDown className={styles.linkIcon} aria-hidden="true" />
             </a>
           </div>
         </div>
 
-        <div id="como-funciona" className={styles.demo}>
-          <LiveGenerator />
-        </div>
+        <HeroScene />
       </div>
     </section>
   )
