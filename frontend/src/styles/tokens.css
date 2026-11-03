@@ -89,6 +89,9 @@
   --radius-round: 999px;
   --border-width: 1px;
   --border-width-strong: 2px;
+  --shadow-float: 0 12px 24px #0b1a4a33;
+  --shadow-depth: 0 32px 64px #0b1a4a4d;
+  --perspective: 1200px;
   --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-primary);
   --focus-ring-inset: inset 0 0 0 2px var(--color-primary);
   --ring-selected: inset 0 0 0 1px var(--color-accent);
@@ -101,9 +104,11 @@
   --dur-slow: 320ms;
   --dur-spin: 900ms;
   --dur-toast: 5000ms;
+  --dur-float: 7000ms;
   --ease-enter: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
   --ease-linear: linear;
+  --ease-float: ease-in-out;
   --color-demo-action: #5d9cbd;
   --color-demo-action-hover: #4e8baa;
   --color-demo-action-tint: #eaf3f8;
@@ -123,5 +128,6 @@
     --dur-base: 0ms;
     --dur-slow: 0ms;
     --dur-spin: 0ms;
+    --dur-float: 0ms;
   }
 }

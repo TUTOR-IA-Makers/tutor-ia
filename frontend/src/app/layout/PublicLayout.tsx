@@ -37,7 +37,12 @@ export function PublicLayout() {
               </li>
             </ul>
           </nav>
-          <ExternalButtonLink href={ACCESS_URL} variant="primary" className={styles.cta}>
+          <ExternalButtonLink
+            href={ACCESS_URL}
+            variant="primary"
+            className={styles.cta}
+            location="header"
+          >
             Pedir acesso
           </ExternalButtonLink>
         </div>
