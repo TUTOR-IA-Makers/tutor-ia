@@ -4,7 +4,7 @@ test('abre na landing pública com pedido de acesso e documentação', async ({ 
   await page.goto('/')
   await expect(page).toHaveTitle('CodeExpert')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Questões de C verificadas por execução, prontas para o Moodle.',
+    'Menos tempo criando questões. Mais tempo ensinando.',
   )
   await expect(page.getByRole('link', { name: 'Pedir acesso' }).first()).toBeInViewport()
   await expect(page.getByRole('link', { name: 'Ler a documentação' }).first()).toHaveAttribute(

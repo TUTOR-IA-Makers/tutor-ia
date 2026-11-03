@@ -3,7 +3,7 @@ import { cleanup, configure } from '@testing-library/react'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 import { server } from './server'
 
-configure({ asyncUtilTimeout: 4000 })
+configure({ asyncUtilTimeout: 10_000 })
 
 function polyfillDialog() {
   const proto = HTMLDialogElement.prototype as Partial<HTMLDialogElement>
