@@ -92,7 +92,7 @@ Cada execução roda no próprio grupo de processos; ao estourar o tempo, o grup
 
 ## 5 · Exportação Moodle XML {#5-exportacao-moodle-xml}
 
-Três templates em `src/codeexpert/export/templates/`, lidos via `importlib.resources`:
+Três templates em `backend/src/codeexpert/export/templates/`, lidos via `importlib.resources`:
 
 | Template | Papel |
 | --- | --- |

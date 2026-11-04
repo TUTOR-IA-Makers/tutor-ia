@@ -111,7 +111,7 @@ o trabalho foi distribuído por **capacidade**, não por rótulo. Duas restriç�
   para ninguém começar duas vezes a mesma coisa.
 
 !!! tip "Onde o harness da IA encosta no backend"
-    G7 (harness) é código Python que vive em `src/codeexpert/generation/` e em
+    G7 (harness) é código Python que vive em `backend/src/codeexpert/generation/` e em
     `scripts/`. A Dupla C escreve, a Dupla A revisa. E
     [`prompts.py` exige um humano no portão](https://github.com/TUTOR-IA-Makers/tutor-ia/blob/main/AGENTS.md)
     — nenhum agente muda prompt sozinho, e nenhuma pessoa muda prompt sem rodar o

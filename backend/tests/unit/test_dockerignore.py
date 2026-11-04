@@ -21,11 +21,10 @@ MUST_BE_IGNORED = [
     "Questions/",
     "config/LLM_Config.txt",
     ".git",
-    "frontend/node_modules/",
 ]
 
-# `pip install .` needs these: pyproject.toml reads README.md and LICENSE.
-MUST_STAY_IN_CONTEXT = ["pyproject.toml", "README.md", "LICENSE", "src"]
+# `pip install .` needs these: pyproject.toml reads README.md.
+MUST_STAY_IN_CONTEXT = ["pyproject.toml", "README.md", "src"]
 
 
 def _patterns() -> set[str]:

@@ -42,7 +42,7 @@ A dificuldade deve ser avaliada por critérios observáveis para minimizar a div
 
 ## Vocabulário Fechado de Estruturas C
 
-Garantindo a compatibilidade com a modelagem no Moodle, a catalogação restringe as estruturas aos seguintes termos, definidos na enumeração `CStructure` (em `src/codeexpert/domain.py`). Abaixo definimos o critério de presença de cada uma:
+Garantindo a compatibilidade com a modelagem no Moodle, a catalogação restringe as estruturas aos seguintes termos, definidos na enumeração `CStructure` (em `backend/src/codeexpert/domain.py`). Abaixo definimos o critério de presença de cada uma:
 
 - **Controle de Fluxo e Condicionais**
   - `if`: Uso de condicional se.

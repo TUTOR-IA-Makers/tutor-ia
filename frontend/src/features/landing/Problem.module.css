@@ -1,0 +1,126 @@
+.section {
+  --p: 0;
+
+  height: 170vh;
+}
+
+.pin {
+  position: sticky;
+  top: var(--header-height);
+  display: grid;
+  align-content: center;
+  gap: var(--space-12);
+  height: calc(100vh - var(--header-height));
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  overflow-x: clip;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-display);
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.after {
+  color: var(--color-accent-text);
+  opacity: clamp(0.15, calc(var(--p) * 2 - 0.4), 1);
+}
+
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-4);
+  padding: 0;
+  list-style: none;
+  perspective: var(--perspective);
+}
+
+/* The line that ties the five cards together grows with the scroll. */
+.stage::before {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  left: 5%;
+  height: var(--border-width-strong);
+  background: var(--color-accent);
+  content: '';
+  transform: scaleX(var(--p));
+  transform-origin: left;
+}
+
+.card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+  color: var(--color-primary);
+  transform: translate3d(
+      calc(var(--x) * (1 - var(--p)) * 1px),
+      calc(var(--y) * (1 - var(--p)) * 1px),
+      calc(var(--z) * (1 - var(--p)) * 1px)
+    )
+    rotate(calc(var(--r) * (1 - var(--p)) * 1deg));
+}
+
+.number {
+  color: var(--color-accent-text);
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+}
+
+.label {
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
+@media (width < 640px) {
+  .section {
+    height: 180vh;
+  }
+
+  .pin {
+    gap: var(--space-6);
+    padding: 0 var(--space-4);
+  }
+
+  .title {
+    font-size: var(--text-2xl);
+  }
+
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .stage::before {
+    display: none;
+  }
+
+  .card {
+    grid-auto-flow: column;
+    justify-content: start;
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: auto;
+  }
+
+  .pin {
+    position: static;
+    height: auto;
+    padding-block: var(--space-16);
+  }
+}

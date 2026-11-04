@@ -21,13 +21,13 @@ O `Makefile` só chama os scripts em `scripts/`, então pessoas, agentes e CI ro
 | `make front-build` | Build de produção em `frontend/dist` | — |
 | `make front-check` | Gate do front-end, também chamado pelo `make check` | `scripts/front-check.sh` |
 | `make front-e2e` | Playwright com axe-core contra o build de produção, em 1280px e 320px | — |
-| `make clean` | Apaga `var/`, `.dist/`, caches de ferramentas, `__pycache__` e as saídas de build e teste do front-end | — |
+| `make clean` | Apaga `backend/var/`, `.dist/`, caches de ferramentas, `__pycache__` e as saídas de build e teste do front-end | — |
 
-Outras formas de iniciar a API, sem recarga: `.venv/bin/codeexpert`, `python -m codeexpert` ou `python main.py` — as três escutam em `0.0.0.0:8000`. Em container: [Rodar com Docker](../guides/docker.md).
+Outras formas de iniciar a API, sem recarga: `backend/.venv/bin/codeexpert`, `python -m codeexpert` ou `python main.py` (dentro de `backend/`) — as três escutam em `0.0.0.0:8000`. Em container: [Rodar com Docker](../guides/docker.md).
 
 ## Variáveis de ambiente {#variaveis-de-ambiente}
 
-Lidas por `Settings` em `src/codeexpert/settings.py`, com prefixo `CODEEXPERT_`. Em desenvolvimento vêm do `.env` (criado por `make setup`); variáveis do ambiente real têm precedência sobre ele, que é como CI e containers configuram o serviço. A imagem Docker não contém `.env`: as variáveis chegam pelo `docker run` ([Rodar com Docker](../guides/docker.md#subir-o-container)).
+Lidas por `Settings` em `backend/src/codeexpert/settings.py`, com prefixo `CODEEXPERT_`. Em desenvolvimento vêm de `backend/.env` (criado por `make setup`; caminhos relativos como `var/` também valem a partir de `backend/`); variáveis do ambiente real têm precedência sobre ele, que é como CI e containers configuram o serviço. A imagem Docker não contém `.env`: as variáveis chegam pelo `docker run` ([Rodar com Docker](../guides/docker.md#subir-o-container)).
 
 | Variável | Padrão | O que controla |
 | --- | --- | --- |

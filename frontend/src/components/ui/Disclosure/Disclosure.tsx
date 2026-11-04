@@ -10,6 +10,7 @@ export interface DisclosureProps {
   icon?: LucideIcon
   framed?: boolean
   defaultOpen?: boolean
+  onToggle?: (open: boolean) => void
   children: ReactNode
 }
 
@@ -18,10 +19,20 @@ export function Disclosure({
   icon,
   framed = false,
   defaultOpen,
+  onToggle,
   children,
 }: DisclosureProps) {
   return (
-    <details className={cx(styles.details, framed && styles.framed)} open={defaultOpen}>
+    <details
+      className={cx(styles.details, framed && styles.framed)}
+      open={defaultOpen}
+      onToggle={
+        onToggle &&
+        ((event) => {
+          onToggle(event.currentTarget.open)
+        })
+      }
+    >
       <summary className={styles.summary}>
         {icon && <Icon icon={icon} size="md" />}
         <span className={styles.label}>{summary}</span>
