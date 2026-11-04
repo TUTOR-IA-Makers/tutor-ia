@@ -9,7 +9,7 @@
   },
   {
     "id": "ternario",
-    "label": "ternario"
+    "label": "operador ternário"
   },
   {
     "id": "switch",
@@ -25,7 +25,7 @@
   },
   {
     "id": "do-while",
-    "label": "do-while"
+    "label": "do / while"
   },
   {
     "id": "break",
@@ -69,19 +69,19 @@
   },
   {
     "id": "alocacao dinamica",
-    "label": "alocacao dinamica"
+    "label": "alocação dinâmica"
   },
   {
     "id": "funcao",
-    "label": "funcao"
+    "label": "função"
   },
   {
     "id": "passagem por referencia",
-    "label": "passagem por referencia"
+    "label": "passagem por referência"
   },
   {
     "id": "recursao",
-    "label": "recursao"
+    "label": "recursão"
   },
   {
     "id": "arquivos",

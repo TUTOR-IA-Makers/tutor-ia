@@ -12,5 +12,8 @@ def test_structure_catalog_matches_domain_and_mock(client) -> None:
     catalog = response.json()
     assert [item["id"] for item in catalog] == [item.value for item in CStructure]
     assert all(item["label"].strip() for item in catalog)
+    labels = {item["id"]: item["label"] for item in catalog}
+    assert labels["recursao"] == "recursão"
+    assert labels["alocacao dinamica"] == "alocação dinâmica"
     snapshot = Path(__file__).parents[2] / "frontend/src/services/mock/structures.json"
-    assert catalog == json.loads(snapshot.read_text())
+    assert catalog == json.loads(snapshot.read_text(encoding="utf-8"))
