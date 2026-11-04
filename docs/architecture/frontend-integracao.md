@@ -8,13 +8,13 @@
 
 ## 1. A lacuna, rota por rota
 
-O front-end já chama uma API de recursos sob `/api/v1` (`frontend/src/services/http/endpoints.ts`). O backend de `main` expõe chamadas no estilo RPC na raiz, uma por etapa do pipeline (`src/codeexpert/api/routes/`), sem banco e sem sessão.
+O front-end já chama uma API de recursos sob `/api/v1` (`frontend/src/services/http/endpoints.ts`). O backend de `develop` expõe chamadas no estilo RPC na raiz, uma por etapa do pipeline (`backend/src/codeexpert/api/routes/`), sem sessão. Os artefatos de uma geração já podem ficar no Postgres pelo `ArtifactStore` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)).
 
 | O front chama | O backend de `main` tem | Falta |
 |---|---|---|
 | `GET /api/v1/questions` com filtros | nada | listar questões guardadas (G1-5); depende do banco (G0-4) |
 | `POST /api/v1/questions` → `202 {id}` | `POST /create_question` síncrono, ou as quatro etapas `/gen_statement`, `/gen_code`, `/gen_inputs`, `/gen_testcases` | geração como job fora do ciclo da requisição (G0-8) |
-| `GET /api/v1/questions/{id}` | nada | questão completa com casos e restrições |
+| `GET /api/v1/questions/{id}` | `GET /questions/{run_id}`, na raiz e por id de execução | questão completa com casos e restrições |
 | `GET /api/v1/questions/{id}/generation` | nada | andamento do job: etapa atual, estado, motivo da falha |
 | `POST /api/v1/questions/{id}/approve`, `/reject`, `/regenerate` | nada | ciclo de vida da questão (G3-1, G3-2) |
 | `PATCH /api/v1/questions/{id}/statement` | nada | edição do enunciado pelo professor |
