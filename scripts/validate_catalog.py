@@ -1,123 +1,113 @@
-"""Validator for the reference catalog (G6-2).
-
-Loads every JSON file under data/catalog/, validates each entry against
-CatalogEntry (which re-uses the closed enumerations from domain.py) and prints
-a coverage matrix by axis × level.
-
-Exit 0  → all entries valid.
-Exit 1  → one or more validation errors (fails make check).
-"""
-
-from __future__ import annotations
-
-import json
+import os
 import sys
-from pathlib import Path
+import subprocess
+import glob
 
-# ---------------------------------------------------------------------------
-# Resolve project root so the script works regardless of cwd.
-# ---------------------------------------------------------------------------
-ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+CATALOG_DIR = os.environ.get("CATALOG_DIR_OVERRIDE", "data/catalog")
+REQUIRED_COVERAGE = 8
 
-from pydantic import BaseModel, Field, ValidationError  # noqa: E402
+EXPECTED_LEVELS = ["MF", "F", "M", "D", "MD"]
+EXPECTED_AXES = ["E1", "E2"]
 
-from codeexpert.domain import CStructure, ContentAxis, Difficulty  # noqa: E402
+def parse_meta(meta_path):
+    meta = {}
+    with open(meta_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith('eixo:'):
+                meta['eixo'] = line.split(':', 1)[1].strip().replace('"', '').replace("'", "")
+            elif line.startswith('nivel:'):
+                meta['nivel'] = line.split(':', 1)[1].strip().replace('"', '').replace("'", "")
+    return meta
 
+def main():
+    if not os.path.exists(CATALOG_DIR):
+        print(f"[ERRO] Diretório raiz {CATALOG_DIR} não encontrado.")
+        sys.exit(1)
 
-# ---------------------------------------------------------------------------
-# Schema
-# ---------------------------------------------------------------------------
+    coverage = {eixo: {nivel: 0 for nivel in EXPECTED_LEVELS} for eixo in EXPECTED_AXES}
+    has_errors = False
+    encontrou_alguma_questao = False
 
-
-class CatalogTestCase(BaseModel):
-    input: str
-    output: str
-
-
-class CatalogEntry(BaseModel):
-    """One catalogued question.
-
-    Fields mirror the acceptance criteria of G6-2:
-    - enunciado, solucao_referencia, casos_teste → complete question body
-    - eixo, nivel, estruturas → full classification per G6-1 taxonomy
-    - origem, direitos_restritos → provenance and rights
-    """
-
-    id: str = Field(..., description="Unique ID, e.g. E1-MF-001")
-    eixo: ContentAxis
-    nivel: Difficulty
-    estruturas: list[CStructure] = Field(default_factory=list)
-    enunciado: str = Field(..., min_length=10)
-    solucao_referencia: str = Field(..., min_length=10)
-    casos_teste: list[CatalogTestCase] = Field(..., min_length=1)
-    origem: str = Field(..., min_length=3)
-    direitos_restritos: bool
-
-
-# ---------------------------------------------------------------------------
-# Validation logic
-# ---------------------------------------------------------------------------
-
-
-def validate_catalog(catalog_dir: Path) -> int:
-    """Validate all JSON files in *catalog_dir*.
-
-    Returns the number of invalid entries (0 = success).
-    """
-    files = sorted(catalog_dir.glob("*.json"))
-    if not files:
-        print(f"[validate_catalog] No JSON files found in {catalog_dir}.")
-        return 0
-
-    errors_total = 0
-    counts: dict[str, int] = {}
-
-    for path in files:
-        raw = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(raw, list):
-            print(f"ERROR  {path.name}: root must be a JSON array.")
-            errors_total += 1
+    for eixo_dir in EXPECTED_AXES:
+        eixo_path = os.path.join(CATALOG_DIR, eixo_dir.lower())
+        
+        if not os.path.exists(eixo_path):
+            print(f"[AVISO] Pasta do eixo não encontrada: {eixo_path}")
             continue
 
-        for item in raw:
-            entry_id = item.get("id", "<sem id>")
-            try:
-                entry = CatalogEntry.model_validate(item)
-                key = f"{entry.eixo.value} × {entry.nivel.value}"
-                counts[key] = counts.get(key, 0) + 1
-            except ValidationError as exc:
-                errors_total += 1
-                for e in exc.errors():
-                    field = ".".join(str(x) for x in e["loc"])
-                    print(f"ERROR  {path.name} [{entry_id}] {field}: {e['msg']}")
+        for q_id in os.listdir(eixo_path):
+            q_dir = os.path.join(eixo_path, q_id)
+            if not os.path.isdir(q_dir):
+                continue
+                
+            encontrou_alguma_questao = True
+            meta_path = os.path.join(q_dir, "meta.yaml")
+            c_file = os.path.join(q_dir, "solucao.c")
+            in_dir = os.path.join(q_dir, "entradas")
+            out_dir = os.path.join(q_dir, "saidas")
 
-    # Coverage matrix
-    print("\n── Cobertura por eixo × nível ──────────────────────────────────")
-    for key in sorted(counts):
-        mark = "✓" if counts[key] >= 8 else f"! ({counts[key]}/8)"
-        print(f"  {key}: {counts[key]:3d}  {mark}")
-    print("────────────────────────────────────────────────────────────────\n")
+            if not os.path.exists(meta_path) or not os.path.exists(c_file):
+                print(f"[ERRO] {q_id}: Arquivos essenciais (meta.yaml ou solucao.c) faltando.")
+                has_errors = True
+                continue
 
-    return errors_total
+            meta = parse_meta(meta_path)
+            eixo = meta.get('eixo', '').upper()
+            nivel = meta.get('nivel', '').upper()
+            
+            if eixo in coverage and nivel in coverage[eixo]:
+                coverage[eixo][nivel] += 1
+            else:
+                print(f"[AVISO] {q_id}: Nível ({nivel}) ou Eixo ({eixo}) fora do padrão esperado.")
 
+            bin_file = os.path.join(q_dir, "exec_temp")
+            compile_cmd = ["gcc", "-Wall", c_file, "-o", bin_file, "-lm"]
+            comp_res = subprocess.run(compile_cmd, capture_output=True, text=True)
+            
+            if comp_res.returncode != 0:
+                print(f"[ERRO] {q_id}: Falha na compilação.\n{comp_res.stderr}")
+                has_errors = True
+                continue
 
-def main() -> None:
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")
+            os.makedirs(out_dir, exist_ok=True)
+            in_files = sorted(glob.glob(os.path.join(in_dir, "*.txt")))
+            
+            for in_file in in_files:
+                filename = os.path.basename(in_file)
+                out_file = os.path.join(out_dir, filename)
+                
+                with open(in_file, 'r') as f_in, open(out_file, 'w') as f_out:
+                    run_res = subprocess.run([bin_file], stdin=f_in, stdout=f_out, stderr=subprocess.PIPE, text=True)
+                    if run_res.returncode != 0:
+                        print(f"[AVISO] {q_id}: Erro de execução no caso {filename}.\n{run_res.stderr}")
+                        has_errors = True
 
-    catalog_dir = ROOT / "data" / "catalog"
-    if not catalog_dir.exists():
-        print(f"ERROR  data/catalog/ not found at {catalog_dir}.")
+            if os.path.exists(bin_file):
+                os.remove(bin_file)
+            
+            print(f"[OK] {q_id}: {len(in_files)} caso(s) regerado(s).")
+
+    if not encontrou_alguma_questao:
+        print("\n[ERRO CRÍTICO] Nenhuma questão foi lida. Verifique se as pastas estão dentro de data/catalog/e1/ e data/catalog/e2/")
         sys.exit(1)
 
-    n_errors = validate_catalog(catalog_dir)
-    if n_errors:
-        print(f"validate_catalog: {n_errors} erro(s) encontrado(s). Corrija antes de abrir o PR.")
+    print("\n--- Relatório de Cobertura ---")
+    coverage_failed = False
+    for eixo in EXPECTED_AXES:
+        for nivel in EXPECTED_LEVELS:
+            count = coverage[eixo][nivel]
+            status = "OK" if count >= REQUIRED_COVERAGE else "FALHOU"
+            print(f"{eixo} Nível {nivel}: {count}/{REQUIRED_COVERAGE} [{status}]")
+            if count < REQUIRED_COVERAGE:
+                coverage_failed = True
+
+    if has_errors or coverage_failed:
+        print("\n[FALHA] Validação finalizada com erros ou cobertura insuficiente.")
         sys.exit(1)
     else:
-        print("validate_catalog: todos os registros são válidos.")
-
+        print("\n[SUCESSO] Catálogo validado. Saídas geradas e cobertura atingida.")
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
