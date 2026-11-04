@@ -1,0 +1,1 @@
+Utilizando apenas operadores matemáticos (sem usar `if`, `else`, `while`, operador ternário ou qualquer outra estrutura de fluxo), leia três números inteiros `A`, `B` e `C` e imprima o maior deles. Utilize a fórmula matemática `Maior(a,b) = (a + b + abs(a - b)) / 2` incluída na biblioteca padrão `stdlib.h`.

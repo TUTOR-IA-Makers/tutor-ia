@@ -1,0 +1,8 @@
+id: "E2-D-005"
+eixo: "controle de fluxo"
+nivel: "dificil"
+estruturas:
+  - "while"
+  - "if"
+origem: "Algoritmo de Euclides (Matemática Discreta)"
+direitos_restritos: false

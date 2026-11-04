@@ -1,0 +1,1 @@
+Leia o valor nominal de um título, a taxa de desconto diária e o número de dias de antecipação. Calcule o valor atual comercial (desconto simples) e imprima com 2 casas decimais.

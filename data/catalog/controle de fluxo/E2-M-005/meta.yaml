@@ -1,0 +1,8 @@
+id: "E2-M-005"
+eixo: "controle de fluxo"
+nivel: "medio"
+estruturas:
+  - "while"
+  - "if"
+origem: "Exercício de número perfeito"
+direitos_restritos: false

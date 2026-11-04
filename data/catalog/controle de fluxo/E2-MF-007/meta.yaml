@@ -1,0 +1,8 @@
+id: "E2-MF-007"
+eixo: "controle de fluxo"
+nivel: "muito facil"
+estruturas:
+  - "if"
+  - "else"
+origem: "Exercício clássico de condicionais compostos"
+direitos_restritos: true

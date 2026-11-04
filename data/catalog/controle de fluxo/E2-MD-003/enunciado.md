@@ -1,0 +1,1 @@
+Leia `T` casos de teste. Para cada caso, leia `N` e verifique se N é um número narcisista (igual à soma dos cubos de seus dígitos, ex: 153 = 1³+5³+3³). Imprima `sim` ou `nao`.

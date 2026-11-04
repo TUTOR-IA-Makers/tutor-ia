@@ -1,3 +1,10 @@
+id: "E1-D-001"
+eixo: "fundamentos"
+nivel: "dificil"
+estruturas:
+  - "math.h"
+origem: "Exercício de geometria de polígonos regulares — precisa de math.h"
+direitos_restritos: false
 # data/catalog/
 
 Acervo de questões de referência para geração ancorada (G6-2).
