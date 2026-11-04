@@ -1,0 +1,91 @@
+# The services on the VPS (docs/adr/0011): Postgres, the migrations, the API.
+# See docs/adr/0013 and docs/guides/deploy.md.
+#
+#   CODEEXPERT_SECRETS_DIR=/srv/codeexpert/secrets docker compose -f deploy/compose.yaml up -d
+#
+# Not here yet, because G0-9 (#25) brings them: the reverse proxy, the only
+# service that will publish a port, and the job that runs this on each deploy.
+# Until then nothing in this file is reachable from outside the host.
+
+name: codeexpert
+
+x-app-image: &app-image
+  # The deploy sets CODEEXPERT_IMAGE to the image built for the commit. Without
+  # it, Compose builds one from this checkout.
+  image: ${CODEEXPERT_IMAGE:-codeexpert:local}
+  build: ../backend
+
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: codeexpert
+      POSTGRES_DB: codeexpert
+      # The image reads the password from the file; it is never an environment value.
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets: [postgres_password]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # No `ports:`. 5432 exists only on the internal network below.
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U codeexpert -d codeexpert"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Runs once per `up` and exits. The API waits for it to succeed, so a release
+  # whose migration fails never starts against the old schema.
+  migrate:
+    <<: *app-image
+    command: ["codeexpert", "migrate"]
+    restart: "no"
+    secrets:
+      - source: database_url
+        target: codeexpert_database_url
+    networks: [data]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *app-image
+    restart: unless-stopped
+    environment:
+      CODEEXPERT_STORE_BACKEND: postgres
+      CODEEXPERT_COMMIT_SHA: ${CODEEXPERT_COMMIT_SHA:-}
+    secrets:
+      - source: database_url
+        target: codeexpert_database_url
+      - source: llm_api_key
+        target: codeexpert_llm_api_key
+    volumes:
+      # Still written to disk: the Moodle files under var/questions (docs/adr/0012).
+      - appvar:/app/var
+    # `data` to reach Postgres, `default` to reach the model provider.
+    networks: [data, default]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+networks:
+  # internal: no route out of the host, and nothing in it can be published.
+  data:
+    internal: true
+
+volumes:
+  pgdata:
+  appvar:
+
+# Files on the host, outside the repository. See docs/guides/deploy.md for who
+# owns them and with what permissions.
+secrets:
+  postgres_password:
+    file: ${CODEEXPERT_SECRETS_DIR:?set CODEEXPERT_SECRETS_DIR to the directory holding the secret files}/postgres_password
+  database_url:
+    file: ${CODEEXPERT_SECRETS_DIR:?}/codeexpert_database_url
+  llm_api_key:
+    file: ${CODEEXPERT_SECRETS_DIR:?}/codeexpert_llm_api_key
