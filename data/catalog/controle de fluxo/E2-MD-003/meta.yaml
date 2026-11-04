@@ -1,9 +1,0 @@
-id: "E2-MD-003"
-eixo: "controle de fluxo"
-nivel: "muito dificil"
-estruturas:
-  - "for"
-  - "if"
-  - "while"
-origem: "Exercício de número narcisista (Armstrong)"
-direitos_restritos: false

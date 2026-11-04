@@ -1,0 +1,7 @@
+id: "E2-F-004"
+eixo: "E2"
+nivel: "F"
+estruturas:
+  - "for"
+origem: "Exercício clássico de laço for"
+direitos_restritos: true

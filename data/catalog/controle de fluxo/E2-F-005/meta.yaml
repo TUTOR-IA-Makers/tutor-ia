@@ -1,7 +1,0 @@
-id: "E2-F-005"
-eixo: "controle de fluxo"
-nivel: "facil"
-estruturas:
-  - "while"
-origem: "Exercício de laço com sentinela"
-direitos_restritos: false

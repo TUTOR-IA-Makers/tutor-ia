@@ -1,0 +1,9 @@
+id: "E2-MD-001"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "while"
+  - "for"
+  - "if"
+origem: "Exercício de série harmônica e constante de Euler"
+direitos_restritos: false

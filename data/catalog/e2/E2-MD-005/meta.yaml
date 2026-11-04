@@ -1,0 +1,8 @@
+id: "E2-MD-005"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "while"
+  - "if"
+origem: "Problema Clássico de Collatz"
+direitos_restritos: true

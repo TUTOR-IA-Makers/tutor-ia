@@ -1,8 +1,0 @@
-id: "E2-MD-008"
-eixo: "controle de fluxo"
-nivel: "muito dificil"
-estruturas:
-  - "while"
-  - "if"
-origem: "Exercício clássico de métodos numéricos (Leibniz)"
-direitos_restritos: true

@@ -1,0 +1,8 @@
+id: "E2-MF-005"
+eixo: "E2"
+nivel: "MF"
+estruturas:
+  - "if"
+  - "else"
+origem: "Exercício clássico de divisibilidade"
+direitos_restritos: true
