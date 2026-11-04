@@ -41,7 +41,7 @@ flowchart LR
 | Imagem | GitHub Container Registry, tag = SHA. O job envia com o `GITHUB_TOKEN`; a VPS baixa. Como a imagem não contém segredo, o pacote pode ser público |
 | Deploy | O job, no ambiente `production` restrito a `main`, entra por SSH com uma chave cujo `authorized_keys` só permite rodar o script de deploy. A chave do host fica fixada numa variável do repositório |
 | Segredos | Chave do LLM e senha do banco ficam só na VPS, como arquivos montados pelo Compose em `/run/secrets`. Nunca passam pelo GitHub ([G0-3](../product/plano-30-11.md#g0-3)) |
-| Banco | Postgres no mesmo Compose, migrações aplicadas por um serviço que roda antes da API, `pg_dump` diário copiado para fora da VPS ([G1-1](../product/plano-30-11.md#g1-1)) |
+| Banco | Postgres no mesmo Compose, migrações aplicadas por um serviço que roda antes da API, `pg_dump` diário copiado para fora da VPS ([G1-1](../product/plano-30-11.md#g1-1)). Os arquivos já estão no repositório: ver [Banco de dados e backup](#banco-de-dados-e-backup) |
 | Estado da geração | Até o [G0-4](../product/plano-30-11.md#g0-4), `var/` num volume Docker. Sobrevive a reinício e a deploy, porque há uma máquina só |
 
 !!! warning "O que a troca custa"
@@ -59,3 +59,52 @@ Sem `CODEEXPERT_LLM_API_KEY` o serviço sobe e responde `GET /health`, mas a ger
 - No `compose.yaml`, o segredo é declarado com `file:` apontando para esse arquivo e entra no serviço `api` com `target: codeexpert_llm_api_key`. `CODEEXPERT_LLM_API_KEY` não aparece em `environment:` nem num `env_file:`.
 - A senha do banco segue o mesmo caminho quando existir o campo dela em `Settings` ([G1-1](../product/plano-30-11.md#g1-1)).
 - A demonstração do [G0-3](../product/plano-30-11.md#g0-3) é mostrar que `docker inspect` e `/proc/1/environ` do container não contêm a chave e que uma geração funciona.
+
+## Banco de dados e backup {#banco-de-dados-e-backup}
+
+<span class="ce-badge ce-status--done">Implementado</span> No repositório, testado só numa máquina de desenvolvimento ([ADR-0013](../adr/0013-versioned-migrations-with-alembic.md)):
+
+| Arquivo | O que faz |
+| --- | --- |
+| `deploy/compose.yaml` | `db` (Postgres 16, volume `pgdata`, só na rede interna `data`, sem porta publicada) → `migrate` (`codeexpert migrate`, roda e sai) → `api` (só sobe se `migrate` terminou com sucesso). Não tem o proxy: ele vem com o [G0-9](../product/plano-30-11.md#g0-9) |
+| `deploy/backup.sh` | `pg_dump` em formato custom num diretório da VPS, copiado com `rsync` para fora dela. Falha se a cópia falhar. Apaga cópias locais com mais de 14 dias |
+| `deploy/restore-check.sh` | Restaura um dump num banco temporário ao lado do de produção, mostra revisão do esquema e contagens, e apaga o banco temporário. A saída é a evidência de que o restore foi testado |
+
+O Compose lê três arquivos de `CODEEXPERT_SECRETS_DIR`, que fica fora do repositório:
+
+| Arquivo | Conteúdo | Lido por |
+| --- | --- | --- |
+| `postgres_password` | A senha, sem quebra de linha | `db` (uid `999`) |
+| `codeexpert_database_url` | `postgresql://codeexpert:<senha>@db:5432/codeexpert` | `migrate` e `api` (uid `1000`) |
+| `codeexpert_llm_api_key` | A chave do provedor | `api` (uid `1000`) |
+
+A senha aparece em dois arquivos. Para trocá-la, mude os dois e a senha do papel `codeexpert` no banco.
+
+Para subir localmente (com Docker):
+
+```bash
+CODEEXPERT_SECRETS_DIR=/caminho/para/segredos docker compose -f deploy/compose.yaml up -d --build
+docker compose -f deploy/compose.yaml logs migrate     # "Running upgrade  -> 0001"
+```
+
+!!! note "Fedora e outras distribuições com SELinux"
+    O container não consegue ler os arquivos de segredo (`Permission denied` no log do `db`) até eles receberem o rótulo certo: `chcon -R -t container_file_t /caminho/para/segredos`. O Ubuntu da VPS não usa SELinux.
+
+<span class="ce-badge ce-status--planned">Planejado</span> Depende da VPS do [G0-9](../product/plano-30-11.md#g0-9):
+
+- O job de deploy rodar `docker compose -f deploy/compose.yaml up -d` com `CODEEXPERT_IMAGE` apontando para a imagem do commit.
+- A entrada do cron que roda `deploy/backup.sh` todo dia, e o destino fora da VPS (`CODEEXPERT_BACKUP_REMOTE`). *A confirmar.*
+- O primeiro restore registrado com `deploy/restore-check.sh`, e a demonstração de que a 5432 não responde de fora da VPS.
+- Dono e permissão dos arquivos de segredo na VPS. *A confirmar.*
+
+### Restaurar depois de uma perda
+
+<span class="ce-badge ce-status--planned">Planejado</span> Nunca executado. Procedimento esperado, a validar no primeiro restore real:
+
+```bash
+docker compose -f deploy/compose.yaml stop api
+docker compose -f deploy/compose.yaml exec -T db dropdb -U codeexpert --force codeexpert
+docker compose -f deploy/compose.yaml exec -T db createdb -U codeexpert codeexpert
+docker compose -f deploy/compose.yaml exec -T db pg_restore -U codeexpert -d codeexpert --no-owner --exit-on-error < codeexpert-AAAAMMDDTHHMMSSZ.dump
+docker compose -f deploy/compose.yaml up -d            # migrate leva o dump até a última revisão
+```

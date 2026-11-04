@@ -102,8 +102,9 @@ Consequências: o pipeline é **retomável** (edita-se um arquivo e roda-se só 
     Os artefatos passam por um `ArtifactStore` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)).
     Com `CODEEXPERT_STORE_BACKEND=local` (o padrão) cada execução é o diretório abaixo, em `var/runs/`.
     Com `postgres` os mesmos arquivos viram linhas da tabela `run_artifacts`, com o mesmo nome. O
-    `PostgresStore` existe no código e ainda **não está ligado em produção**: falta o serviço Postgres no
-    Compose da VPS ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)).
+    esquema vem de migrações do Alembic ([ADR-0013](../adr/0013-versioned-migrations-with-alembic.md)),
+    e `deploy/compose.yaml` sobe o Postgres, as migrações e a API nessa ordem. Ainda **não está ligado em
+    produção**: a VPS não existe ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md), [G0-9](../product/plano-30-11.md#g0-9)).
 
     Uma execução só vira questão quando a etapa 5 termina. Até lá é um rascunho: pode ser retomada pelo
     `run_id`, mas `GET /questions/{run_id}` responde `404`.

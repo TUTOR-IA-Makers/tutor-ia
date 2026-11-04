@@ -15,8 +15,9 @@ backend/src/codeexpert/
 ├── store/
 │   ├── base.py          ArtifactStore (protocolo)
 │   ├── local.py         LocalFilesystemStore: um diretório por execução
-│   ├── postgres.py      PostgresStore
-│   └── schema.sql       tabelas runs e run_artifacts
+│   ├── postgres.py      PostgresStore: recusa um banco fora da última revisão
+│   ├── migrate.py       `codeexpert migrate`: aplica as revisões do Alembic
+│   └── migrations/      env.py e versions/, uma revisão por mudança de esquema
 ├── llm/client.py        LLMClient (protocolo), OpenAIChatClient
 ├── execution/
 │   ├── runner.py        CodeRunner (protocolo), RunOutcome
@@ -101,7 +102,7 @@ raise MissingArtefactError("'statement.json' not found. Generate a statement fir
 
 ```text
 backend/tests/
-├── conftest.py                FakeLLM, FakeRunner, isolated_settings, client, requires_gcc
+├── conftest.py                FakeLLM, FakeRunner, isolated_settings, client, requires_gcc, bancos descartáveis
 ├── unit/
 │   ├── test_parsers.py        parse_statement, parse_inputs, strip_code_fences
 │   ├── test_workspace.py      isolamento entre execuções, path traversal
@@ -112,9 +113,10 @@ backend/tests/
     └── test_api.py            contrato HTTP e códigos de status
 ```
 
-- **Nenhum teste acessa a rede.** O modelo é sempre `FakeLLM`, com respostas roteirizadas em ordem.
+- **Nenhum teste acessa a rede.** O modelo é sempre `FakeLLM`, com respostas roteirizadas em ordem. A única exceção é o Postgres de teste, e só quando `CODEEXPERT_TEST_DATABASE_URL` está definida.
 - **Nenhum teste escreve fora de `tmp_path`.** A fixture automática `isolated_settings` redireciona `var/` e injeta uma chave falsa.
 - Testes que precisam de compilador usam `@requires_gcc` e são pulados sem `gcc`. **`make check` passa sem `gcc`, mas os testes da etapa 4 não rodam** — o CI roda.
+- Testes que precisam de Postgres usam os fixtures `migrated_database` ou `empty_database` e são pulados sem `CODEEXPERT_TEST_DATABASE_URL`. Cada um roda num banco criado para ele e apagado no fim. O CI define a variável ([Banco de dados](configuration.md#banco-de-dados)).
 - Correção de bug vem com o teste que falhava antes.
 - Teste o comportamento, não a implementação.
 

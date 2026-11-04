@@ -38,7 +38,7 @@ Lidas por `Settings` em `backend/src/codeexpert/settings.py`, com prefixo `CODEE
 | `CODEEXPERT_LLM_MAX_RETRIES` | `3` | Tentativas em erros transitórios (1 a 10) |
 | `CODEEXPERT_COMMIT_SHA` | *(vazia)* | Commit devolvido em `GET /health` como `commit`. O [workflow de deploy](../guides/deploy.md) define o commit publicado; fora dele fica `null` |
 | `CODEEXPERT_STORE_BACKEND` | `local` | Onde os artefatos de uma execução ficam: `local` (disco) ou `postgres` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)) |
-| `CODEEXPERT_DATABASE_URL` | *(vazia)* | Conexão do Postgres, obrigatória com `postgres`. Tem senha: trate como segredo, também aceita `/run/secrets/codeexpert_database_url` |
+| `CODEEXPERT_DATABASE_URL` | *(vazia)* | Conexão do Postgres, obrigatória com `postgres` e para `codeexpert migrate`. Tem senha: trate como segredo, também aceita `/run/secrets/codeexpert_database_url` |
 | `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções, quando o backend é `local` |
 | `CODEEXPERT_QUESTIONS_DIR` | `var/questions` | Onde o XML é escrito |
 | `CODEEXPERT_COMPILE_TIMEOUT_SECONDS` | `20` | Timeout da compilação |
@@ -46,6 +46,30 @@ Lidas por `Settings` em `backend/src/codeexpert/settings.py`, com prefixo `CODEE
 | `CODEEXPERT_RUN_MAX_OUTPUT_BYTES` | `65536` | Saída capturada por execução; o excedente é truncado |
 
 Caminhos relativos são resolvidos a partir do diretório onde o servidor foi iniciado.
+
+`CODEEXPERT_TEST_DATABASE_URL` não é lida por `Settings`, só pelos testes. Ela aponta para um servidor Postgres onde o usuário pode criar bancos. Os testes criam um banco próprio, aplicam as migrações e apagam o banco no fim, sem escrever no banco que a URL nomeia. Sem ela, os testes de Postgres são pulados ([Banco de dados](#banco-de-dados)).
+
+## Banco de dados {#banco-de-dados}
+
+Com `CODEEXPERT_STORE_BACKEND=postgres`, o esquema vem das migrações do Alembic em `backend/src/codeexpert/store/migrations/versions/` ([ADR-0013](../adr/0013-versioned-migrations-with-alembic.md)). A API não cria tabelas: se o banco não está na última revisão, ela não sobe e diz qual comando rodar.
+
+```bash
+cd backend
+.venv/bin/codeexpert migrate                    # aplica as revisões pendentes; usa CODEEXPERT_DATABASE_URL
+.venv/bin/alembic revision -m "cria tabela X"   # cria um arquivo de revisão novo, para escrever à mão
+```
+
+Aplique as revisões com `codeexpert migrate`, nunca com `alembic upgrade`. A URL vem de `Settings`, e o `alembic.ini` não tem nenhuma.
+
+Para rodar os testes de Postgres localmente, com um servidor descartável:
+
+```bash
+docker run -d --rm --name ce-pg -e POSTGRES_PASSWORD=test -p 127.0.0.1:55432:5432 postgres:16
+cd backend && CODEEXPERT_TEST_DATABASE_URL=postgresql://postgres:test@127.0.0.1:55432/postgres .venv/bin/pytest
+docker stop ce-pg
+```
+
+O CI faz o mesmo com um serviço `postgres:16` no job do portão.
 
 ### Front-end
 
