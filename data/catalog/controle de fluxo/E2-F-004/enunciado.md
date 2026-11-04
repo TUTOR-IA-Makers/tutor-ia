@@ -1,0 +1,1 @@
+Leia um inteiro `N` e imprima os `N` primeiros múltiplos de 3, um por linha (começando de 3).

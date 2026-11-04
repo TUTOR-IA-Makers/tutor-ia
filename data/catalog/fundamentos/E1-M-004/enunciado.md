@@ -1,0 +1,1 @@
+Leia a temperatura em Kelvin e converta para Celsius (`C = K - 273.15`) e Fahrenheit (`F = C * 9/5 + 32`). Imprima as duas conversões com 2 casas decimais, cada uma em uma linha.

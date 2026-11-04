@@ -1,0 +1,1 @@
+Leia um inteiro `N` (1 ≤ N ≤ 100) e imprima todos os divisores de `N` em ordem crescente, um por linha.
