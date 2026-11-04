@@ -1,0 +1,229 @@
+.window {
+  display: grid;
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.titlebar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-6);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.appName {
+  font-weight: var(--weight-semibold);
+}
+
+.screen {
+  font-family: var(--font-mono);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6);
+}
+
+.controls button {
+  background: var(--color-demo-button);
+  border-color: var(--color-demo-button);
+  color: var(--color-on-fill);
+  font-weight: var(--weight-semibold);
+}
+
+.controls button:hover:not(:disabled) {
+  background: var(--color-demo-button-hover);
+  border-color: var(--color-demo-button-hover);
+}
+
+.contents {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-weight: var(--weight-semibold);
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.option {
+  position: relative;
+  display: inline-flex;
+}
+
+.radio {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.optionLabel {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--size-control);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--color-border-control);
+  border-radius: var(--radius-round);
+  background: var(--color-surface);
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-enter);
+}
+
+.radio:checked + .optionLabel {
+  background: linear-gradient(
+    135deg,
+    var(--color-demo-selected-start),
+    var(--color-demo-selected-end)
+  );
+  border: var(--border-width-strong) solid var(--color-demo-selected-border);
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+}
+
+.radio:focus-visible + .optionLabel {
+  box-shadow: var(--focus-ring);
+}
+
+.radio:disabled {
+  cursor: not-allowed;
+}
+
+.status {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  border-block: var(--border-width) solid var(--color-border);
+  background: var(--color-page);
+}
+
+.statusText {
+  font-weight: var(--weight-semibold);
+}
+
+.stepCount {
+  color: var(--color-accent-text);
+  font-family: var(--font-mono);
+}
+
+.stage {
+  min-height: var(--height-code-max);
+  padding: var(--space-6);
+}
+
+.intro,
+.result {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.introSteps {
+  display: grid;
+  gap: var(--space-2);
+  padding-left: var(--space-6);
+}
+
+.resultTitle {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.verified,
+.passed {
+  color: var(--status-success-text);
+  font-weight: var(--weight-semibold);
+}
+
+.passed {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.caption {
+  padding-bottom: var(--space-2);
+  font-weight: var(--weight-semibold);
+  text-align: left;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.data {
+  font-family: var(--font-mono);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.waiting {
+  font-style: italic;
+}
+
+.command {
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-page);
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+}
+
+@media (width < 640px) {
+  .titlebar,
+  .controls,
+  .status,
+  .stage {
+    padding-inline: var(--space-4);
+  }
+
+  .table th,
+  .table td {
+    padding: var(--space-2);
+  }
+} /* Selected content: light blue gradient with dark text. */

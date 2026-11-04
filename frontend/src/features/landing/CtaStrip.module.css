@@ -1,0 +1,28 @@
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-8);
+  padding: var(--space-6) var(--space-8);
+  border: var(--border-width) solid var(--color-border);
+  border-left: var(--border-width-strong) solid var(--color-primary);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+}
+
+.text {
+  max-width: var(--width-prose);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+@media (width < 640px) {
+  .strip {
+    padding: var(--space-4);
+  }
+
+  .text {
+    font-size: var(--text-md);
+  }
+}

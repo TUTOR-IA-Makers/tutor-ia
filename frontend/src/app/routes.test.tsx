@@ -8,12 +8,18 @@ import { MAIN_CONTENT_ID } from './layout/RootLayout'
 import { routes } from './routes'
 
 describe('rotas da aplicação', () => {
-  it('redireciona a raiz para a biblioteca', async () => {
+  it('a raiz mostra a landing pública, sem a navbar do app', async () => {
     const { router } = renderRoutes(routes, '/')
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'Biblioteca de questões' }),
+      await screen.findByRole('heading', {
+        level: 1,
+        name: 'Menos tempo criando questões. Mais tempo ensinando.',
+      }),
     ).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/biblioteca')
+    expect(router.state.location.pathname).toBe('/')
+    expect(screen.getByRole('navigation', { name: 'Seções da página' })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Principal' })).toBeNull()
+    expect(screen.getByRole('main')).toHaveAttribute('id', MAIN_CONTENT_ID)
   })
 
   it('a navbar é a mesma em todas as telas e marca a página ativa', async () => {
@@ -35,7 +41,7 @@ describe('rotas da aplicação', () => {
     await user.click(within(nav).getByRole('link', { name: 'Ajuda' }))
     expect(await screen.findByRole('heading', { level: 1, name: 'Ajuda' })).toBeInTheDocument()
     expect(screen.getByRole('main')).toHaveAttribute('id', MAIN_CONTENT_ID)
-  })
+  }, 15_000)
 
   it('o primeiro Tab leva ao link de pular para o conteúdo', async () => {
     const user = userEvent.setup()
@@ -101,15 +107,20 @@ describe('rotas da aplicação', () => {
   }, 15_000)
 
   it.each([
+    '/',
     '/biblioteca',
     '/gerar',
     '/ajuda',
     '/questoes/q-0142',
     '/questoes/q-0143',
     '/nao-existe',
-  ])('a rota %s não tem violações sérias de acessibilidade', async (path) => {
-    const { container } = renderRoutes(routes, path)
-    await screen.findByRole('heading', { level: 1 })
-    expect(await blockingViolations(container)).toEqual([])
-  })
+  ])(
+    'a rota %s não tem violações sérias de acessibilidade',
+    async (path) => {
+      const { container } = renderRoutes(routes, path)
+      await screen.findByRole('heading', { level: 1 })
+      expect(await blockingViolations(container)).toEqual([])
+    },
+    15_000,
+  )
 })

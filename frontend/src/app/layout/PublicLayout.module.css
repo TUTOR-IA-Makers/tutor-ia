@@ -1,0 +1,129 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  border-bottom: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  max-width: var(--width-content);
+  min-height: var(--header-height);
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-6);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+
+.logo {
+  width: var(--size-logo);
+  height: auto;
+}
+
+.nav {
+  margin-left: auto;
+}
+
+.list {
+  display: flex;
+  gap: var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--size-control);
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition-property: color;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-enter);
+}
+
+.link:hover {
+  color: var(--color-primary);
+}
+
+.cta {
+  flex: none;
+}
+
+.main:focus {
+  outline: none;
+}
+
+.footer {
+  background: var(--color-footer);
+  color: var(--color-on-fill);
+}
+
+.footerInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-6);
+}
+
+.footerBrand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: var(--weight-semibold);
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+.footerLinks a {
+  color: var(--color-on-fill);
+}
+
+/* The section links go first; the brand and the call to action always fit. */
+@media (width < 1024px) {
+  .nav {
+    display: none;
+  }
+
+  .cta {
+    margin-left: auto;
+  }
+}
+
+@media (width < 640px) {
+  .bar {
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .brand {
+    gap: var(--space-2);
+    font-size: var(--text-md);
+  }
+
+  .footerInner {
+    padding: var(--space-8) var(--space-4);
+  }
+}
