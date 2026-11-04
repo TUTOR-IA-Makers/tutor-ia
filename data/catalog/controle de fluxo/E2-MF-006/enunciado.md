@@ -1,0 +1,1 @@
+Leia a idade de uma pessoa. Imprima `maior de idade` se tiver 18 anos ou mais, senão `menor de idade`.

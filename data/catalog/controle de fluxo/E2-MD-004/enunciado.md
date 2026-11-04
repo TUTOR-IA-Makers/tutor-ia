@@ -1,0 +1,1 @@
+Leia um inteiro `N` (N > 1) e imprima sua decomposição em fatores primos. Formato: `fator1 * fator2 * ...`. Ex: 12 gera `2 * 2 * 3`.

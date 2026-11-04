@@ -1,0 +1,1 @@
+Leia um inteiro `N`. Se for par, imprima `par`; se for ímpar, imprima `impar`.

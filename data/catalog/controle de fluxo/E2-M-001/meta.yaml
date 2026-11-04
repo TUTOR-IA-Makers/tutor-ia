@@ -1,0 +1,8 @@
+id: "E2-M-001"
+eixo: "controle de fluxo"
+nivel: "medio"
+estruturas:
+  - "for"
+  - "if"
+origem: "Exercício clássico de estatísticas simples com laço"
+direitos_restritos: true
