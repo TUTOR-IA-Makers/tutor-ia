@@ -24,6 +24,10 @@ Inclua na mensagem:
 
 Não mande senha, chave de API nem dados de alunos.
 
+## Entrar e criar conta
+
+<span class="ce-badge ce-status--planned">Planejado</span> A aplicação já tem as telas **Entrar** (`/entrar`) e **Criar conta** (`/criar-conta`), mas o backend ainda não guarda contas nem sessões. Hoje as telas só funcionam no modo de demonstração (`VITE_PUBLIC_API_MODE=mock`), com uma conta fictícia. Quando o backend existir, o cadastro vai pedir o código de convite que a equipe envia em resposta ao pedido acima. Os botões "Entrar com Google" e "Entrar com GitHub" ainda não fazem nada além de avisar que não estão disponíveis.
+
 ## Depois do pedido
 
 A equipe responde pelo mesmo e-mail com o endereço da aplicação. Enquanto isso, você pode ler como uma questão é gerada em [Gerar uma questão](generate-a-question.md) e como importar o XML em [Importar no Moodle](import-into-moodle.md).

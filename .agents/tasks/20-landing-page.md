@@ -61,6 +61,34 @@ live demo, scope, FAQ, closing call. Decisions:
 - No access form: access is still manual by e-mail (see `request-access.md`), so the CTA stays a link.
 - `analytics.ts` publishes `codeexpert:analytics` events on `window`; nothing is sent anywhere.
 
+## Sign-in and sign-up screens (2026-11-03)
+
+Scope added on this branch by decision of the driver, after merging `origin/main` (4b3e2f7).
+Out-of-scope note above ("does not create accounts") still holds for the backend: nothing
+here talks to a real account store.
+
+- Routes `/entrar` and `/criar-conta` under a lazy `AuthLayout` (split screen, single column
+  below 1024px). Header of the public layout gains an "Entrar" link.
+- Brand half reuses `HeroScene` and the hero gradient; logo is `logo-mono.svg` because the
+  colour logo fails contrast on blue (1.94). Identity decision D9 records the gradient exception.
+- Auth model chosen by the driver: e-mail + password + invite code on sign-up (G8-1).
+- Validation runs twice before any request: the form (zod schema via react-hook-form) and the
+  submit hook, which re-parses the values. The backend must repeat every rule.
+- Password never reaches TanStack's MutationCache (plain state instead of `useMutation`),
+  analytics, logs or query keys. Session is meant to be an HttpOnly cookie; `login` and
+  `register` resolve `void`.
+- Errors are generic (401 and every sign-up refusal say nothing about which field was wrong).
+  Five failures in a row lock the button for 30 s; this is UX, the real limit is the backend's.
+- `?proximo=` goes through `safeNextPath` and never back to an auth page.
+- Google and GitHub buttons are mocks: inline SVG, `type="button"`, a status message, no request.
+- Mock account (fictitious, reserved domain): `professora@exemplo.com` / `demo-codeexpert`,
+  invite `DEMO-2026`. Not shown in the UI, to keep fixtures out of the http entry chunk.
+- Removed unused `--color-demo-action*` tokens (white on it was 3.02); added white on
+  `--color-closing-blue` (6.40) to `contrast.mjs`.
+
+Still to do on this branch: independent review (security, validation, a11y) and the
+backend integration plan in `docs/architecture/` + ADR draft.
+
 ## Verification
 
 <make check / make front-e2e output>
