@@ -17,6 +17,24 @@ jobs:
   check:
     name: gate
     runs-on: ubuntu-latest
+    # A throwaway Postgres for this job only, so the store and migration tests
+    # run here instead of skipping. They create and drop a database of their own
+    # on it (backend/tests/conftest.py); the password never leaves this job.
+    # Locally the variable is unset, they skip, and the gate stays offline.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      CODEEXPERT_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
     steps:
       - uses: actions/checkout@v6
         with:
