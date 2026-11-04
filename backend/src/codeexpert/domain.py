@@ -77,6 +77,7 @@ class Constraints(BaseModel):
     can_has_function: bool = False
     can_has_matrix: bool = False
     difficulty: Difficulty = Difficulty.MUITO_FACIL
+    axis: ContentAxis | None = None
 
 
 class Statement(BaseModel):
@@ -112,3 +113,17 @@ class RunMetadata(BaseModel):
     input_quantity: int | None = None
     steps: list[StepRecord] = Field(default_factory=list)
     reviewed: bool = False
+
+
+class StoredQuestion(BaseModel):
+    """The last completed generation, read from the structured question bank."""
+
+    run_id: str
+    statement: Statement
+    reference_solution: str
+    constraints: Constraints | None = None
+    difficulty: Difficulty | None = None
+    axis: ContentAxis | None = None
+    state: str = "draft"
+    testcases: list[TestCase] = Field(default_factory=list)
+    metadata: RunMetadata
