@@ -7,7 +7,7 @@ name = "codeexpert"
 version = "0.2.0"
 description = "Generates C programming exercises and exports them as Moodle CodeRunner XML."
 readme = "README.md"
-license = { file = "LICENSE" }
+license = { text = "MIT" }
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

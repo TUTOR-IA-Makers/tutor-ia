@@ -4,7 +4,8 @@ from pathlib import Path
 
 from codeexpert.domain import ContentAxis, CStructure
 
-ROOT = Path(__file__).resolve().parents[2]
+# backend/tests/unit/ -> repository root, where docs/ lives.
+ROOT = Path(__file__).resolve().parents[3]
 
 
 def _strip_accents(s: str) -> str:

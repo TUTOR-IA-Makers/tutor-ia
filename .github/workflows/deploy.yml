@@ -99,7 +99,7 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v3
 
       - name: Build the image
-        run: docker build --tag "$IMAGE" .
+        run: docker build --tag "$IMAGE" backend
 
       - name: Push to Artifact Registry
         run: |

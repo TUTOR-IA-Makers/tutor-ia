@@ -18,7 +18,7 @@ ls var/runs/ | tail -3                     # execuções mais recentes
 | --- | --- | --- |
 | `make: ./scripts/…: Permission denied` | Clone antigo, de antes de os scripts virarem executáveis, ou cópia que perdeu a permissão | `git pull`; se persistir, `chmod +x scripts/*.sh` |
 | `ModuleNotFoundError: codeexpert` ou de uma dependência | Pacote não instalado no ambiente, ou dependência nova no `pyproject.toml` | `make setup` |
-| `make run`: porta 8000 ocupada | Outro processo | `.venv/bin/uvicorn codeexpert.api.app:app --reload --port 8010` |
+| `make run`: porta 8000 ocupada | Outro processo | `backend/.venv/bin/uvicorn codeexpert.api.app:app --reload --port 8010` |
 | `make check` verde, mas a etapa 4 falha | Sem `gcc`, os testes `@requires_gcc` são pulados | Instale o `gcc` (ver [Primeiro dia](../onboarding/index.md#pre-requisitos)) |
 | `make task` avisa que não conseguiu atualizar `main` | `main` local divergiu do remoto | Resolva `main` e rode de novo; a branch foi criada a partir da `main` local |
 

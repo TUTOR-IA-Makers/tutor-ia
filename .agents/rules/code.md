@@ -61,8 +61,8 @@ def public_entry_point(...) -> Model: ...    # the one public function, last
 
 ## Tests
 
-- `tests/unit/` — pure functions. No network, no compiler, no filesystem outside `tmp_path`.
-- `tests/integration/` — several modules together, still offline. `FakeLLM` always.
+- `backend/tests/unit/` — pure functions. No network, no compiler, no filesystem outside `tmp_path`.
+- `backend/tests/integration/` — several modules together, still offline. `FakeLLM` always.
 - A test needing a compiler is marked `@requires_gcc` and skips when absent.
 - A bug fix comes with the test that failed before it. No exceptions: this suite
   exists because the parsers used to fail silently.

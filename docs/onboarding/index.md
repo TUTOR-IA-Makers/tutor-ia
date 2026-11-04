@@ -40,13 +40,14 @@ Instalar o `gcc`: `sudo apt install build-essential` (Debian/Ubuntu), `sudo dnf 
 ```bash
 git clone https://github.com/TUTOR-IA-Makers/tutor-ia.git
 cd tutor-ia
-make setup                # cria .venv, instala dependências, copia .env.example para .env
+make setup                # cria backend/.venv, instala dependências, copia backend/.env.example para backend/.env
 ```
 
-`make setup` pode ser executado de novo quando quiser. Ele instala o pacote em modo editável com os extras `dev` e `docs`, então mudanças em `src/` têm efeito sem reinstalar.
+`make setup` pode ser executado de novo quando quiser. Ele instala o pacote em modo editável com os extras `dev` e `docs`, então mudanças em `backend/src/` têm efeito sem reinstalar.
 
 ??? note "Sem `make`"
     ```bash
+    cd backend
     python3 -m venv .venv
     .venv/bin/pip install -e ".[dev,docs]"
     cp .env.example .env
@@ -99,7 +100,7 @@ Leva algumas dezenas de segundos. O resultado fica em:
 ## 4. O código em cinco minutos
 
 ```text
-src/codeexpert/
+backend/src/codeexpert/
   settings.py    configuração, só do ambiente
   errors.py      exceções de domínio; a API traduz cada uma num status HTTP
   domain.py      Constraints, Statement, TestCase, RunMetadata
