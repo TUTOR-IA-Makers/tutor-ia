@@ -85,6 +85,7 @@ Sempre responde `200`: ele informa o problema de configuração, não falha por 
 | `can_has_function` | `bool` | `false` | `true` **exige** funções |
 | `can_has_matrix` | `bool` | `false` | `true` **exige** vetores ou matrizes |
 | `difficulty` | enum | `"muito facil"` | `muito facil`, `facil`, `medio`, `dificil`, `muito dificil` |
+| `axis` | enum ou `null` | `null` | Classificação opcional: `fundamentos`, `controle de fluxo`, `estruturas de dados e ponteiros`, `modularizacao`. É armazenada; não altera o prompt |
 | `run_id` | `string?` | `null` | Reusa uma execução existente e sobrescreve o enunciado dela |
 
 `{}` é um pedido válido. As restrições são **pedidas** ao modelo, não verificadas.

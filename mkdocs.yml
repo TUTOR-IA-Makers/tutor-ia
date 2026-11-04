@@ -127,6 +127,7 @@ nav:
   - Arquitetura:
       - architecture/index.md
       - Pipeline de geração: architecture/pipeline.md
+      - Modelo de dados: architecture/data-model.md
       - Decisões (ADR):
           - adr/index.md
           - 0001 — Record architecture decisions: adr/0001-record-architecture-decisions.md
@@ -141,6 +142,7 @@ nav:
           - 0010 — Deploy main after the gate: adr/0010-continuous-deployment-after-the-gate.md
           - 0011 — Host on a Hostinger VPS: adr/0011-host-on-a-hostinger-vps.md
           - 0012 — Artifact store in Postgres: adr/0012-artifact-store-in-postgres.md
+          - 0013 — Structured question snapshot: adr/0013-structured-question-snapshot.md
           - Modelo: adr/0000-template.md
   - Design:
       - Identidade visual: design/identidade.md
