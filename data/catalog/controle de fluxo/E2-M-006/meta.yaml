@@ -1,8 +1,0 @@
-id: "E2-M-006"
-eixo: "controle de fluxo"
-nivel: "medio"
-estruturas:
-  - "for"
-  - "if"
-origem: "Exercício de acumulação com condicional em laço"
-direitos_restritos: false
