@@ -12,8 +12,9 @@ cd "$(dirname "$0")/.."
 FAST=0
 [[ "${1:-}" == "--fast" ]] && FAST=1
 
+# Python tooling runs from backend/: pyproject.toml, .env and var/ live there.
 PY="python3"
-[[ -x .venv/bin/python ]] && PY=".venv/bin/python"
+[[ -x backend/.venv/bin/python ]] && PY="$PWD/backend/.venv/bin/python"
 
 failures=()
 step() {
@@ -30,7 +31,7 @@ step() {
 # ── 1. Nothing that should never be committed ────────────────────────────────
 guard_artifacts() {
   local tracked
-  tracked=$(git ls-files -- 'var/*' 'cache/*' 'Questions/*' '.env' 'config/LLM_Config.txt' 2>/dev/null || true)
+  tracked=$(git ls-files -- '*/var/*' 'var/*' '*/cache/*' 'cache/*' '*/Questions/*' 'Questions/*' '.env' '*/.env' '*/config/LLM_Config.txt' 'config/LLM_Config.txt' 2>/dev/null || true)
   if [[ -n "$tracked" ]]; then
     echo "Runtime artefacts or secrets are tracked by git:"
     echo "$tracked" | sed 's/^/    /'
@@ -52,12 +53,12 @@ guard_secrets() {
 }
 
 # ── 2. Style, correctness, docs ──────────────────────────────────────────────
-run_format() { "$PY" -m ruff format --check src tests main.py; }
-run_lint()   { "$PY" -m ruff check src tests main.py; }
-run_tests()  { "$PY" -m pytest -q; }
+run_format() { (cd backend && "$PY" -m ruff format --check src tests main.py); }
+run_lint()   { (cd backend && "$PY" -m ruff check src tests main.py); }
+run_tests()  { (cd backend && "$PY" -m pytest -q); }
 run_docs() {
   if ! "$PY" -c "import mkdocs" 2>/dev/null; then
-    echo "  mkdocs not installed — skipping (pip install -e '.[docs]')"
+    echo "  mkdocs not installed — skipping (pip install -e 'backend[docs]')"
     return 0
   fi
   # Not --quiet: it hides the warnings that --strict is there to turn into

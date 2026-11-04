@@ -1,0 +1,41 @@
+# Build context exclusions. Anything listed here can never end up in an image
+# layer, which is how the image stays free of secrets and runtime artefacts.
+# The build context is backend/ itself. Keep README.md: pyproject.toml
+# references it, so the package build fails without it.
+# Unlike .gitignore, a pattern here only matches at the context root, so anything
+# that can also appear inside src/ needs the `**/` prefix.
+
+# ── Secrets and machine-specific configuration ───────────────────────────────
+**/.env
+**/.env.*
+config/LLM_Config.txt
+
+# ── Runtime artefacts (everything the app writes lives under var/) ───────────
+var/
+cache/
+Questions/
+
+# ── Version control and tooling ──────────────────────────────────────────────
+.git
+.gitignore
+.vscode/
+.idea/
+
+# ── Python build and test output ─────────────────────────────────────────────
+.venv/
+venv/
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# ── Not needed at runtime ────────────────────────────────────────────────────
+tests/
+Dockerfile
+.dockerignore

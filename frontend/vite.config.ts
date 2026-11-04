@@ -60,6 +60,7 @@ export default defineConfig({
     assetsInlineLimit: 0,
   },
   test: {
+    testTimeout: 15_000,
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],

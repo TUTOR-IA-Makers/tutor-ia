@@ -23,6 +23,7 @@
 | <span class="ce-badge ce-badge--post">POST</span> | [`/gen_testcases`](#post-gen_testcases) | Etapa 4 — compila e executa |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/export_moodle_xml_question`](#post-export_moodle_xml_question) | Etapa 5 — acrescenta a questão ao XML |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/create_question`](#post-create_question) | As cinco etapas numa chamada |
+| <span class="ce-badge ce-badge--get">GET</span> | [`/questions/{run_id}`](#get-questions-run_id) | Tudo o que a tela de revisão precisa, de uma questão concluída |
 
 Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem a forma `{"detail": "..."}`; erros de `/create_question` trazem também `run_id` (validação é diferente, ver [Erros](#erros)).
 
@@ -165,6 +166,31 @@ As cinco etapas em sequência, numa execução nova (ou na indicada em `statemen
 ```
 
 Se uma etapa falha, o erro dela é devolvido com o mesmo status do endpoint individual, e o que já foi gerado fica no disco. Nesse caso a resposta de erro traz também o `run_id`, para retomar etapa por etapa — ver [Gerar uma questão](../guides/generate-a-question.md#retomar-depois-de-uma-falha). Não é idempotente: cada chamada cria uma execução e acrescenta uma questão ao XML.
+
+---
+
+## `GET /questions/{run_id}` {#get-questions-run_id}
+
+Devolve numa chamada o que a tela de revisão precisa: enunciado, solução, entradas, casos de teste e o `meta.json`.
+
+```json title="200"
+{
+  "run_id": "20260918T221305Z-1a2b3c4d",
+  "statement": { "name": "Soma de dois numeros", "statement": "..." },
+  "code": "#include <stdio.h>
+...",
+  "inputs": ["1
+2
+"],
+  "testcases": [{ "input": "1
+2
+", "output": "3
+" }],
+  "metadata": { "run_id": "...", "created_at": "...", "steps": [], "reviewed": false }
+}
+```
+
+Só responde para uma execução **concluída**, isto é, que terminou a etapa 5. Uma geração que falhou no meio é um rascunho e responde `404`, igual a um `run_id` desconhecido; ela continua retomável pelas etapas. Erros: `404`.
 
 ---
 

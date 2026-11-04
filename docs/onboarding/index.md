@@ -40,13 +40,14 @@ Instalar o `gcc`: `sudo apt install build-essential` (Debian/Ubuntu), `sudo dnf 
 ```bash
 git clone https://github.com/TUTOR-IA-Makers/tutor-ia.git
 cd tutor-ia
-make setup                # cria .venv, instala dependências, copia .env.example para .env
+make setup                # cria backend/.venv, instala dependências, copia backend/.env.example para backend/.env
 ```
 
-`make setup` pode ser executado de novo quando quiser. Ele instala o pacote em modo editável com os extras `dev` e `docs`, então mudanças em `src/` têm efeito sem reinstalar.
+`make setup` pode ser executado de novo quando quiser. Ele instala o pacote em modo editável com os extras `dev` e `docs`, então mudanças em `backend/src/` têm efeito sem reinstalar.
 
 ??? note "Sem `make`"
     ```bash
+    cd backend
     python3 -m venv .venv
     .venv/bin/pip install -e ".[dev,docs]"
     cp .env.example .env
@@ -91,7 +92,7 @@ Leva algumas dezenas de segundos. O resultado fica em:
 
 | Caminho | Conteúdo |
 | --- | --- |
-| `var/runs/<run_id>/` | Enunciado, solução, entradas, casos de teste e `meta.json` (modelo e versão de prompt usados) |
+| `var/runs/<run_id>/` | Enunciado, solução, entradas, casos de teste e `meta.json` (modelo e versão de prompt usados). É o `LocalFilesystemStore`, o padrão; com o `PostgresStore` os mesmos artefatos ficam no banco |
 | `var/questions/Moodle_Questionnaire.xml` | O XML para importar no Moodle. Cada exportação acrescenta uma questão |
 
 `var/` é ignorado pelo Git. Se algo falhar, veja [Problemas comuns](../reference/troubleshooting.md). Para controlar cada etapa, veja [Gerar uma questão](../guides/generate-a-question.md).
@@ -99,11 +100,12 @@ Leva algumas dezenas de segundos. O resultado fica em:
 ## 4. O código em cinco minutos
 
 ```text
-src/codeexpert/
+backend/src/codeexpert/
   settings.py    configuração, só do ambiente
   errors.py      exceções de domínio; a API traduz cada uma num status HTTP
   domain.py      Constraints, Statement, TestCase, RunMetadata
-  workspace.py   um diretório por execução, em var/runs/<run_id>/
+  workspace.py   os artefatos de uma execução, lidos e gravados por um ArtifactStore
+  store/         onde os artefatos ficam: var/runs/<run_id>/ ou Postgres
   llm/           o único módulo que fala com o provedor de modelos
   execution/     compila e executa C — o ponto onde um sandbox real entra
   generation/    as etapas do pipeline, e prompts.py
@@ -114,7 +116,7 @@ src/codeexpert/
 As dependências têm um sentido só:
 
 ```text
-api → generation → {llm, execution, export, workspace} → {domain, settings, errors}
+api → generation → {llm, execution, export, workspace} → {store, domain, settings, errors}
 ```
 
 Nada abaixo de `api/` importa FastAPI. Nada fora de `llm/` chama um modelo. Nada fora de `execution/` chama `subprocess`. Detalhes em [Arquitetura](../architecture/index.md) e [Código](../reference/codebase.md).

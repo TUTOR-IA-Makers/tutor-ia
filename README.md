@@ -28,7 +28,7 @@ compatível com OpenAI. No Windows, use WSL.
 
 ```bash
 git clone https://github.com/TUTOR-IA-Makers/tutor-ia.git && cd tutor-ia
-make setup              # .venv, dependências, .env
+make setup              # backend/.venv, dependências, backend/.env
 $EDITOR .env            # preencha CODEEXPERT_LLM_API_KEY
 make check              # o gate: formatação, lint, testes, docs
 make run                # http://127.0.0.1:8000 → Swagger UI
@@ -65,8 +65,8 @@ execução, incluindo o `meta.json` com o modelo e a versão de prompt usados, e
 ## Estrutura
 
 ```text
-src/codeexpert/      a aplicação
-tests/               unit/ e integration/, ambos sem rede
+backend/             a API (Python/FastAPI): src/codeexpert/, tests/, pyproject.toml, Dockerfile
+frontend/            a interface (React + Vite)
 docs/                site MkDocs em português; docs/adr/ em inglês
 .agents/             o harness: regras, workflows, arquivos de tarefa
 scripts/             check.sh é o gate; o CI roda o mesmo arquivo

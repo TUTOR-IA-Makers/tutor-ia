@@ -72,19 +72,22 @@ done. Report what `make check` says.
 ## 4. Where things live
 
 ```text
-src/codeexpert/
-  settings.py      configuration, from the environment only
-  errors.py        the exceptions services raise
-  domain.py        entities: Constraints, Statement, TestCase, RunMetadata
-  workspace.py     one directory per generation run — the unit of isolation
-  llm/             the only module that talks to a model provider
-  execution/       compiling and running C — the seam a real sandbox replaces
-  generation/      the five pipeline steps, plus prompts.py
-  export/          Moodle CodeRunner XML and its templates
-  api/             FastAPI: routes, schemas, dependencies, error mapping
-tests/unit/        pure functions — no network, no compiler
-tests/integration/ several modules together — still offline
+backend/           the Python service — its own pyproject.toml, .env, var/ and .venv
+  src/codeexpert/
+    settings.py      configuration, from the environment only
+    errors.py        the exceptions services raise
+    domain.py        entities: Constraints, Statement, TestCase, RunMetadata
+    workspace.py     one directory per generation run — the unit of isolation
+    llm/             the only module that talks to a model provider
+    execution/       compiling and running C — the seam a real sandbox replaces
+    generation/      the five pipeline steps, plus prompts.py
+    export/          Moodle CodeRunner XML and its templates
+    api/             FastAPI: routes, schemas, dependencies, error mapping
+  tests/unit/        pure functions — no network, no compiler
+  tests/integration/ several modules together — still offline
+frontend/          the React + Vite SPA (see frontend/README.md)
 docs/              MkDocs site (Portuguese). docs/adr/ holds decisions (English)
+scripts/           check.sh is the gate; CI runs the same file
 .agents/           this harness: rules, workflows, task files
 ```
 
@@ -131,11 +134,11 @@ first rather than opening a PR that sits blocked:
 
 | Area | Why |
 | --- | --- |
-| `src/codeexpert/generation/prompts.py` | Prompts are the product. A change alters output in ways tests cannot fully catch |
-| `src/codeexpert/export/templates/` | A broken macro is invisible until a Moodle import fails |
+| `backend/src/codeexpert/generation/prompts.py` | Prompts are the product. A change alters output in ways tests cannot fully catch |
+| `backend/src/codeexpert/export/templates/` | A broken macro is invisible until a Moodle import fails |
 | `docs/adr/` | Decisions are made by people; agents draft, humans accept |
 | `.github/workflows/`, `AGENTS.md`, `CODEOWNERS` | An agent must not widen its own permissions |
-| Dependencies in `pyproject.toml` | Supply chain |
+| Dependencies in `backend/pyproject.toml` | Supply chain |
 
 ## 8. Attribution
 

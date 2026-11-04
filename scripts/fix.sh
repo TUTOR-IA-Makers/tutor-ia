@@ -4,7 +4,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PY="python3"
-[[ -x .venv/bin/python ]] && PY=".venv/bin/python"
+[[ -x backend/.venv/bin/python ]] && PY="$PWD/backend/.venv/bin/python"
+cd backend
 
 "$PY" -m ruff check --fix src tests main.py
 "$PY" -m ruff format src tests main.py

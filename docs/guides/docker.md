@@ -2,7 +2,7 @@
 
 <p class="lead">A API e o <code>gcc</code> numa imagem só, para que o mesmo artefato rode na máquina de qualquer pessoa. Esta página mostra como construir a imagem, subir o container, conferir que ela está limpa e gerar uma questão de ponta a ponta.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` na raiz do repositório. O [deploy na VPS da Hostinger](deploy.md) está <span class="ce-badge ce-status--planned">Planejado</span>; o front-end na mesma imagem, <span class="ce-badge ce-status--planned">Planejado</span> ([Roadmap](../product/roadmap.md#infraestrutura-e-deploy)).
+<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` em `backend/`; o contexto de build é essa pasta. O [deploy na VPS da Hostinger](deploy.md) está <span class="ce-badge ce-status--planned">Planejado</span>; o front-end na mesma imagem, <span class="ce-badge ce-status--planned">Planejado</span> ([Roadmap](../product/roadmap.md#infraestrutura-e-deploy)).
 
 !!! danger "A imagem não é um sandbox"
     O container não acrescenta isolamento à execução do código gerado: o serviço continua só limitando tempo e tamanho de saída ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). Sem autenticação, não exponha a porta à internet. Veja [Arquitetura](../architecture/index.md).
@@ -10,7 +10,7 @@
 ## O que a imagem contém
 
 - Python 3.12 (`python:3.12-slim`), `gcc` e `libc6-dev` (sem ele, nem `#include <stdio.h>` compila).
-- O pacote `codeexpert`, instalado a partir de `pyproject.toml` e `src/`.
+- O pacote `codeexpert`, instalado a partir de `backend/pyproject.toml` e `backend/src/`.
 - Um usuário sem privilégios (`app`, UID 1000) e um `/app/var` vazio e gravável por ele.
 - Um `HEALTHCHECK` que chama `GET /health`.
 
@@ -19,7 +19,7 @@ E o que **não** contém, garantido pelo `.dockerignore`: `.env`, chaves, `confi
 ## Construir
 
 ```bash
-docker build -t codeexpert:dev .
+docker build -t codeexpert:dev backend
 ```
 
 ## Subir o container
@@ -30,7 +30,7 @@ A imagem não traz configuração. Tudo chega pelas variáveis `CODEEXPERT_*` na
 
     ```bash
     docker run --rm -d --name ce -p 8000:8000 \
-      --env-file .env \
+      --env-file backend/.env \
       -v ce-var:/app/var \
       codeexpert:dev
     ```
@@ -103,13 +103,13 @@ docker run --rm --entrypoint sh codeexpert:dev -c \
   'ls -A /app; ls -A /app/var; find / -xdev -name ".env*" -not -path "/proc/*" 2>/dev/null'
 ```
 
-O esperado: `/app` com `LICENSE`, `README.md`, `pyproject.toml`, `src` e `var`; `var` vazio; nenhum arquivo `.env*`.
+O esperado: `/app` com `README.md`, `pyproject.toml`, `src` e `var`; `var` vazio; nenhum arquivo `.env*`.
 
 ## Limitações de hoje
 
 | Tema | Hoje |
 | --- | --- |
-| Porta | Fixa em `8000` (`src/codeexpert/__main__.py`). Na VPS o proxy encaminha para ela pela rede do Compose, sem publicá-la — <span class="ce-badge ce-status--planned">Planejado</span> no [G0-9](../product/plano-30-11.md#g0-9) |
+| Porta | Fixa em `8000` (`backend/src/codeexpert/__main__.py`). Na VPS o proxy encaminha para ela pela rede do Compose, sem publicá-la — <span class="ce-badge ce-status--planned">Planejado</span> no [G0-9](../product/plano-30-11.md#g0-9) |
 | Recarga automática | Não há. Para desenvolver, use `make run` |
 | Estado | Em `/app/var` dentro do container, em disco local; cada container tem o seu |
 | Front-end | Não está na imagem — <span class="ce-badge ce-status--planned">Planejado</span> no G4-1 |

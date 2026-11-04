@@ -9,7 +9,7 @@ make docs                          # http://127.0.0.1:8001, com recarga
 make check                         # inclui mkdocs build --strict: falha em link quebrado, âncora inexistente ou página fora do nav
 ```
 
-O site é MkDocs Material, com versões fixadas em `requirements-docs.txt` (usado pelo CI) e no extra `docs` do `pyproject.toml` (usado por `make setup`). Se algo aparece diferente localmente e publicado, compare as versões dos dois.
+O site é MkDocs Material, com versões fixadas em `requirements-docs.txt` (usado pelo CI) e no extra `docs` do `backend/pyproject.toml` (usado por `make setup`). Se algo aparece diferente localmente e publicado, compare as versões dos dois.
 
 ## Organização
 

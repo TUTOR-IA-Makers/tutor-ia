@@ -1,0 +1,196 @@
+.section {
+  display: grid;
+  gap: var(--space-12);
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-6) var(--space-24);
+}
+
+.layout {
+  --p: 0;
+
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 4fr);
+  align-items: start;
+  gap: var(--space-12);
+}
+
+.stickyColumn {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
+  min-width: 0;
+  perspective: var(--perspective);
+}
+
+.window {
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-depth);
+
+  /* The tilt eases out as the steps scroll by: -12deg at the start, flat at the end. */
+  transform: rotateY(calc((var(--p) - 1) * 12deg)) rotateX(calc((1 - var(--p)) * 3deg));
+  transform-origin: right center;
+}
+
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-primary);
+  color: var(--color-on-fill);
+}
+
+.appName {
+  font-weight: var(--weight-semibold);
+}
+
+.screen {
+  font-size: var(--text-sm);
+}
+
+.panel {
+  min-height: 22rem;
+  padding: var(--space-4);
+}
+
+/* Each step's content eases in instead of swapping. */
+.panelContent {
+  animation-name: enter;
+  animation-duration: var(--dur-slow);
+  animation-timing-function: var(--ease-enter);
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--space-2);
+  }
+}
+
+.block {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.blockTitle {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+}
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-accent-text);
+  font-family: var(--font-mono);
+  font-weight: var(--weight-medium);
+}
+
+.command {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.data {
+  color: var(--color-accent-text);
+  font-family: var(--font-mono);
+  white-space: pre-line;
+}
+
+.waiting {
+  color: var(--color-text-muted);
+}
+
+.steps {
+  display: grid;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  align-content: center;
+  gap: var(--space-2);
+  min-height: 40vh;
+  padding-left: var(--space-6);
+  border-left: var(--border-width-strong) solid var(--color-border);
+  color: var(--color-text-muted);
+  transition-property: border-color, color, translate;
+  transition-duration: var(--dur-slow);
+  transition-timing-function: var(--ease-enter);
+}
+
+.current {
+  translate: var(--space-2) 0;
+  border-left-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.number {
+  color: var(--color-accent-text);
+  font-family: var(--font-mono);
+}
+
+.stepTitle {
+  font-size: var(--text-2xl);
+}
+
+@media (width < 1024px) {
+  .window {
+    transform: none;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  /* On small screens the interface stays pinned under the header and the steps scroll below it. */
+  .stickyColumn {
+    z-index: var(--z-sticky);
+    top: var(--header-height);
+  }
+
+  .panel {
+    min-height: 0;
+    max-height: 40vh;
+    overflow: auto;
+  }
+
+  .step {
+    min-height: 30vh;
+  }
+
+  .stepTitle {
+    font-size: var(--text-xl);
+  }
+}
+
+@media (width < 640px) {
+  .section {
+    gap: var(--space-8);
+    padding: var(--space-8) var(--space-4) var(--space-16);
+  }
+}
