@@ -1,0 +1,1 @@
+Leia um número inteiro `N` (N > 1) e determine se ele é primo. Imprima `primo` ou `composto`. O algoritmo deve ser eficiente, testando divisores apenas até a raiz quadrada de `N`.

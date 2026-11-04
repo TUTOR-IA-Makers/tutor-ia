@@ -1,0 +1,1 @@
+Leia inteiros até ler o valor 0 (sentinela). Imprima a soma de todos os valores lidos antes do sentinela.

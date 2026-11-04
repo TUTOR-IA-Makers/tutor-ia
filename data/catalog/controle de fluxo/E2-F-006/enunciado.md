@@ -1,0 +1,1 @@
+Leia um inteiro `N` e imprima quantos números entre 1 e N são divisíveis por 2 ou por 5.

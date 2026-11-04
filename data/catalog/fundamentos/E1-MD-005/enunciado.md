@@ -1,0 +1,1 @@
+Leia as coordenadas de quatro vértices que formam um retângulo cujos lados são paralelos aos eixos cartesianos, representados por dois pontos opostos `(x1, y1)` e `(x2, y2)`. Determine o perímetro e a área da figura geometricamente utilizando apenas operações aritméticas diretas, imprimindo os resultados em duas linhas com 2 casas decimais.

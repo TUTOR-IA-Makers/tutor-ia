@@ -1,0 +1,1 @@
+Leia o valor de um montante futuro desejado, a taxa de juros anual e o número de anos. Calcule o valor principal (capital inicial) necessário aplicando a fórmula de juros compostos invertida (`P = M / (1 + i)^n`) com 2 casas decimais.

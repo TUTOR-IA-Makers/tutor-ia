@@ -1,0 +1,1 @@
+Leia um inteiro `N` e imprima todos os números de 1 a N que são divisíveis por 3 e por 5 simultaneamente.

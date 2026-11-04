@@ -1,0 +1,1 @@
+Leia inteiros até EOF. Ao final, imprima a média, o maior e o menor valor, cada um em uma linha com 2 casas decimais. Se nenhum valor for lido, imprima `vazio`.

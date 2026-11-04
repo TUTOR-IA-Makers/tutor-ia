@@ -1,0 +1,7 @@
+id: "E1-M-007"
+eixo: "fundamentos"
+nivel: "medio"
+estruturas:
+  - "math.h"
+origem: "Exercício de equação quadrática — precisa de math.h"
+direitos_restritos: false

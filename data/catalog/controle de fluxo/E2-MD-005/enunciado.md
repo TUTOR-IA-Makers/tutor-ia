@@ -1,0 +1,1 @@
+Conjectura de Collatz: se par, divida por 2; se ímpar, multiplique por 3 e some 1. Leia um inteiro positivo `N` e imprima a sequência gerada até atingir 1, separando os números por espaço. Na linha seguinte, imprima o total de passos.

@@ -1,0 +1,1 @@
+Leia `N` pares de inteiros `(a, b)`. Para cada par, imprima o maior. Ao final, imprima a soma de todos os maiores.

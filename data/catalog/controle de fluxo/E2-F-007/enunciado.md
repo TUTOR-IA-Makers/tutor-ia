@@ -1,0 +1,1 @@
+Leia um inteiro `N`. Imprima o número de dígitos de `N`. Para `N = 0`, imprima 1.

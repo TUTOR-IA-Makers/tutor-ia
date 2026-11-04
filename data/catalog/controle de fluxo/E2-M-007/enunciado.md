@@ -1,0 +1,1 @@
+Leia um inteiro `N` (N > 0) e imprima um triângulo retângulo de asteriscos (`*`) com `N` linhas. A primeira linha deve ter 1 asterisco, a segunda 2, e assim por diante.

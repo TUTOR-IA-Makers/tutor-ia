@@ -1,0 +1,1 @@
+Leia um número inteiro positivo na base decimal e converta-o para a base binária. Imprima o resultado.

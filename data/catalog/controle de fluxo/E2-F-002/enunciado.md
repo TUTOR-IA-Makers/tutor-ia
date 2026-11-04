@@ -1,0 +1,1 @@
+Leia três lados de um triângulo. Verifique se formam um triângulo válido (cada lado menor que a soma dos outros dois). Se sim, classifique como `equilatero`, `isosceles` ou `escaleno`. Caso contrário, imprima `invalido`.

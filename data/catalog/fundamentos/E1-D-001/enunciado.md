@@ -1,0 +1,1 @@
+Leia o número de lados `n` (n ≥ 3) e o comprimento do lado `l` de um polígono regular. Calcule a área usando a fórmula `A = (n * l² / 4) * cot(π/n)` onde `cot(x) = cos(x)/sin(x)`. Imprima com 4 casas decimais.

@@ -1,0 +1,9 @@
+id: "E2-M-003"
+eixo: "controle de fluxo"
+nivel: "medio"
+estruturas:
+  - "for"
+  - "if"
+  - "else"
+origem: "Exercício de contagem classificada"
+direitos_restritos: false

@@ -1,0 +1,1 @@
+Calcule a área de um triângulo cujos três lados a, b e c são fornecidos, utilizando exclusivamente a Fórmula de Herão (`Area = sqrt(s*(s-a)*(s-b)*(s-c))` onde `s = (a+b+c)/2`), sem utilizar condicionais ou laços. Imprima a área com 4 casas decimais.

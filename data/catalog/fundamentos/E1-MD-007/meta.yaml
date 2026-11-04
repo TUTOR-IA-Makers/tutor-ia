@@ -1,0 +1,7 @@
+id: "E1-MD-007"
+eixo: "fundamentos"
+nivel: "muito dificil"
+estruturas:
+  - "math.h"
+origem: "Identidades trigonométricas fundamentais em ponto flutuante"
+direitos_restritos: false

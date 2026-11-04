@@ -1,0 +1,1 @@
+Leia a base e a altura de um triângulo (reais) e imprima a área com 2 casas decimais.

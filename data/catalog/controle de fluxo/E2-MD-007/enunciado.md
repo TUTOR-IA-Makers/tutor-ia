@@ -1,0 +1,1 @@
+Leia um inteiro `N` (0 ≤ N ≤ 20). Calcule e imprima a N-ésima linha do Triângulo de Pascal iterativamente, em uma única linha com valores separados por espaço. Use tipo longo para evitar overflow.

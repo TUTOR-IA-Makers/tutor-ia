@@ -1,0 +1,1 @@
+Dizemos que uma sequência de números inteiros está em ordem crescente se cada número é estritamente maior que o anterior. Leia números inteiros positivos até ler o valor `0` (sentinela). Imprima `ordenada` se a sequência de números lidos (ignorando o 0) estiver em ordem estritamente crescente, ou `desordenada` caso contrário. Se for lido apenas o 0, imprima `ordenada`.

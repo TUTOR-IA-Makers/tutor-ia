@@ -1,0 +1,1 @@
+Leia dois inteiros representando um número de notas de R$50 e de moedas de R$0,25. Calcule e imprima o valor total com 2 casas decimais.

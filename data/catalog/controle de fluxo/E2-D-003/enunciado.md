@@ -1,0 +1,1 @@
+Leia `N` e simule um jogo de dados: para cada número de 1 a N, se divisível por 6 marque `acerto`, por 3 (mas não 6) marque `quase`, por 2 (mas não 3) marque `metade`, caso contrário `erro`. Imprima cada rótulo e, ao final, a contagem de cada um.

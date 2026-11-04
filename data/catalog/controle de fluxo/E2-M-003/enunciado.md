@@ -1,0 +1,1 @@
+Leia `N` inteiros. Imprima a contagem de positivos, negativos e zeros, cada uma em uma linha.

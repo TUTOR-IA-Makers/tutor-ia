@@ -1,0 +1,1 @@
+Leia um número real correspondente a um ângulo em graus. Converta-o para radianos e calcule o valor da expressão trigonométrica `sin²(x) + cos²(x)` utilizando as funções da biblioteca `math.h`. Imprima o resultado com 6 casas decimais.

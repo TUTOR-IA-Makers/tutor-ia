@@ -1,0 +1,7 @@
+id: "E1-MD-008"
+eixo: "fundamentos"
+nivel: "muito dificil"
+estruturas:
+  - "math.h"
+origem: "Matemática financeira inversa e capitalização composta"
+direitos_restritos: false

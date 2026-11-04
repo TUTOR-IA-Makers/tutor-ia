@@ -1,0 +1,1 @@
+Leia um inteiro de 4 dígitos representando um ano e calcule quantos anos se passaram até 2026. Imprima o resultado.

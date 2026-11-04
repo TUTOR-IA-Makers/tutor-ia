@@ -1,0 +1,8 @@
+id: "E2-MF-004"
+eixo: "controle de fluxo"
+nivel: "muito facil"
+estruturas:
+  - "if"
+  - "else"
+origem: "Exercício clássico de condicionais — paridade"
+direitos_restritos: true

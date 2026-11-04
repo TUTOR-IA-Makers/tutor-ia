@@ -1,0 +1,1 @@
+Leia `N` e calcule o somatório `S = Σ 1/i` para i de 1 a N (série harmônica). Imprima com 6 casas decimais. Adicionalmente, encontre o menor `M` tal que `S_M > ln(N) + 0.5772` (usando essa estimativa para a constante de Euler). Imprima `M` na segunda linha.

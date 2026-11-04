@@ -1,0 +1,7 @@
+id: "E1-D-006"
+eixo: "fundamentos"
+nivel: "dificil"
+estruturas:
+  - "math.h"
+origem: "Exercício de cinemática vetorial"
+direitos_restritos: false

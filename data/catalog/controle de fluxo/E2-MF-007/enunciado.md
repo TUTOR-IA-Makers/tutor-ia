@@ -1,0 +1,1 @@
+Leia três inteiros. Imprima `crescente` se estiverem em ordem estritamente crescente, senão imprima `nao crescente`.

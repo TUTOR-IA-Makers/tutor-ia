@@ -1,0 +1,1 @@
+Um número é perfeito se a soma dos seus divisores próprios (excluindo ele mesmo) é igual a ele. Leia `N` e imprima `perfeito` ou `nao perfeito`.
