@@ -34,7 +34,9 @@ test('botões sociais não fazem requisição', async ({ page }) => {
   page.on('request', (request) => requests.push(request.url()))
   await page.getByRole('button', { name: 'Entrar com Google' }).click()
   await page.getByRole('button', { name: 'Entrar com GitHub' }).click()
-  await expect(page.getByRole('status')).toHaveText(/GitHub ainda não está disponível/)
+  // The route announcer is a second live region, so find the notice by text.
+  const notice = page.getByText(/GitHub ainda não está disponível/)
+  await expect(notice).toHaveAttribute('role', 'status')
   expect(requests).toEqual([])
 })
 
