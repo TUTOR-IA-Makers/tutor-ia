@@ -79,7 +79,7 @@ describe('rotas da aplicação', () => {
     )
     await user.click(
       within(screen.getByRole('group', { name: 'Estruturas obrigatórias' })).getByRole('button', {
-        name: 'if / else',
+        name: 'if',
       }),
     )
     await user.type(screen.getByRole('textbox', { name: /Contexto do exercício/ }), 'par ou ímpar')

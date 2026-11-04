@@ -57,7 +57,7 @@ export const generateSchema = z.object({
       ),
       z.refine(
         (rules) => conflicts(rules).length === 0,
-        'Uma estrutura não pode ser obrigatória e proibida ao mesmo tempo.',
+        'Uma estrutura proibida não pode ser obrigatória nem permitida.',
       ),
     ),
 })
@@ -70,5 +70,5 @@ export const DEFAULT_VALUES: QuestionDraft = {
   testCaseCount: 6,
   testCaseHints: '',
   context: '',
-  structures: { required: [], allowed: ['scanf-printf', 'tipos-primitivos'], forbidden: [] },
+  structures: { required: [], allowed: [], forbidden: [] },
 }

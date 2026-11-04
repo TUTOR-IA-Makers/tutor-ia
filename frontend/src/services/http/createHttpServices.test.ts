@@ -86,6 +86,20 @@ function capture() {
 describe('createHttpServices', () => {
   const services = createHttpServices()
 
+  it('carrega o catálogo da API sem substituir os identificadores', async () => {
+    const catalog = [{ id: 'nova-estrutura', label: 'Nova estrutura' }]
+    server.use(http.get('*/api/v1/structures', () => HttpResponse.json(catalog)))
+    expect(await services.catalog.structures()).toEqual(catalog)
+  })
+
+  it.each([[], [{ id: '', label: 'Inválida' }], { items: [] }])(
+    'recusa catálogo inválido: %j',
+    async (body) => {
+      server.use(http.get('*/api/v1/structures', () => HttpResponse.json(body)))
+      await expect(services.catalog.structures()).rejects.toBeInstanceOf(ResponseShapeError)
+    },
+  )
+
   it('lista questões com filtros na query e converte o DTO', async () => {
     const calls = capture()
     const list = await services.questions.list({

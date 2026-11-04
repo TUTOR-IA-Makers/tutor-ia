@@ -4,6 +4,7 @@ export const API_PREFIX = '/api/v1'
 
 export const ENDPOINTS = {
   health: '/health',
+  structures: '/structures',
   questions: '/questions',
   question: (id: string) => `/questions/${segment(id)}`,
   generation: (id: string) => `/questions/${segment(id)}/generation`,

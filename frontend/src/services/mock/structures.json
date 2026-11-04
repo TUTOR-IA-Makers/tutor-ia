@@ -1,0 +1,102 @@
+[
+  {
+    "id": "if",
+    "label": "if"
+  },
+  {
+    "id": "else",
+    "label": "else"
+  },
+  {
+    "id": "ternario",
+    "label": "operador ternário"
+  },
+  {
+    "id": "switch",
+    "label": "switch"
+  },
+  {
+    "id": "for",
+    "label": "for"
+  },
+  {
+    "id": "while",
+    "label": "while"
+  },
+  {
+    "id": "do-while",
+    "label": "do / while"
+  },
+  {
+    "id": "break",
+    "label": "break"
+  },
+  {
+    "id": "continue",
+    "label": "continue"
+  },
+  {
+    "id": "goto",
+    "label": "goto"
+  },
+  {
+    "id": "vetor",
+    "label": "vetor"
+  },
+  {
+    "id": "matriz",
+    "label": "matriz"
+  },
+  {
+    "id": "string",
+    "label": "string"
+  },
+  {
+    "id": "struct",
+    "label": "struct"
+  },
+  {
+    "id": "typedef",
+    "label": "typedef"
+  },
+  {
+    "id": "enum",
+    "label": "enum"
+  },
+  {
+    "id": "ponteiro",
+    "label": "ponteiro"
+  },
+  {
+    "id": "alocacao dinamica",
+    "label": "alocação dinâmica"
+  },
+  {
+    "id": "funcao",
+    "label": "função"
+  },
+  {
+    "id": "passagem por referencia",
+    "label": "passagem por referência"
+  },
+  {
+    "id": "recursao",
+    "label": "recursão"
+  },
+  {
+    "id": "arquivos",
+    "label": "arquivos"
+  },
+  {
+    "id": "math.h",
+    "label": "math.h"
+  },
+  {
+    "id": "string.h",
+    "label": "string.h"
+  },
+  {
+    "id": "stdlib.h",
+    "label": "stdlib.h"
+  }
+]
