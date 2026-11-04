@@ -1,8 +1,0 @@
-id: "E2-D-002"
-eixo: "controle de fluxo"
-nivel: "dificil"
-estruturas:
-  - "while"
-  - "if"
-origem: "Exercício de leitura até EOF com estatísticas"
-direitos_restritos: false
