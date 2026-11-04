@@ -37,7 +37,7 @@ Todos os campos têm padrão; `{"statement_request": {}, "qty": 3}` já funciona
 sequenceDiagram
     participant C as curl
     participant A as API
-    participant W as var/runs/&lt;run_id&gt;
+    participant W as store (var/runs/&lt;run_id&gt;)
     participant M as Modelo
     participant G as gcc
 

@@ -13,7 +13,7 @@ import logging
 
 from fastapi import APIRouter
 
-from codeexpert.api.deps import LLMDep, RunnerDep, SettingsDep, create_run, open_run
+from codeexpert.api.deps import LLMDep, RunnerDep, StoreDep, create_run, open_run
 from codeexpert.api.schemas import (
     CodeResponse,
     CreateQuestionRequest,
@@ -21,12 +21,14 @@ from codeexpert.api.schemas import (
     ExportResponse,
     InputRequest,
     InputResponse,
+    QuestionDetail,
     RunRequest,
     StatementRequest,
     StatementResponse,
     TestCaseResponse,
 )
-from codeexpert.domain import Constraints
+from codeexpert.domain import Constraints, Statement, TestCase
+from codeexpert.errors import RunNotFoundError
 from codeexpert.export import export_question
 from codeexpert.generation import (
     create_question,
@@ -35,6 +37,7 @@ from codeexpert.generation import (
     generate_statement,
     generate_testcases,
 )
+from codeexpert.workspace import INPUTS, SOLUTION, STATEMENT, TESTCASES
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["generation"])
@@ -42,10 +45,10 @@ router = APIRouter(tags=["generation"])
 
 @router.post("/gen_statement", response_model=StatementResponse)
 async def gen_statement(
-    request: StatementRequest, settings: SettingsDep, llm: LLMDep
+    request: StatementRequest, store: StoreDep, llm: LLMDep
 ) -> StatementResponse:
     """Step 1. Starts a new run unless `run_id` names an existing one."""
-    workspace = open_run(request.run_id, settings) if request.run_id else create_run(settings)
+    workspace = open_run(request.run_id, store) if request.run_id else create_run(store)
     constraints = Constraints.model_validate(request.model_dump(exclude={"run_id"}))
     statement = generate_statement(workspace, constraints, llm)
     return StatementResponse(
@@ -54,35 +57,35 @@ async def gen_statement(
 
 
 @router.post("/gen_code", response_model=CodeResponse)
-async def gen_code(request: RunRequest, settings: SettingsDep, llm: LLMDep) -> CodeResponse:
+async def gen_code(request: RunRequest, store: StoreDep, llm: LLMDep) -> CodeResponse:
     """Step 2."""
-    workspace = open_run(request.run_id, settings)
+    workspace = open_run(request.run_id, store)
     return CodeResponse(run_id=workspace.run_id, code=generate_code(workspace, llm))
 
 
 @router.post("/gen_inputs", response_model=InputResponse)
-async def gen_inputs(request: InputRequest, settings: SettingsDep, llm: LLMDep) -> InputResponse:
+async def gen_inputs(request: InputRequest, store: StoreDep, llm: LLMDep) -> InputResponse:
     """Step 3."""
-    workspace = open_run(request.run_id, settings)
+    workspace = open_run(request.run_id, store)
     inputs = generate_inputs(workspace, request.qty, llm)
     return InputResponse(run_id=workspace.run_id, inputs=inputs)
 
 
 @router.post("/gen_testcases", response_model=TestCaseResponse)
 async def gen_testcases(
-    request: RunRequest, settings: SettingsDep, runner: RunnerDep
+    request: RunRequest, store: StoreDep, runner: RunnerDep
 ) -> TestCaseResponse:
     """Step 4. The only step that produces ground truth instead of model output."""
-    workspace = open_run(request.run_id, settings)
+    workspace = open_run(request.run_id, store)
     return TestCaseResponse(
         run_id=workspace.run_id, testcases=generate_testcases(workspace, runner)
     )
 
 
 @router.post("/export_moodle_xml_question", response_model=ExportResponse)
-async def export_moodle_xml_question(request: RunRequest, settings: SettingsDep) -> ExportResponse:
+async def export_moodle_xml_question(request: RunRequest, store: StoreDep) -> ExportResponse:
     """Step 5. Appends to the questionnaire file rather than replacing it."""
-    workspace = open_run(request.run_id, settings)
+    workspace = open_run(request.run_id, store)
     result = export_question(workspace)
     return ExportResponse(
         run_id=workspace.run_id,
@@ -94,15 +97,15 @@ async def export_moodle_xml_question(request: RunRequest, settings: SettingsDep)
 @router.post("/create_question", response_model=CreateQuestionResponse)
 async def create_question_endpoint(
     request: CreateQuestionRequest,
-    settings: SettingsDep,
+    store: StoreDep,
     llm: LLMDep,
     runner: RunnerDep,
 ) -> CreateQuestionResponse:
     """All five steps in one call."""
     workspace = (
-        open_run(request.statement_request.run_id, settings)
+        open_run(request.statement_request.run_id, store)
         if request.statement_request.run_id
-        else create_run(settings)
+        else create_run(store)
     )
     constraints = Constraints.model_validate(
         request.statement_request.model_dump(exclude={"run_id"})
@@ -121,4 +124,26 @@ async def create_question_endpoint(
             file_path=str(result.export.file_path),
             question_count=result.export.question_count,
         ),
+    )
+
+
+@router.get("/questions/{run_id}", response_model=QuestionDetail)
+async def get_question(run_id: str, store: StoreDep) -> QuestionDetail:
+    """Everything the review screen needs, in one call.
+
+    A run that has not finished step 5 is a draft and answers 404, so a generation
+    that failed halfway never shows up as a question. See docs/adr/0012.
+    """
+    workspace = open_run(run_id, store)
+    if not workspace.is_complete():
+        raise RunNotFoundError(f"Question '{run_id}' is not complete. Finish the run to see it.")
+    return QuestionDetail(
+        run_id=run_id,
+        statement=Statement.model_validate(workspace.read_json(STATEMENT)),
+        code=workspace.read_text(SOLUTION),
+        inputs=workspace.read_json(INPUTS)["inputs"],
+        testcases=[
+            TestCase.model_validate(item) for item in workspace.read_json(TESTCASES)["testcases"]
+        ],
+        metadata=workspace.read_metadata(),
     )

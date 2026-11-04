@@ -52,5 +52,5 @@ def generate_statement(
     workspace.write_metadata(metadata)
     record_step(workspace, "statement", PROMPT_VERSIONS["statement"])
 
-    logger.info("Statement saved to %s", workspace.path(STATEMENT))
+    logger.info("Run %s — statement saved", workspace.run_id)
     return statement

@@ -37,7 +37,9 @@ Lidas por `Settings` em `src/codeexpert/settings.py`, com prefixo `CODEEXPERT_`.
 | `CODEEXPERT_LLM_TIMEOUT_SECONDS` | `60` | Timeout por chamada ao modelo |
 | `CODEEXPERT_LLM_MAX_RETRIES` | `3` | Tentativas em erros transitórios (1 a 10) |
 | `CODEEXPERT_COMMIT_SHA` | *(vazia)* | Commit devolvido em `GET /health` como `commit`. O [workflow de deploy](../guides/deploy.md) define o commit publicado; fora dele fica `null` |
-| `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções |
+| `CODEEXPERT_STORE_BACKEND` | `local` | Onde os artefatos de uma execução ficam: `local` (disco) ou `postgres` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)) |
+| `CODEEXPERT_DATABASE_URL` | *(vazia)* | Conexão do Postgres, obrigatória com `postgres`. Tem senha: trate como segredo, também aceita `/run/secrets/codeexpert_database_url` |
+| `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções, quando o backend é `local` |
 | `CODEEXPERT_QUESTIONS_DIR` | `var/questions` | Onde o XML é escrito |
 | `CODEEXPERT_COMPILE_TIMEOUT_SECONDS` | `20` | Timeout da compilação |
 | `CODEEXPERT_RUN_TIMEOUT_SECONDS` | `5` | Timeout de **cada** execução do binário |
@@ -64,11 +66,21 @@ Lidas pelo Vite no build e no `make front-dev`, a partir de `frontend/.env.local
 ## Segredos
 
 - `.env` está no `.gitignore`; `.env.example` só tem valores falsos (`sk-XXXX…`).
-- A chave é um `SecretStr`: não aparece em `repr`, logs nem em `GET /config`. Um teste garante isso.
+- A chave é um `SecretStr`: não aparece em `repr`. Se o provedor devolver a chave no corpo de um erro, o cliente a troca por `[redacted]` antes de registrar o erro no log e de devolvê-lo em `detail`. Os testes em `tests/integration/test_secret_leaks.py` falham se a chave, ou qualquer trecho de 10 caracteres dela, aparecer no log ou na resposta de um erro de geração ou de `GET /config?verify=true`.
 - `make check` recusa arquivos versionados com formato de chave (`sk-…` longo, `AIza…`, chave privada PEM) e qualquer coisa versionada em `var/`, `cache/`, `Questions/`, `.env` ou `config/LLM_Config.txt`.
 - **Se uma chave vazar:** revogue e gere outra primeiro; depois reescreva o histórico.
 
-Até 30/11 a chave de produção vai para o Secret Manager (G0-3, <span class="ce-badge ce-status--planned">Planejado</span>).
+### Segredos em arquivo {#segredos-em-arquivo}
+
+Qualquer variável da tabela acima também pode vir de um arquivo em `/run/secrets`, que é onde o Docker Compose monta seus `secrets`. O nome do arquivo é o nome da variável em minúsculas, e o conteúdo é o valor; espaços e quebra de linha no fim são descartados:
+
+```text
+/run/secrets/codeexpert_llm_api_key     →  CODEEXPERT_LLM_API_KEY
+```
+
+A ordem de precedência é: variável de ambiente, depois `.env`, depois o arquivo, depois o padrão. O arquivo só é lido quando nenhuma das duas primeiras fontes define a variável. Se `/run/secrets` não existe, como num notebook ou no CI, essa fonte é ignorada e nada muda em relação ao `.env`.
+
+É assim que a chave chega ao container sem virar variável de ambiente, e por isso não aparece em `docker inspect` nem em `/proc/1/environ`. Montar o arquivo na VPS é parte do [deploy](../guides/deploy.md#chave-do-modelo), <span class="ce-badge ce-status--planned">Planejado</span>.
 
 ## Portas e caminhos
 

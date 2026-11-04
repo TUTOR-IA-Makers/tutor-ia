@@ -108,5 +108,7 @@ def export_question(workspace: RunWorkspace, output_dir: Path | None = None) -> 
         final_xml = _template("questionnaire.xml").replace("Macro_Question", question_xml)
 
     output_file.write_text(final_xml, encoding="utf-8")
+    # The last step: only now is this a question and not a draft. See docs/adr/0012.
+    workspace.complete()
     logger.info("Moodle XML saved to %s (question %d)", output_file, question_number)
     return ExportResult(file_path=output_file, question_count=question_number)
