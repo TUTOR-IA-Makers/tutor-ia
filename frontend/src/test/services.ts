@@ -1,4 +1,4 @@
-import type { QuestionsService, Services } from '@/services'
+import type { QuestionsService, Services, SessionService } from '@/services'
 import { createTestServices } from './render'
 
 export function withQuestions(
@@ -11,4 +11,11 @@ export function withQuestions(
 export function createClock(start = 1_000_000) {
   const clock = { now: start }
   return { clock, now: () => clock.now }
+}
+
+export function withSession(
+  overrides: Partial<SessionService>,
+  base: Services = createTestServices(),
+): Services {
+  return { ...base, session: { ...base.session, ...overrides } }
 }

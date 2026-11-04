@@ -1,0 +1,59 @@
+.social {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--size-control-lg);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-width) solid var(--color-border-control);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition-property: background-color, border-color;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-enter);
+}
+
+.button:hover {
+  border-color: var(--color-text-muted);
+  background: var(--color-page);
+}
+
+.mark {
+  flex: none;
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+}
+
+.notice {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--status-info-bg);
+  color: var(--status-info-text);
+  font-size: var(--text-sm);
+}
+
+/* Kept in the accessibility tree while empty: a live region that appears
+   together with its first message is often not announced. */
+.empty {
+  margin: 0;
+}
+
+@media (width < 400px) {
+  .buttons {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

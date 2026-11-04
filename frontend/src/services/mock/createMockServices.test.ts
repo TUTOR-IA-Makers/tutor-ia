@@ -1,6 +1,7 @@
 import { EMPTY_FILTERS, type QuestionDraft } from '@/domain'
 import { HttpError } from '@/lib/http'
 import { createMockServices } from './createMockServices'
+import { MOCK_ACCOUNT, MOCK_INVITE_CODE } from './fixtures'
 
 const STEP = 1000
 
@@ -113,6 +114,36 @@ describe('createMockServices', () => {
     expect((await services.session.currentTeacher()).department).toBe('Ciência da Computação')
     await expect(services.session.logout()).resolves.toBeUndefined()
     expect(await services.system.health()).toEqual({ status: 'ok', version: 'mock' })
+  })
+
+  it('entra com a conta de demonstração e recusa o resto com o mesmo erro', async () => {
+    const { session } = setup().services
+    await expect(session.login(MOCK_ACCOUNT)).resolves.toBeUndefined()
+    const refusal = (email: string) =>
+      session.login({ email, password: 'outra-senha-1' }).then(
+        () => null,
+        (error: unknown) => error,
+      )
+    const wrongPassword = await refusal(MOCK_ACCOUNT.email)
+    const unknownAccount = await refusal('ninguem@exemplo.com')
+    expect(wrongPassword).toBeInstanceOf(HttpError)
+    expect(wrongPassword).toEqual(unknownAccount)
+  })
+
+  it('cria conta só com o convite certo e passa a responder pela professora nova', async () => {
+    const { session } = setup().services
+    const registration = {
+      name: 'Ana Souza',
+      email: 'ana@exemplo.com',
+      password: 'algoritmos-em-c',
+      inviteCode: MOCK_INVITE_CODE,
+    }
+    const badInvite = session.register({ ...registration, inviteCode: 'OUTRO-2026' })
+    await expect(badInvite).rejects.toMatchObject({ status: 400 })
+    await session.register(registration)
+    expect((await session.currentTeacher()).name).toBe('Ana Souza')
+    await expect(session.register(registration)).rejects.toMatchObject({ status: 400 })
+    await session.login({ email: registration.email, password: registration.password })
   })
 
   it('respeita o cancelamento da consulta', async () => {

@@ -1,0 +1,147 @@
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-2));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.card {
+  display: grid;
+  gap: var(--space-8);
+  width: 100%;
+  max-width: 28rem;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius-panel);
+  background: var(--color-primary-tint);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--size-control);
+  border-radius: var(--radius-control);
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  transition-property: background-color, color;
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-enter);
+}
+
+.tab:hover {
+  background: var(--color-surface);
+}
+
+.active {
+  background: var(--color-primary);
+  color: var(--color-on-fill);
+}
+
+.active:hover {
+  background: var(--color-primary-hover);
+}
+
+.panel {
+  display: grid;
+  gap: var(--space-6);
+  animation-name: enter;
+  animation-duration: var(--dur-slow);
+  animation-timing-function: var(--ease-enter);
+}
+
+.heading {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+}
+
+.lead {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.divider::before,
+.divider::after {
+  flex: 1;
+  border-top: var(--border-width) solid var(--color-border);
+  content: '';
+}
+
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.requirements {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.met {
+  color: var(--color-accent-text);
+}
+
+.code {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.aside,
+.switch {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.aside {
+  font-size: var(--text-sm);
+}
+
+.aside a,
+.switch a {
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+}

@@ -1,9 +1,11 @@
 import type {
   Generation,
   LibraryFilters,
+  LoginCredentials,
   Question,
   QuestionDraft,
   QuestionSummary,
+  Registration,
   Statement,
 } from '@/domain'
 import type { Query } from '@/lib/http'
@@ -65,6 +67,21 @@ export function fromDraft(draft: QuestionDraft) {
     test_case_hints: draft.testCaseHints.trim() || null,
     context: draft.context.trim() || null,
     structures: draft.structures,
+  }
+}
+
+// Explicit field lists, not spreads: a property added to the domain type later
+// must not reach the wire without someone choosing to send it.
+export function fromCredentials({ email, password }: LoginCredentials) {
+  return { email, password }
+}
+
+export function fromRegistration(registration: Registration) {
+  return {
+    name: registration.name,
+    email: registration.email,
+    password: registration.password,
+    invite_code: registration.inviteCode,
   }
 }
 
