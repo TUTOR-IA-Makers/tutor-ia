@@ -49,5 +49,19 @@ The disposable database was used to verify reopen/read, nullable usage fields,
 case replacement, rollback, metadata identity, cascade deletion and upgrading
 the previous schema without losing artifacts. No model provider was called.
 
-Implementation is ready for human review. ADR-0013 remains Proposed. Keep this
+Implementation is ready for human review. ADR-0014 remains Proposed. Keep this
 task file until preparing the PR that closes #16, then delete it in that PR.
+
+## PR integration
+
+The user confirmed that PR #37 targets develop and requested conflict resolution
+without a commit or push. Integrating origin/develop with --no-commit preserves
+both catalog and authentication mock imports and both architecture navigation
+entries. The snapshot ADR is renumbered to 0014 because develop already owns
+0013 for the resource API and cookie session. Its decision remains unchanged.
+Post-integration verification passed: make check in Linux with Postgres 16 and
+gcc (113 backend tests, strict docs, formatting, lint and guards). The frontend
+was checked separately on Windows with scripts/front-check.sh (438 tests and
+all frontend checks passed); it was not installed in the Linux container.
+All conflict resolutions are staged. The merge is intentionally pending:
+no commit or push was performed, as requested.

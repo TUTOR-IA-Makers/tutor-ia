@@ -1,4 +1,4 @@
-# ADR-0013 — Store a structured snapshot of completed generations
+# ADR-0014 — Store a structured snapshot of completed generations
 
 - **Status** Proposed
 - **Date** 2026-11-04

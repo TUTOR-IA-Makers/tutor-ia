@@ -65,4 +65,4 @@ são pulados explicitamente.
 
 Versionamento completo (G1-7), papéis de aprovador/solicitante e coleta de
 tokens/custo (G2-4) permanecem planejados. A decisão está na
-[ADR-0013](../adr/0013-structured-question-snapshot.md).
+[ADR-0014](../adr/0014-structured-question-snapshot.md).

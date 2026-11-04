@@ -24,6 +24,7 @@ export const PAIRS = [
   ['--color-danger', '--color-surface', TEXT],
   ['--color-danger', '--color-danger-tint', TEXT],
   ['--color-on-fill', '--color-footer', TEXT],
+  ['--color-on-fill', '--color-closing-blue', TEXT],
   ['--status-info-text', '--status-info-bg', TEXT],
   ['--status-warning-text', '--status-warning-bg', TEXT],
   ['--status-success-text', '--status-success-bg', TEXT],

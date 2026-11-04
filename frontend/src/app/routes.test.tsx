@@ -22,6 +22,30 @@ describe('rotas da aplicação', () => {
     expect(screen.getByRole('main')).toHaveAttribute('id', MAIN_CONTENT_ID)
   })
 
+  it('o cabeçalho da landing leva à tela de entrada', async () => {
+    const user = userEvent.setup()
+    const { router } = renderRoutes(routes, '/')
+    await user.click(await screen.findByRole('link', { name: 'Entrar' }))
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Entrar no CodeExpert' }),
+    ).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/entrar')
+  })
+
+  it.each([
+    ['/entrar', 'Entrar no CodeExpert', 'Entrar'],
+    ['/criar-conta', 'Criar sua conta', 'Criar conta'],
+  ])('%s abre em tela dividida, sem a navbar do app', async (path, heading, title) => {
+    renderRoutes(routes, path)
+    expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
+    expect(screen.getByRole('complementary', { name: 'Sobre o CodeExpert' })).toBeInTheDocument()
+    expect(screen.queryByRole('navigation', { name: 'Principal' })).toBeNull()
+    expect(screen.getByRole('main')).toHaveAttribute('id', MAIN_CONTENT_ID)
+    await waitFor(() => {
+      expect(document.title).toMatch(new RegExp(`^${title}`))
+    })
+  })
+
   it('a navbar é a mesma em todas as telas e marca a página ativa', async () => {
     const user = userEvent.setup()
     renderRoutes(routes, '/biblioteca')

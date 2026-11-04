@@ -16,7 +16,7 @@ export function PublicLayout() {
         <div className={styles.bar}>
           <Link to="/" className={styles.brand}>
             <img src={logo} alt="" width={38} height={24} className={styles.logo} />
-            <span>CodeExpert</span>
+            <span className={styles.brandName}>CodeExpert</span>
           </Link>
           <nav aria-label="Seções da página" className={styles.nav}>
             <ul className={styles.list}>
@@ -37,14 +37,14 @@ export function PublicLayout() {
               </li>
             </ul>
           </nav>
-          <ExternalButtonLink
-            href={ACCESS_URL}
-            variant="primary"
-            className={styles.cta}
-            location="header"
-          >
-            Pedir acesso
-          </ExternalButtonLink>
+          <div className={styles.actions}>
+            <Link to="/entrar" className={styles.signIn}>
+              Entrar
+            </Link>
+            <ExternalButtonLink href={ACCESS_URL} variant="primary" location="header">
+              Pedir acesso
+            </ExternalButtonLink>
+          </div>
         </div>
       </header>
       <main id={MAIN_CONTENT_ID} tabIndex={-1} className={styles.main}>

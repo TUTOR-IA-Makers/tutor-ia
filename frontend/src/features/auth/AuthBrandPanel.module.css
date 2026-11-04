@@ -1,0 +1,107 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  min-width: 0;
+  padding: var(--space-8) var(--space-12) var(--space-12);
+  overflow: clip;
+  background: linear-gradient(
+    110deg,
+    var(--color-primary-hover) 0%,
+    var(--color-primary) 25%,
+    var(--color-accent-hover) 65%,
+    var(--color-accent) 100%
+  );
+  color: var(--color-on-fill);
+}
+
+.brand {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-on-fill);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+
+.logo {
+  width: var(--size-logo);
+  height: auto;
+}
+
+.copy {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 34rem;
+}
+
+.eyebrow {
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: var(--border-width-strong) solid var(--color-on-fill);
+  font-weight: var(--weight-medium);
+}
+
+/* Display size on purpose: --code-string reaches 3.34:1 on the green end of
+   the gradient, which WCAG accepts only for large text. */
+.statement {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+.keyword {
+  color: var(--code-string);
+}
+
+.text {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-body);
+}
+
+.scene {
+  flex: 1;
+  display: grid;
+  align-items: center;
+  min-height: 0;
+}
+
+/* Short screens keep the words and drop the picture. */
+@media (height < 820px) {
+  .scene {
+    display: none;
+  }
+}
+
+/* Stacked layout: a compact band above the form. */
+@media (width < 1024px) {
+  .panel {
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+  }
+
+  .statement,
+  .text,
+  .scene {
+    display: none;
+  }
+
+  .eyebrow {
+    font-size: var(--text-sm);
+  }
+}
+
+@media (width < 640px) {
+  .panel {
+    padding: var(--space-4);
+  }
+
+  .brand {
+    font-size: var(--text-md);
+  }
+}

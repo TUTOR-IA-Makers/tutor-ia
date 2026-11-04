@@ -15,4 +15,5 @@ export const ENDPOINTS = {
   moodleExport: '/exports/moodle',
   session: '/session',
   logout: '/session/logout',
+  accounts: '/accounts',
 } as const
