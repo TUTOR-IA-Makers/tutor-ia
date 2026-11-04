@@ -1,0 +1,7 @@
+id: "E2-M-007"
+eixo: "E2"
+nivel: "M"
+estruturas:
+  - "for"
+origem: "Exercício clássico de laços aninhados"
+direitos_restritos: true
