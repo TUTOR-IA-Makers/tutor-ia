@@ -6,6 +6,8 @@ verified by execution is never predicted by a model.
 """
 
 import logging
+import tempfile
+from pathlib import Path
 
 from codeexpert.domain import TestCase
 from codeexpert.errors import ExecutionError
@@ -17,25 +19,36 @@ logger = logging.getLogger(__name__)
 
 
 def generate_testcases(workspace: RunWorkspace, runner: CodeRunner) -> list[TestCase]:
-    source = workspace.require(SOLUTION)
+    code = workspace.read_text(SOLUTION)
     inputs: list[str] = workspace.read_json(INPUTS)["inputs"]
-    binary = workspace.path(BINARY)
 
-    runner.compile(source, binary)
-
+    # The compiler needs a file, and nothing else does: the disk is scratch space
+    # for this step alone, and the directory is gone when it ends, failed or not.
+    # Cleanup errors are ignored so they never replace the step's own error: on
+    # Windows a program killed on timeout can still hold its .exe for a moment.
+    # See docs/adr/0012.
     testcases: list[TestCase] = []
-    for index, stdin in enumerate(inputs):
-        outcome = runner.run(binary, stdin)
-        if outcome.timed_out:
-            raise ExecutionError(
-                f"Input {index + 1} of {len(inputs)} did not terminate within the time "
-                "limit. The generated solution probably loops forever on it; regenerate "
-                "the solution or drop the input."
-            )
-        testcases.append(TestCase(input=stdin, output=outcome.stdout))
+    with tempfile.TemporaryDirectory(
+        prefix=f"{workspace.run_id}-", ignore_cleanup_errors=True
+    ) as scratch:
+        source = Path(scratch) / SOLUTION
+        binary = Path(scratch) / BINARY
+        source.write_text(code, encoding="utf-8")
+
+        runner.compile(source, binary)
+
+        for index, stdin in enumerate(inputs):
+            outcome = runner.run(binary, stdin)
+            if outcome.timed_out:
+                raise ExecutionError(
+                    f"Input {index + 1} of {len(inputs)} did not terminate within the time "
+                    "limit. The generated solution probably loops forever on it; regenerate "
+                    "the solution or drop the input."
+                )
+            testcases.append(TestCase(input=stdin, output=outcome.stdout))
 
     workspace.write_json(TESTCASES, {"testcases": [case.model_dump() for case in testcases]})
     record_step(workspace, "testcases")
 
-    logger.info("Test cases saved to %s", workspace.path(TESTCASES))
+    logger.info("Run %s — test cases saved", workspace.run_id)
     return testcases

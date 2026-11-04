@@ -56,5 +56,5 @@ def generate_inputs(workspace: RunWorkspace, quantity: int, llm: LLMClient) -> l
     workspace.write_metadata(metadata)
     record_step(workspace, "inputs", PROMPT_VERSIONS["inputs"])
 
-    logger.info("Inputs saved to %s", workspace.path(INPUTS))
+    logger.info("Run %s — inputs saved", workspace.run_id)
     return inputs

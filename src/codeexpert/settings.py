@@ -7,6 +7,7 @@ supplied by CI or a container. See docs/adr/0007.
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -44,6 +45,14 @@ class Settings(BaseSettings):
     # Set by the deploy workflow to the commit it shipped. The package version
     # only moves on a release, so it cannot tell two deploys of main apart.
     commit_sha: str | None = None
+
+    # ── Where a run's artefacts live ──────────────────────────────────────────
+    # `local` keeps one directory per run under `workspace_root`; `postgres` keeps
+    # them in the database. See docs/adr/0012.
+    store_backend: Literal["local", "postgres"] = "local"
+    # Carries the password, so it is a secret like the API key: it can arrive as
+    # `/run/secrets/codeexpert_database_url` and never needs to be in the environment.
+    database_url: SecretStr | None = None
 
     # ── Filesystem ────────────────────────────────────────────────────────────
     workspace_root: Path = Path("var/runs")

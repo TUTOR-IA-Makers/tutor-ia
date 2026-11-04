@@ -37,7 +37,9 @@ Lidas por `Settings` em `src/codeexpert/settings.py`, com prefixo `CODEEXPERT_`.
 | `CODEEXPERT_LLM_TIMEOUT_SECONDS` | `60` | Timeout por chamada ao modelo |
 | `CODEEXPERT_LLM_MAX_RETRIES` | `3` | Tentativas em erros transitórios (1 a 10) |
 | `CODEEXPERT_COMMIT_SHA` | *(vazia)* | Commit devolvido em `GET /health` como `commit`. O [workflow de deploy](../guides/deploy.md) define o commit publicado; fora dele fica `null` |
-| `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções |
+| `CODEEXPERT_STORE_BACKEND` | `local` | Onde os artefatos de uma execução ficam: `local` (disco) ou `postgres` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)) |
+| `CODEEXPERT_DATABASE_URL` | *(vazia)* | Conexão do Postgres, obrigatória com `postgres`. Tem senha: trate como segredo, também aceita `/run/secrets/codeexpert_database_url` |
+| `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções, quando o backend é `local` |
 | `CODEEXPERT_QUESTIONS_DIR` | `var/questions` | Onde o XML é escrito |
 | `CODEEXPERT_COMPILE_TIMEOUT_SECONDS` | `20` | Timeout da compilação |
 | `CODEEXPERT_RUN_TIMEOUT_SECONDS` | `5` | Timeout de **cada** execução do binário |

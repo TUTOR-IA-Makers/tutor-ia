@@ -139,6 +139,7 @@ nav:
           - 0009 — One container image with the API and gcc: adr/0009-container-image-with-gcc.md
           - 0010 — Deploy main after the gate: adr/0010-continuous-deployment-after-the-gate.md
           - 0011 — Host on a Hostinger VPS: adr/0011-host-on-a-hostinger-vps.md
+          - 0012 — Artifact store in Postgres: adr/0012-artifact-store-in-postgres.md
           - Modelo: adr/0000-template.md
   - Design:
       - Identidade visual: design/identidade.md

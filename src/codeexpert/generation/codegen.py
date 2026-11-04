@@ -34,5 +34,5 @@ def generate_code(workspace: RunWorkspace, llm: LLMClient) -> str:
     workspace.write_text(SOLUTION, code)
     record_step(workspace, "code", PROMPT_VERSIONS["code"])
 
-    logger.info("Solution saved to %s", workspace.path(SOLUTION))
+    logger.info("Run %s — solution saved", workspace.run_id)
     return code

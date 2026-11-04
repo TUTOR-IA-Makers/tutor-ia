@@ -23,7 +23,7 @@ flowchart TD
 
     LLM["llm/<br/><small>chat completions</small>"]
     EXE["execution/<br/><small>gcc, com limites</small>"]
-    WS[("var/runs/&lt;run_id&gt;/<br/><small>estado da execução</small>")]
+    WS[("store/<br/><small>estado da execução: disco ou Postgres</small>")]
     XML[("var/questions/<br/><small>Moodle_Questionnaire.xml</small>")]
 
     Cliente --> Rotas
@@ -49,7 +49,8 @@ flowchart TD
 | `llm/` | Único ponto de contato com o provedor de modelos | Interpretar as respostas |
 | `execution/` | Compilar e executar C com limites de tempo e de saída | Saber o que está compilando |
 | `export/` | Renderizar o XML do CodeRunner a partir de três templates | Gerar conteúdo |
-| `workspace.py` | O diretório da execução e seus arquivos | Saber o que cada arquivo significa |
+| `workspace.py` | Os artefatos de uma execução, lidos e gravados por um `ArtifactStore` | Saber onde eles ficam, ou o que cada arquivo significa |
+| `store/` | Guardar os artefatos de uma execução: no disco (`LocalFilesystemStore`) ou no Postgres (`PostgresStore`) | Saber o que cada artefato significa |
 | `domain.py`, `settings.py`, `errors.py` | Tipos, configuração e exceções | Qualquer efeito externo |
 
 As cinco etapas estão detalhadas em [Pipeline de geração](pipeline.md).
@@ -97,12 +98,21 @@ Consequências: o pipeline é **retomável** (edita-se um arquivo e roda-se só 
 
 ## O diretório da execução {#o-diretorio-da-execucao}
 
+!!! info "Onde os artefatos ficam"
+    Os artefatos passam por um `ArtifactStore` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)).
+    Com `CODEEXPERT_STORE_BACKEND=local` (o padrão) cada execução é o diretório abaixo, em `var/runs/`.
+    Com `postgres` os mesmos arquivos viram linhas da tabela `run_artifacts`, com o mesmo nome. O
+    `PostgresStore` existe no código e ainda **não está ligado em produção**: falta o serviço Postgres no
+    Compose da VPS ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)).
+
+    Uma execução só vira questão quando a etapa 5 termina. Até lá é um rascunho: pode ser retomada pelo
+    `run_id`, mas `GET /questions/{run_id}` responde `404`.
+
 ```text
 var/runs/20260918T221305Z-1a2b3c4d/
 ├── meta.json        restrições pedidas, modelo e versão de prompt por etapa, reviewed
 ├── statement.json   {"name": ..., "statement": ...}
 ├── solution.c       a solução gerada
-├── solution         o binário compilado
 ├── inputs.json      {"inputs": [...]}
 └── testcases.json   {"testcases": [{"input": ..., "output": ...}]}
 ```
@@ -112,12 +122,13 @@ var/runs/20260918T221305Z-1a2b3c4d/
 | 1 `gen_statement` | — | `statement.json`, `meta.json` |
 | 2 `gen_code` | `statement.json` | `solution.c` |
 | 3 `gen_inputs` | `statement.json`, `solution.c` | `inputs.json` |
-| 4 `gen_testcases` | `solution.c`, `inputs.json` | `solution`, `testcases.json` |
+| 4 `gen_testcases` | `solution.c`, `inputs.json` | `testcases.json` |
 | 5 `export_moodle_xml_question` | `statement.json`, `solution.c`, `testcases.json`, `meta.json` | `var/questions/Moodle_Questionnaire.xml` |
 
 - **`run_id`** é `<timestamp UTC>-<8 hex>`, então `ls var/runs/` lista em ordem cronológica. O cliente envia o `run_id` e ele vira caminho no disco; `RunWorkspace.open()` valida o formato antes, e qualquer outra coisa (inclusive `../../etc`) é `404`.
 - **Concorrência:** duas execuções escrevem em diretórios diferentes e não se misturam ([ADR-0003](../adr/0003-one-workspace-per-run.md)). O XML de saída, porém, é um arquivo único lido e reescrito a cada exportação.
 - **Rastreabilidade:** `meta.json` registra as restrições, e para cada etapa com prompt, o modelo e a versão (`PROMPT_VERSIONS`). Não registra tokens nem custo.
+- **Rascunho em disco:** a etapa 4 grava o `.c` e o binário num diretório temporário do sistema e o apaga ao terminar, mesmo se falhar. É o único uso de disco do pipeline além do XML da etapa 5.
 - **Limpeza:** nada é apagado automaticamente. `make clean` remove `var/` inteiro.
 
 ```json title="meta.json"

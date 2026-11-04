@@ -9,6 +9,7 @@ from xml.etree import ElementTree
 
 from codeexpert.domain import Constraints, Difficulty
 from codeexpert.export.moodle import OUTPUT_FILENAME, export_question
+from codeexpert.store import LocalFilesystemStore
 from codeexpert.workspace import SOLUTION, STATEMENT, TESTCASES, RunWorkspace
 
 
@@ -68,7 +69,7 @@ def test_successive_exports_accumulate_and_number_questions(
     _populate(workspace, name="Primeira")
     export_question(workspace, output_dir=tmp_path / "out")
 
-    second = RunWorkspace.create(isolated_settings.workspace_root)
+    second = RunWorkspace.create(LocalFilesystemStore(isolated_settings.workspace_root))
     _populate(second, name="Segunda")
     result = export_question(second, output_dir=tmp_path / "out")
 
