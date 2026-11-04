@@ -58,8 +58,26 @@
   color: var(--color-primary);
 }
 
-.cta {
+.actions {
+  display: flex;
   flex: none;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.signIn {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--size-control);
+  padding: 0 var(--space-2);
+  color: var(--color-primary);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.signIn:hover {
+  text-decoration: underline;
 }
 
 .main:focus {
@@ -107,7 +125,7 @@
     display: none;
   }
 
-  .cta {
+  .actions {
     margin-left: auto;
   }
 }
@@ -123,7 +141,24 @@
     font-size: var(--text-md);
   }
 
+  .actions {
+    gap: var(--space-2);
+  }
+
   .footerInner {
     padding: var(--space-8) var(--space-4);
+  }
+}
+
+/* Brand, "Entrar" and "Pedir acesso" do not fit side by side on the
+   narrowest phones. The name leaves the screen but stays as the link's name. */
+@media (width < 480px) {
+  .brandName {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

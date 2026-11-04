@@ -15,6 +15,19 @@ export const routes: RouteObject[] = [
     ],
   },
   {
+    lazy: async () => ({ Component: (await import('./layout/AuthLayout')).AuthLayout }),
+    children: [
+      {
+        path: 'entrar',
+        lazy: async () => ({ Component: (await import('@/routes/auth')).LoginPage }),
+      },
+      {
+        path: 'criar-conta',
+        lazy: async () => ({ Component: (await import('@/routes/auth')).SignupPage }),
+      },
+    ],
+  },
+  {
     element: <RootLayout />,
     children: [
       {

@@ -6,12 +6,13 @@ import {
   type QuestionAction,
   type QuestionStatus,
   type QuestionSummary,
+  type Teacher,
   can,
 } from '@/domain'
 import { HttpError } from '@/lib/http'
 import type { Services } from '../contracts'
 import { delay } from './delay'
-import { MOCK_TEACHER, seedQuestions } from './fixtures'
+import { MOCK_ACCOUNT, MOCK_INVITE_CODE, MOCK_TEACHER, seedQuestions } from './fixtures'
 import { buildMockMoodleXml } from './moodleXml'
 import { questionFromDraft } from './template'
 
@@ -35,6 +36,11 @@ function toSummary(question: Question): QuestionSummary {
   return { id, code, title, description, contentId, difficulty, status, testCaseCount }
 }
 
+// The same detail for every refusal, so the mock behaves like the backend we
+// are asking for: a failed login or signup never says which part was wrong.
+const loginRefused = () => new HttpError(401, 'Credenciais inválidas.')
+const signupRefused = () => new HttpError(400, 'Não foi possível criar a conta.')
+
 function conflict(status: QuestionStatus): HttpError {
   return new HttpError(409, `Esta ação não é possível no estado "${status}".`)
 }
@@ -57,6 +63,11 @@ export function createMockServices({
   }
 
   const wait = (signal?: AbortSignal) => delay(latencyMs, signal)
+
+  const accounts = new Map<string, { password: string; teacher: Teacher }>([
+    [MOCK_ACCOUNT.email, { password: MOCK_ACCOUNT.password, teacher: MOCK_TEACHER }],
+  ])
+  let teacher: Teacher = MOCK_TEACHER
 
   const settle = (record: Record): Record => {
     if (record.question.status !== 'GERANDO') return record
@@ -175,7 +186,20 @@ export function createMockServices({
     session: {
       async currentTeacher(options) {
         await wait(options?.signal)
-        return { ...MOCK_TEACHER }
+        return { ...teacher }
+      },
+      async login({ email, password }, options) {
+        await wait(options?.signal)
+        const account = accounts.get(email)
+        if (account?.password !== password) throw loginRefused()
+        teacher = account.teacher
+      },
+      async register({ name, email, password, inviteCode }, options) {
+        await wait(options?.signal)
+        if (inviteCode !== MOCK_INVITE_CODE || accounts.has(email)) throw signupRefused()
+        const created = { name, department: MOCK_TEACHER.department }
+        accounts.set(email, { password, teacher: created })
+        teacher = created
       },
       async logout() {
         await wait()

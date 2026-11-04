@@ -5,6 +5,15 @@ export const MOCK_TEACHER: Teacher = {
   department: 'Ciência da Computação',
 }
 
+// The one account the mock knows. example.com-style reserved domain and a
+// made-up password: this ships in the bundle, so nothing here may be real.
+export const MOCK_ACCOUNT = {
+  email: 'professora@exemplo.com',
+  password: 'demo-codeexpert',
+} as const
+
+export const MOCK_INVITE_CODE = 'DEMO-2026'
+
 const GCC = 'gcc -std=c11 -Wall -Wextra solucao.c -o solucao'
 const COMPILED = {
   command: GCC,

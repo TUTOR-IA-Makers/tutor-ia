@@ -1,0 +1,35 @@
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100dvh;
+  background: var(--color-surface);
+}
+
+.main {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: var(--space-12) var(--space-8);
+}
+
+.main:focus {
+  outline: none;
+}
+
+@media (width < 1024px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .main {
+    place-items: start center;
+    padding: var(--space-8) var(--space-6) var(--space-12);
+  }
+}
+
+@media (width < 640px) {
+  .main {
+    padding: var(--space-6) var(--space-4) var(--space-8);
+  }
+}
