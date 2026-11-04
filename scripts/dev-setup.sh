@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One-time setup. Safe to re-run.
 set -euo pipefail
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../backend"
 
 PY="${PYTHON:-python3}"
 

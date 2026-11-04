@@ -1,7 +1,7 @@
 # Build context exclusions. Anything listed here can never end up in an image
 # layer, which is how the image stays free of secrets and runtime artefacts.
-# Keep README.md and LICENSE: pyproject.toml references both, so the package
-# build fails without them.
+# The build context is backend/ itself. Keep README.md: pyproject.toml
+# references it, so the package build fails without it.
 # Unlike .gitignore, a pattern here only matches at the context root, so anything
 # that can also appear inside src/ needs the `**/` prefix.
 
@@ -18,8 +18,6 @@ Questions/
 # ── Version control and tooling ──────────────────────────────────────────────
 .git
 .gitignore
-.github/
-.agents/
 .vscode/
 .idea/
 
@@ -37,19 +35,7 @@ dist/
 .coverage.*
 htmlcov/
 
-# ── Front-end dependencies and test output ──────────────────────────────────
-# node_modules alone is ~300 MB; the image does not build the front-end yet.
-frontend/node_modules/
-frontend/coverage/
-frontend/test-results/
-frontend/playwright-report/
-
 # ── Not needed at runtime ────────────────────────────────────────────────────
 tests/
-docs/
-scripts/
-site/
-.dist/
-Makefile
 Dockerfile
 .dockerignore

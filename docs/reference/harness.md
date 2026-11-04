@@ -63,9 +63,9 @@ Um arquivo de tarefa em `main` significa trabalho em andamento ou branch abandon
 | --- | --- | --- |
 | 1 | Artefatos e segredos versionados | Algo em `var/`, `cache/`, `Questions/`, `.env` ou `config/LLM_Config.txt` está no índice do Git |
 | 2 | Credenciais na árvore | Algum arquivo versionado contém `sk-` + 32 caracteres, `AIza…` ou chave privada PEM (exceto `*.example`) |
-| 3 | Formatação | `ruff format --check src tests main.py` |
-| 4 | Lint | `ruff check src tests main.py` |
-| 5 | Testes | `pytest -q` |
+| 3 | Formatação | `ruff format --check src tests main.py` (em `backend/`) |
+| 4 | Lint | `ruff check src tests main.py` (em `backend/`) |
+| 5 | Testes | `pytest -q` (em `backend/`) |
 | 6 | Front-end | `scripts/front-check.sh`: Prettier, ESLint, Stylelint, `tsc`, contraste dos tokens, Vitest com cobertura mínima de 80%, build, busca de segredos em `dist/`, orçamento de 150 KB gzip e `npm audit` das dependências de produção. Pulado se `npm` ou `frontend/node_modules` não existirem |
 | 7 | Documentação | `mkdocs build --strict` (pulado se o `mkdocs` não estiver instalado, e com `make check-fast`) |
 
@@ -88,11 +88,11 @@ O `CODEOWNERS` exige revisor específico nestas áreas. Um agente pode rascunhar
 
 | Área | Por quê |
 | --- | --- |
-| `src/codeexpert/generation/prompts.py` | Prompts são o produto; a mudança altera a saída de formas que os testes não pegam |
-| `src/codeexpert/export/templates/` | Um marcador quebrado só aparece quando a importação no Moodle falha |
+| `backend/src/codeexpert/generation/prompts.py` | Prompts são o produto; a mudança altera a saída de formas que os testes não pegam |
+| `backend/src/codeexpert/export/templates/` | Um marcador quebrado só aparece quando a importação no Moodle falha |
 | `docs/adr/` | Decisões são de pessoas; agentes rascunham, humanos aceitam |
 | `AGENTS.md`, `.agents/`, `.github/`, `scripts/` | Um agente não pode ampliar as próprias permissões nem enfraquecer o gate |
-| `pyproject.toml` | Cadeia de suprimentos: dependência nova precisa de um humano e de uma frase explicando por que a biblioteca padrão não serve |
+| `backend/pyproject.toml` | Cadeia de suprimentos: dependência nova precisa de um humano e de uma frase explicando por que a biblioteca padrão não serve |
 
 | Um agente pode | Um agente não pode |
 | --- | --- |

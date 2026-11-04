@@ -1,6 +1,6 @@
 # Rules — prompts
 
-Every prompt lives in `src/codeexpert/generation/prompts.py`. Nowhere else.
+Every prompt lives in `backend/src/codeexpert/generation/prompts.py`. Nowhere else.
 
 Prompts are the most valuable and most fragile thing in the repository: they
 decide the output, no type checker guards them, and a change can degrade quality

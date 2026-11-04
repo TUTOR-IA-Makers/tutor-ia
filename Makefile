@@ -12,7 +12,7 @@ setup: ## Create .venv, install everything, create .env
 	@./scripts/dev-setup.sh
 
 run: ## Start the API with auto-reload on http://127.0.0.1:8000
-	@.venv/bin/uvicorn codeexpert.api.app:app --reload --port 8000
+	@cd backend && .venv/bin/uvicorn codeexpert.api.app:app --reload --port 8000
 
 check: ## The gate — run before every push (same checks as CI)
 	@./scripts/check.sh
@@ -24,10 +24,10 @@ fix: ## Apply formatting and auto-fixable lint
 	@./scripts/fix.sh
 
 test: ## Run the test suite with coverage
-	@.venv/bin/pytest --cov --cov-report=term-missing
+	@cd backend && .venv/bin/pytest --cov --cov-report=term-missing
 
 docs: ## Serve the documentation on http://127.0.0.1:8001
-	@.venv/bin/mkdocs serve -a 127.0.0.1:8001
+	@backend/.venv/bin/mkdocs serve -a 127.0.0.1:8001
 
 task: ## Start a task: make task T=feat I=42 S=scope-check
 	@./scripts/new-task.sh $(T) $(I) $(S)
@@ -48,7 +48,7 @@ front-e2e: ## Playwright end-to-end and axe tests against the production build
 	@cd frontend && npm run test:e2e
 
 clean: ## Remove build output and generation runs
-	@rm -rf .dist var .pytest_cache .ruff_cache .coverage \
+	@rm -rf .dist backend/var backend/.pytest_cache backend/.ruff_cache backend/.coverage \
 	  frontend/dist frontend/coverage frontend/test-results frontend/playwright-report
 	@find . -name __pycache__ -type d -prune -exec rm -rf {} +
 	@echo "✓ clean"

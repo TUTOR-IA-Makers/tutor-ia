@@ -25,9 +25,9 @@ RUN useradd --create-home --uid 1000 app \
     && chown -R app:app /app
 WORKDIR /app
 
-# pyproject.toml references README.md and LICENSE, so the package build needs
-# them.
-COPY pyproject.toml README.md LICENSE ./
+# pyproject.toml references README.md, so the package build needs it. The build
+# context is backend/ (`docker build backend`), so nothing outside it is visible.
+COPY pyproject.toml README.md ./
 COPY src ./src
 RUN pip install .
 

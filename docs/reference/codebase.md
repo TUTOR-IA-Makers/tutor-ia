@@ -5,7 +5,7 @@
 ## Estrutura
 
 ```text
-src/codeexpert/
+backend/src/codeexpert/
 ├── __init__.py          versão do pacote
 ├── __main__.py          python -m codeexpert / console script `codeexpert`
 ├── settings.py          Settings: configuração, só do ambiente
@@ -39,18 +39,19 @@ src/codeexpert/
     ├── schemas.py       contratos *Request / *Response
     └── routes/          health.py (/health, /config), questions.py (etapas)
 
-tests/unit/              funções puras — sem rede, sem compilador
-tests/integration/       vários módulos juntos — ainda offline
+backend/tests/unit/      funções puras — sem rede, sem compilador
+backend/tests/integration/ vários módulos juntos — ainda offline
 scripts/                 check.sh (gate), front-check.sh, dev-setup.sh, fix.sh, new-task.sh
 frontend/                SPA em React + Vite; ver frontend/README.md
 docs/                    este site; docs/adr/ em inglês
 .agents/                 regras, workflows e arquivos de tarefa (ver Harness)
-main.py                  atalho de compatibilidade para `python main.py`
-Dockerfile               imagem com a API e o gcc (ver Rodar com Docker)
-.dockerignore            o que nunca entra no contexto de build: .env, var/, .git
+backend/main.py          atalho de compatibilidade para `python main.py`
+backend/pyproject.toml   dependências e configuração do ruff e do pytest
+backend/Dockerfile       imagem com a API e o gcc (ver Rodar com Docker)
+backend/.dockerignore    o que nunca entra no contexto de build: .env, var/, .git
 ```
 
-Cerca de 1.500 linhas em `src/`. Um pacote só, sem monorepo ([ADR-0002](../adr/0002-modular-monolith-src-layout.md)). Direção das dependências e invariantes em [Arquitetura](../architecture/index.md#direcao-das-dependencias).
+Cerca de 1.500 linhas em `backend/src/`. Um pacote Python só ([ADR-0002](../adr/0002-modular-monolith-src-layout.md)). Direção das dependências e invariantes em [Arquitetura](../architecture/index.md#direcao-das-dependencias).
 
 ## Onde colocar código novo
 
@@ -99,7 +100,7 @@ raise MissingArtefactError("'statement.json' not found. Generate a statement fir
 ## Testes
 
 ```text
-tests/
+backend/tests/
 ├── conftest.py                FakeLLM, FakeRunner, isolated_settings, client, requires_gcc
 ├── unit/
 │   ├── test_parsers.py        parse_statement, parse_inputs, strip_code_fences
