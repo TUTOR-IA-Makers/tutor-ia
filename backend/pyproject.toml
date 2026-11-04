@@ -16,6 +16,10 @@ dependencies = [
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "psycopg[binary,pool]>=3.2",
+    # Versioned schema migrations (docs/adr/0013). Alembic needs SQLAlchemy for
+    # its connection; nothing in the application uses the ORM.
+    "alembic>=1.13",
+    "sqlalchemy>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -79,6 +83,7 @@ addopts = "-q --strict-markers --strict-config"
 markers = [
     "requires_gcc: needs a C compiler on PATH (skipped automatically when absent)",
     "integration: exercises several modules together; still offline and deterministic",
+    "postgres: needs CODEEXPERT_TEST_DATABASE_URL (skipped automatically when unset)",
 ]
 
 [tool.coverage.run]

@@ -81,6 +81,16 @@ class Settings(BaseSettings):
             )
         return self.llm_api_key.get_secret_value()
 
+    def require_database_url(self) -> str:
+        """Return the database URL, or explain how to set it."""
+        if self.database_url is None or not self.database_url.get_secret_value().strip():
+            raise ConfigurationError(
+                "CODEEXPERT_DATABASE_URL is not set. The Postgres store and "
+                "`codeexpert migrate` need it, from the environment, .env, or "
+                f"{SECRETS_DIR}/codeexpert_database_url."
+            )
+        return self.database_url.get_secret_value()
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

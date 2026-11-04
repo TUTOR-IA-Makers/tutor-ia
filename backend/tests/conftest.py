@@ -3,13 +3,23 @@
 Two rules hold for the whole suite, and CI depends on them:
 
 *   No test reaches the network. The model provider is always a `FakeLLM`.
+    The one exception is opt-in: the Postgres server named below.
 *   No test writes outside `tmp_path`. Settings are redirected per test.
 
 Tests that need a real compiler are marked `requires_gcc` and skip themselves
 when `gcc` is absent, so the suite passes on a machine without a toolchain.
+
+Tests that need Postgres skip themselves the same way when
+`CODEEXPERT_TEST_DATABASE_URL` is unset. When it is set, they never touch the
+database it names: each test session creates a database of its own on that
+server, migrates it, and drops it at the end. See docs/adr/0013.
 """
 
+import os
 import shutil
+import uuid
+from collections.abc import Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
@@ -25,6 +35,36 @@ from codeexpert.workspace import RunWorkspace
 
 GCC_AVAILABLE = shutil.which("gcc") is not None
 requires_gcc = pytest.mark.skipif(not GCC_AVAILABLE, reason="no gcc on PATH")
+
+TEST_DATABASE_URL_VAR = "CODEEXPERT_TEST_DATABASE_URL"
+
+
+@contextmanager
+def disposable_database() -> Iterator[str]:
+    """Create an empty database, yield its DSN, drop it however the test ends.
+
+    The URL in `CODEEXPERT_TEST_DATABASE_URL` only has to reach a server where
+    its user may `CREATE DATABASE`. Nothing is written to the database it names.
+    """
+    admin_dsn = os.environ.get(TEST_DATABASE_URL_VAR)
+    if not admin_dsn:
+        pytest.skip(f"{TEST_DATABASE_URL_VAR} is not set")
+
+    import psycopg
+    from psycopg import sql
+    from psycopg.conninfo import make_conninfo
+
+    name = f"codeexpert_test_{uuid.uuid4().hex[:12]}"
+    with psycopg.connect(admin_dsn, autocommit=True) as admin:
+        admin.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(name)))
+    try:
+        yield make_conninfo(admin_dsn, dbname=name)
+    finally:
+        with psycopg.connect(admin_dsn, autocommit=True) as admin:
+            # FORCE: a pool a failing test never closed must not keep it alive.
+            admin.execute(
+                sql.SQL("DROP DATABASE IF EXISTS {} WITH (FORCE)").format(sql.Identifier(name))
+            )
 
 
 class FakeLLM:
@@ -111,6 +151,23 @@ def isolated_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     reset_settings_cache()
     yield get_settings()
     reset_settings_cache()
+
+
+@pytest.fixture(scope="session")
+def migrated_database() -> Iterator[str]:
+    """One disposable database for the session, at the head revision."""
+    from codeexpert.store.migrate import upgrade
+
+    with disposable_database() as dsn:
+        upgrade(dsn)
+        yield dsn
+
+
+@pytest.fixture
+def empty_database() -> Iterator[str]:
+    """A disposable database of its own, never migrated. For migration tests."""
+    with disposable_database() as dsn:
+        yield dsn
 
 
 @pytest.fixture

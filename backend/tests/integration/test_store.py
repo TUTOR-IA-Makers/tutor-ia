@@ -1,11 +1,11 @@
 """Where a run's artefacts live, and what that makes possible. See docs/adr/0012.
 
 The contract tests run against every backend. The Postgres one needs a database
-and skips itself when `CODEEXPERT_TEST_DATABASE_URL` is unset, the same way the
-gcc tests skip without a compiler.
+server and skips itself when `CODEEXPERT_TEST_DATABASE_URL` is unset, the same
+way the gcc tests skip without a compiler. With it, the tests run in a
+disposable, migrated database (`migrated_database` in conftest.py).
 """
 
-import os
 from collections.abc import Callable
 from pathlib import Path
 
@@ -42,13 +42,18 @@ def make_store(request: pytest.FixtureRequest, tmp_path: Path) -> StoreFactory:
     if request.param == "memory":
         shared = MemoryStore()
         return lambda: shared
-    url = os.environ.get("CODEEXPERT_TEST_DATABASE_URL")
-    if not url:
-        pytest.skip("CODEEXPERT_TEST_DATABASE_URL is not set")
+    dsn = request.getfixturevalue("migrated_database")
 
     from codeexpert.store.postgres import PostgresStore
 
-    return lambda: PostgresStore(url)
+    opened: list[PostgresStore] = []
+
+    def open_store() -> ArtifactStore:
+        opened.append(PostgresStore(dsn))
+        return opened[-1]
+
+    request.addfinalizer(lambda: [store.close() for store in opened])
+    return open_store
 
 
 # ── The contract every backend keeps ──────────────────────────────────────────

@@ -1,6 +1,5 @@
 """Where a generation run's artefacts are kept."""
 
-from codeexpert.errors import ConfigurationError
 from codeexpert.settings import Settings
 from codeexpert.store.base import ArtifactStore
 from codeexpert.store.local import LocalFilesystemStore
@@ -16,12 +15,7 @@ def build_store(settings: Settings) -> ArtifactStore:
     if settings.store_backend == "local":
         return LocalFilesystemStore(settings.workspace_root)
 
-    if settings.database_url is None or not settings.database_url.get_secret_value().strip():
-        raise ConfigurationError(
-            "CODEEXPERT_STORE_BACKEND=postgres needs CODEEXPERT_DATABASE_URL, or the "
-            "secret file /run/secrets/codeexpert_database_url."
-        )
-    dsn = settings.database_url.get_secret_value()
+    dsn = settings.require_database_url()
     if dsn not in _postgres_stores:
         # Imported here so a laptop running the local store never needs the driver.
         from codeexpert.store.postgres import PostgresStore

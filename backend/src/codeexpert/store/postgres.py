@@ -3,19 +3,41 @@
 Two tables: `runs` carries the status, `run_artifacts` one row per artefact. A
 row per artefact (not one document per run) means two steps writing different
 artefacts never overwrite each other. See docs/adr/0012.
+
+The store does not create its tables. `codeexpert migrate` does, from the
+revisions in `migrations/` (docs/adr/0013), and the store refuses to start on a
+database at any other revision, so a skipped migration fails the deploy instead
+of the first request that touches the missing column.
 """
 
-from importlib import resources
-
 from psycopg_pool import ConnectionPool
+
+from codeexpert.errors import ConfigurationError
+from codeexpert.store.migrate import current_revision, head_revision
 
 
 class PostgresStore:
     def __init__(self, dsn: str) -> None:
         self._pool = ConnectionPool(dsn, min_size=1, max_size=5, open=True)
-        schema = (resources.files("codeexpert.store") / "schema.sql").read_text(encoding="utf-8")
+        try:
+            self._require_current_schema()
+        except BaseException:
+            self._pool.close()
+            raise
+
+    def _require_current_schema(self) -> None:
+        expected = head_revision()
         with self._pool.connection() as conn:
-            conn.execute(schema)
+            found = current_revision(conn)
+        if found != expected:
+            raise ConfigurationError(
+                f"The database schema is at revision {found or 'none'}, the code expects "
+                f"{expected}. Run `codeexpert migrate` against this database first."
+            )
+
+    def close(self) -> None:
+        """Close the pool. The process-wide store lives until exit; tests close theirs."""
+        self._pool.close()
 
     def create_run(self, run_id: str) -> None:
         with self._pool.connection() as conn:
