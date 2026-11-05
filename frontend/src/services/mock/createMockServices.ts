@@ -12,6 +12,7 @@ import {
 import { HttpError } from '@/lib/http'
 import type { Services } from '../contracts'
 import { delay } from './delay'
+import structures from './structures.json'
 import { MOCK_ACCOUNT, MOCK_INVITE_CODE, MOCK_TEACHER, seedQuestions } from './fixtures'
 import { buildMockMoodleXml } from './moodleXml'
 import { questionFromDraft } from './template'
@@ -97,6 +98,12 @@ export function createMockServices({
   }
 
   return {
+    catalog: {
+      async structures(options) {
+        await wait(options?.signal)
+        return structuredClone(structures)
+      },
+    },
     questions: {
       async list(filters, options) {
         await wait(options?.signal)

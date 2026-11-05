@@ -127,6 +127,7 @@ nav:
   - Arquitetura:
       - architecture/index.md
       - Pipeline de geração: architecture/pipeline.md
+      - Modelo de dados: architecture/data-model.md
       - Integração com o front-end: architecture/frontend-integracao.md
       - Decisões (ADR):
           - adr/index.md
@@ -143,6 +144,7 @@ nav:
           - 0011 — Host on a Hostinger VPS: adr/0011-host-on-a-hostinger-vps.md
           - 0012 — Artifact store in Postgres: adr/0012-artifact-store-in-postgres.md
           - 0013 — Resource API and cookie session: adr/0013-resource-api-and-cookie-session.md
+          - 0014 — Structured question snapshot: adr/0014-structured-question-snapshot.md
           - Modelo: adr/0000-template.md
   - Design:
       - Identidade visual: design/identidade.md

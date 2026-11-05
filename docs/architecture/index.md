@@ -172,7 +172,7 @@ A tabela completa de status está em [API § Erros](../reference/api.md#erros).
 | Aspecto | Hoje | Previsto até 30/11 |
 | --- | --- | --- |
 | Autenticação e autorização | Nenhuma. Todos os endpoints são públicos | Acesso por convite, cota por usuário — [G8](../product/roadmap.md#acesso-e-custo) |
-| Banco de dados | Nenhum. Estado em arquivos locais | Postgres como fonte de verdade — [G0-4, G1](../product/roadmap.md#estado-da-geracao) |
+| Banco de dados | Artefatos no Postgres ou em arquivos locais; [modelo estruturado](data-model.md) de questões, casos e execuções no Postgres | Versionamento e consultas da biblioteca — [G1](../product/roadmap.md#estado-da-geracao) |
 | Front-end | Só o Swagger UI em `/docs` | Interface do professor — [G4](../product/roadmap.md#interface-do-professor) |
 | Processamento assíncrono | Nenhum. O pedido fica aberto até o fim; as rotas são `async def` executando código síncrono, o que serializa os pedidos no processo | Geração como job com estado no banco — [G0-8](../product/roadmap.md#estado-da-geracao) |
 | Isolamento da execução | Limite de tempo e de saída; sem limite de memória, processos, rede ou sistema de arquivos | Continua assim; risco aceito e documentado — [G8-3](../product/roadmap.md#execucao-de-codigo) |

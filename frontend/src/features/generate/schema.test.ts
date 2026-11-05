@@ -45,12 +45,21 @@ describe('generateSchema', () => {
     )
   })
 
+  it('impede uma estrutura permitida e proibida ao mesmo tempo', () => {
+    expect(
+      messages({
+        ...valid,
+        structures: { required: ['if'], allowed: ['for'], forbidden: ['for'] },
+      }),
+    ).toContain('Uma estrutura proibida não pode ser obrigatória nem permitida.')
+  })
+
   it('exige estrutura obrigatória e impede conflito', () => {
     expect(
       messages({ ...valid, structures: { required: [], allowed: [], forbidden: [] } }),
     ).toContain('Escolha pelo menos uma estrutura obrigatória.')
     expect(
       messages({ ...valid, structures: { required: ['for'], allowed: [], forbidden: ['lacos'] } }),
-    ).toContain('Uma estrutura não pode ser obrigatória e proibida ao mesmo tempo.')
+    ).toContain('Uma estrutura proibida não pode ser obrigatória nem permitida.')
   })
 })

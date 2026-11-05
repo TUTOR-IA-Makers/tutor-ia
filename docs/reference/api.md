@@ -85,6 +85,7 @@ Sempre responde `200`: ele informa o problema de configuração, não falha por 
 | `can_has_function` | `bool` | `false` | `true` **exige** funções |
 | `can_has_matrix` | `bool` | `false` | `true` **exige** vetores ou matrizes |
 | `difficulty` | enum | `"muito facil"` | `muito facil`, `facil`, `medio`, `dificil`, `muito dificil` |
+| `axis` | enum ou `null` | `null` | Classificação opcional: `fundamentos`, `controle de fluxo`, `estruturas de dados e ponteiros`, `modularizacao`. É armazenada; não altera o prompt |
 | `run_id` | `string?` | `null` | Reusa uma execução existente e sobrescreve o enunciado dela |
 
 `{}` é um pedido válido. As restrições são **pedidas** ao modelo, não verificadas.
@@ -230,3 +231,17 @@ Para acrescentar um tipo de erro: uma classe em `errors.py` e uma linha em `STAT
 | O enunciado ignora o formato de blocos | `200`, com o texto todo como corpo |
 
 Diagnóstico de cada um em [Problemas comuns](troubleshooting.md).
+
+## Catálogo de estruturas para o formulário
+
+`GET /api/v1/structures` retorna uma lista de objetos `id` e `label`, derivada de
+`CStructure` em `src/codeexpert/domain.py`. As três listas do formulário usam esse
+catálogo, sem uma lista de opções própria no componente. O envio fica bloqueado
+enquanto o catálogo carrega, falha ou está vazio; a tela permite tentar novamente.
+Estruturas desconhecidas e combinações conflitantes são bloqueadas antes do envio.
+
+No modo `mock`, o serviço usa uma resposta de exemplo em
+`frontend/src/services/mock/structures.json`, conferida contra a API por teste.
+A geração e os demais endpoints `/api/v1/questions` continuam sendo o contrato
+planejado do frontend: esta alteração não conecta as listas ao pipeline legado.
+A demonstração completa do formulário deve usar o modo `mock` até essa integração.

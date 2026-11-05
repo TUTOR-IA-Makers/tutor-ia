@@ -7,6 +7,7 @@ import type {
   QuestionSummary,
   Registration,
   Statement,
+  StructureOption,
   Teacher,
 } from '@/domain'
 
@@ -50,7 +51,12 @@ export interface SystemService {
   health(options?: CallOptions): Promise<Health>
 }
 
+export interface CatalogService {
+  structures(options?: CallOptions): Promise<StructureOption[]>
+}
+
 export interface Services {
+  catalog: CatalogService
   questions: QuestionsService
   session: SessionService
   system: SystemService

@@ -15,12 +15,10 @@ test('gerar, acompanhar, revisar, aprovar e exportar', async ({ page }) => {
   const required = page.getByRole('group', { name: 'Estruturas obrigatórias' })
   await required.getByRole('button', { name: 'for', exact: true }).click()
   await expect(
-    page
-      .getByRole('group', { name: 'Estruturas proibidas' })
-      .getByRole('button', { name: 'laços de repetição' }),
+    page.getByRole('group', { name: 'Estruturas proibidas' }).getByRole('button', { name: 'for' }),
   ).toBeDisabled()
   await required.getByRole('button', { name: 'for', exact: true }).click()
-  await required.getByRole('button', { name: 'if / else' }).click()
+  await required.getByRole('button', { name: 'if' }).click()
   await page.getByRole('button', { name: 'Gerar questão' }).click()
 
   await expect(page.getByRole('heading', { name: 'Acompanhar geração' })).toBeVisible()

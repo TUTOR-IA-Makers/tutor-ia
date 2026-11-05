@@ -24,6 +24,7 @@
 | [0011](0011-host-on-a-hostinger-vps.md) | Host the 30/11 delivery on a Hostinger VPS instead of Cloud Run | Proposed |
 | [0012](0012-artifact-store-in-postgres.md) | Run artefacts live in Postgres behind an `ArtifactStore` protocol | Proposed |
 | [0013](0013-resource-api-and-cookie-session.md) | Serve the web client from a resource API under /api/v1 with a cookie session | Proposed |
+| [0014](0014-structured-question-snapshot.md) | Store a structured snapshot of completed generations | Proposed |
 
 Para escrever uma nova, ver [`.agents/workflows/add-adr.md`](https://github.com/HugoRosa29/coderunner_v2/blob/main/.agents/workflows/add-adr.md) e o [modelo](0000-template.md).
 

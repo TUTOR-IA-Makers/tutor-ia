@@ -1,6 +1,12 @@
 import { z } from 'zod/mini'
 import { QUESTION_STATUSES } from '@/domain'
 
+export const structureCatalogDto = z
+  .array(
+    z.object({ id: z.string().check(z.minLength(1)), label: z.string().check(z.minLength(1)) }),
+  )
+  .check(z.minLength(1))
+
 const status = z.enum(QUESTION_STATUSES)
 const rules = z.object({
   required: z.array(z.string()),

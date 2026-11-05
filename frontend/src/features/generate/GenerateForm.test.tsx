@@ -22,10 +22,99 @@ function chip(group: string, name: string) {
 }
 
 describe('GenerateForm', () => {
+  it('usa as opções recebidas pelo serviço nas três listas', async () => {
+    const base = withQuestions({})
+    const structures = vi.fn().mockResolvedValue([{ id: 'nova', label: 'Estrutura da API' }])
+    renderForm({ ...base, catalog: { structures } })
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
+    for (const group of [
+      'Estruturas obrigatórias',
+      'Estruturas permitidas',
+      'Estruturas proibidas',
+    ]) {
+      expect(chip(group, 'Estrutura da API')).toBeEnabled()
+    }
+    expect(screen.queryByRole('button', { name: 'if' })).not.toBeInTheDocument()
+    expect(structures).toHaveBeenCalledTimes(1)
+  })
+
+  it('bloqueia o envio enquanto carrega o catálogo', () => {
+    const base = withQuestions({})
+    renderForm({ ...base, catalog: { structures: () => new Promise(() => undefined) } })
+    expect(screen.getByText('Carregando estruturas disponíveis…')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Gerar questão' })).toBeDisabled()
+  })
+
+  it('permite tentar novamente quando o catálogo falha', async () => {
+    const user = userEvent.setup()
+    const base = withQuestions({})
+    const structures = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('offline'))
+      .mockResolvedValueOnce([{ id: 'for', label: 'for' }])
+    renderForm({ ...base, catalog: { structures } })
+    await screen.findByText('Não foi possível carregar as estruturas')
+    expect(screen.getByRole('button', { name: 'Gerar questão' })).toBeDisabled()
+    await user.click(screen.getByRole('button', { name: 'Tentar de novo' }))
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
+    expect(chip('Estruturas obrigatórias', 'for')).toBeEnabled()
+  })
+
+  it('bloqueia catálogo vazio e explica o próximo passo', async () => {
+    const base = withQuestions({})
+    renderForm({ ...base, catalog: { structures: () => Promise.resolve([]) } })
+    await screen.findByText('Catálogo de estruturas vazio')
+    expect(screen.getByRole('button', { name: 'Gerar questão' })).toBeDisabled()
+  })
+
+  it('não envia estruturas antigas ausentes do catálogo', async () => {
+    const user = userEvent.setup()
+    const create = vi.fn()
+    const base = withQuestions({ create })
+    renderRoutes(
+      [
+        {
+          path: '/gerar',
+          element: (
+            <GenerateForm
+              defaultValues={{
+                contentId: 'condicionais',
+                difficulty: { min: 1200, max: 1600 },
+                testCaseCount: 6,
+                testCaseHints: '',
+                context: '',
+                structures: { required: ['antiga'], allowed: [], forbidden: [] },
+              }}
+            />
+          ),
+        },
+      ],
+      '/gerar',
+      { services: base },
+    )
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
+    await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
+    expect(
+      await screen.findByText('Há uma estrutura fora do catálogo atual. Revise as seleções.'),
+    ).toBeInTheDocument()
+    expect(create).not.toHaveBeenCalled()
+    await user.click(screen.getByRole('button', { name: 'Remover estruturas fora do catálogo' }))
+    expect(screen.queryByText('Seleções desatualizadas')).not.toBeInTheDocument()
+  })
+
+  it('bloqueia uma estrutura permitida na lista de proibidas', async () => {
+    const user = userEvent.setup()
+    renderForm()
+    await screen.findByRole('group', { name: 'Estruturas permitidas' })
+    await user.click(chip('Estruturas permitidas', 'for'))
+    expect(chip('Estruturas proibidas', 'for')).toBeDisabled()
+  })
+
   it('mostra erros junto aos campos quando falta o essencial', async () => {
     const user = userEvent.setup()
     const create = vi.fn()
     renderForm(withQuestions({ create }))
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
     await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
     expect(await screen.findByText('Escolha o conteúdo da questão.')).toBeInTheDocument()
     expect(screen.getByRole('combobox', { name: /Conteúdo de programação/ })).toHaveAttribute(
@@ -53,13 +142,14 @@ describe('GenerateForm', () => {
   it('bloqueia a estrutura oposta para impedir conflito', async () => {
     const user = userEvent.setup()
     renderForm()
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
     await user.click(chip('Estruturas obrigatórias', 'for'))
     expect(chip('Estruturas obrigatórias', 'for')).toHaveAttribute('aria-pressed', 'true')
-    const loops = chip('Estruturas proibidas', 'laços de repetição')
+    const loops = chip('Estruturas proibidas', 'for')
     expect(loops).toBeDisabled()
-    expect(loops).toHaveAccessibleDescription(/não pode ser obrigatória e proibida/)
+    expect(loops).toHaveAccessibleDescription(/proibida não pode ser obrigatória nem permitida/)
     await user.click(chip('Estruturas obrigatórias', 'for'))
-    expect(chip('Estruturas proibidas', 'laços de repetição')).toBeEnabled()
+    expect(chip('Estruturas proibidas', 'for')).toBeEnabled()
   })
 
   it('envia o rascunho completo, com os casos específicos, e abre a questão', async () => {
@@ -77,8 +167,9 @@ describe('GenerateForm', () => {
       'incluir o ano 1900',
     )
     await user.type(screen.getByRole('textbox', { name: /Contexto do exercício/ }), 'ano bissexto')
-    await user.click(chip('Estruturas obrigatórias', 'if / else'))
-    await user.click(chip('Estruturas proibidas', 'laços de repetição'))
+    await user.click(chip('Estruturas obrigatórias', 'if'))
+    await user.click(chip('Estruturas proibidas', 'for'))
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
     await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
 
     await waitFor(() => {
@@ -91,9 +182,9 @@ describe('GenerateForm', () => {
       testCaseHints: 'incluir o ano 1900',
       context: 'ano bissexto',
       structures: {
-        required: ['if-else'],
-        allowed: ['scanf-printf', 'tipos-primitivos'],
-        forbidden: ['lacos'],
+        required: ['if'],
+        allowed: [],
+        forbidden: ['for'],
       },
     })
   })
@@ -105,13 +196,15 @@ describe('GenerateForm', () => {
       screen.getByRole('combobox', { name: /Conteúdo de programação/ }),
       'vetores',
     )
-    await user.click(chip('Estruturas obrigatórias', 'vetores'))
+    await user.click(chip('Estruturas obrigatórias', 'vetor'))
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
     await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
     expect(await screen.findByText('Geração indisponível')).toBeInTheDocument()
   })
 
   it('não tem violações sérias de acessibilidade', async () => {
     const { container } = renderForm()
+    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
     expect(await blockingViolations(container)).toEqual([])
   })
 })

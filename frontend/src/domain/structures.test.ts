@@ -3,16 +3,13 @@ import {
   conflicts,
   EMPTY_RULES,
   STRUCTURE_GROUPS,
-  STRUCTURE_LABELS,
   structureLabel,
   toggleRule,
 } from './structures'
 
 describe('structures', () => {
-  it('tem rótulo para toda opção oferecida', () => {
-    for (const group of STRUCTURE_GROUPS) {
-      for (const id of group.options) expect(STRUCTURE_LABELS[id]).toBeDefined()
-    }
+  it('oferece os três tipos de restrição', () => {
+    expect(STRUCTURE_GROUPS.map(({ kind }) => kind)).toEqual(['required', 'allowed', 'forbidden'])
   })
 
   it('devolve o próprio id quando não há rótulo', () => {
