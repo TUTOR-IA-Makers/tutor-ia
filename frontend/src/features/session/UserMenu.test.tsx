@@ -1,6 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { NetworkError } from '@/lib/http'
+import { HttpError, NetworkError } from '@/lib/http'
 import { createTestServices, renderInRouter } from '@/test/render'
 import { UserMenu } from './UserMenu'
 
@@ -38,6 +38,20 @@ describe('UserMenu', () => {
     expect(await screen.findByText('Sessão encerrada')).toBeInTheDocument()
     expect(client.getQueryData(CACHED_KEY)).toBeUndefined()
     expect(router.state.location.pathname).toBe('/')
+  })
+
+  // Until F1 the backend has no /api/v1/session, so http mode answers 404 here,
+  // and later a signed-out visitor gets 401. Neither may break the page.
+  it.each([401, 404])('sem sessão (%i) mostra só o espaço reservado', async (status) => {
+    const base = createTestServices()
+    const currentTeacher = vi.fn(() => Promise.reject(new HttpError(status, 'sem sessão')))
+    const services = { ...base, session: { ...base.session, currentTeacher } }
+    const { container } = renderInRouter(<UserMenu />, '/gerar', { services })
+    await waitFor(() => {
+      expect(currentTeacher).toHaveBeenCalledOnce()
+    })
+    expect(screen.queryByRole('button', { name: /Menu da conta/ })).toBeNull()
+    expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull()
   })
 
   it('avisa quando não consegue encerrar a sessão e mantém os dados', async () => {
