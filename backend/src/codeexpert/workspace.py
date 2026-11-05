@@ -26,6 +26,11 @@ BINARY = "solution"
 INPUTS = "inputs.json"
 TESTCASES = "testcases.json"
 META = "meta.json"
+# What the teacher asked for, verbatim. The constraints derived from it lose
+# information (ten contents become four axes), so the original is kept.
+DRAFT = "draft.json"
+# Present only when a background generation stopped before completing.
+FAILURE = "failure.json"
 
 # Run ids come from clients as path segments. Anything outside this alphabet is
 # rejected before it reaches the filesystem.
