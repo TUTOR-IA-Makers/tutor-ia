@@ -53,7 +53,7 @@ S0 e S1. G0-1 está <span class="ce-badge ce-status--done">Implementado</span>; 
 | Sem listagem | **G1-5** `GET /questions` com filtros por eixo, nível, estado e texto, paginado (S2) | Biblioteca do professor |
 | Os 3 primeiros casos são exemplo, por ordem | **G1-4** categoria (típico, limite, borda, inválido) e visibilidade (público, privado) (S4, P1) | Casos privados ocultos no XML; ≥ 1 público e 1 privado para aprovar |
 
-Todos <span class="ce-badge ce-status--planned">Planejados</span>. G0-4 era o risco técnico do plano por causa do Cloud Run; na VPS deixou de bloquear o deploy, mas continua antes de G1-5, G0-8 e G3.
+Todos <span class="ce-badge ce-status--planned">Planejados</span>. G0-4 era o risco técnico do plano por causa do Cloud Run; na VPS deixou de bloquear o deploy, mas continua antes de G1-5, G0-8 e G3. Uma fatia mínima do G0-8 já existe (#38): `POST /api/v1/questions` → `202` com a geração numa `BackgroundTask` e `GET /api/v1/questions/{id}/generation`, sem retomada nem `INTERROMPIDO` — ver [API](../reference/api.md#api-v1).
 
 ### Verificação de escopo {#verificacao-de-escopo}
 

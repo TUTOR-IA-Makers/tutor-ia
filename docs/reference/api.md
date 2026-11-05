@@ -1,8 +1,8 @@
 # API
 
-<p class="lead">Contrato HTTP de <code>main</code>: dois endpoints de diagnóstico, as cinco etapas do pipeline e um orquestrador. Todos públicos, síncronos e em JSON.</p>
+<p class="lead">Contrato HTTP do backend: dois endpoints de diagnóstico, as cinco etapas do pipeline, um orquestrador síncrono e a API de recursos sob <code>/api/v1</code> que o formulário usa. Todos públicos e em JSON.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> Todos os endpoints desta página. Os endpoints previstos no plano (`POST /questions`, `GET /questions`, aprovação, exportação de seleção) estão em [Roadmap](../product/roadmap.md#estado-da-geracao).
+<span class="ce-badge ce-status--done">Implementado</span> Todos os endpoints desta página. Os endpoints previstos no plano (`GET /api/v1/questions`, aprovação, exportação de seleção, sessão) estão em [Roadmap](../product/roadmap.md#estado-da-geracao).
 
 ## Visão geral
 
@@ -24,6 +24,10 @@
 | <span class="ce-badge ce-badge--post">POST</span> | [`/export_moodle_xml_question`](#post-export_moodle_xml_question) | Etapa 5 — acrescenta a questão ao XML |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/create_question`](#post-create_question) | As cinco etapas numa chamada |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/questions/{run_id}`](#get-questions-run_id) | Tudo o que a tela de revisão precisa, de uma questão concluída |
+| <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/structures`](#catalogo-de-estruturas-para-o-formulario) | Vocabulário de estruturas do formulário |
+| <span class="ce-badge ce-badge--post">POST</span> | [`/api/v1/questions`](#post-api-v1-questions) | Cria uma questão a partir do formulário e responde `202` na hora |
+| <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/questions/{id}/generation`](#get-api-v1-generation) | Andamento da geração |
+| <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/questions/{id}`](#get-api-v1-question) | A questão, em qualquer estado |
 
 Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem a forma `{"detail": "..."}`; erros de `/create_question` trazem também `run_id` (validação é diferente, ver [Erros](#erros)).
 
@@ -195,6 +199,107 @@ Só responde para uma execução **concluída**, isto é, que terminou a etapa 5
 
 ---
 
+## API de recursos `/api/v1` {#api-v1}
+
+O formulário do front-end (modo `http`) chama estas rotas. O navegador pede uma questão e consulta o andamento; quem encadeia as cinco etapas é o servidor ([ADR-0013](../adr/0013-resource-api-and-cookie-session.md)). Os nomes dos campos seguem `frontend/src/services/http/dto.ts`. O id de uma questão é o `run_id` da execução.
+
+!!! warning "Versão mínima"
+    A geração roda numa `BackgroundTask` do FastAPI, no mesmo processo da API. Se o servidor reiniciar no meio, a questão fica `GERANDO` para sempre: não há retomada nem estado `INTERROMPIDO` (G0-8). Não há sessão: as rotas são públicas como o resto da API.
+
+### `POST /api/v1/questions` {#post-api-v1-questions}
+
+```json
+{
+  "content_id": "condicionais",
+  "difficulty_min": 1200,
+  "difficulty_max": 1600,
+  "test_case_count": 5,
+  "test_case_hints": null,
+  "context": "Tarifa de estacionamento",
+  "structures": { "required": ["if"], "allowed": ["else"], "forbidden": ["for"] }
+}
+```
+
+```json title="202"
+{ "id": "20261105T142233Z-1a2b3c4d" }
+```
+
+O corpo é validado e traduzido em restrições (`api/drafts.py`) antes de qualquer chamada ao modelo:
+
+| Campo | Regra | Vira |
+| --- | --- | --- |
+| `content_id` | Um dos dez conteúdos do formulário (`frontend/src/domain/contents.ts`) | `axis`: `entrada-saida` → fundamentos; `condicionais`, `repeticao` → controle de fluxo; `vetores`, `matrizes`, `strings`, `ponteiros`, `structs` → estruturas de dados e ponteiros; `funcoes`, `recursao` → modularização |
+| `difficulty_min`, `difficulty_max` | Inteiros de 500 a 3500, `min ≤ max` | `difficulty`: a faixa de `difficulty_max` (até 950 muito fácil, 1350 fácil, 1850 médio, 2350 difícil, acima disso muito difícil) |
+| `test_case_count` | 1 a 20 | Número de entradas pedidas ao modelo |
+| `structures` | Ids de `GET /api/v1/structures`; um id não pode estar em `forbidden` e em outra lista | Flags de `/gen_statement`, por grupo: `if`; `else`; `for`/`while`/`do-while` → repetição; `funcao`/`recursao`/`passagem por referencia` → funções; `vetor`/`matriz` → vetores ou matrizes. Pedir ou permitir qualquer estrutura do grupo liga a flag; senão, proibir alguma desliga; grupo não citado fica no padrão |
+| `test_case_hints` (até 1000), `context` (até 300) | Opcionais | Guardados em `draft.json`. **Ainda não chegam ao prompt** |
+
+Estruturas sem flag (`switch`, `struct`, `ponteiro`…) também são guardadas e não chegam ao prompt. Usar a faixa de `difficulty_max` é provisório, à espera da decisão da equipe (#38).
+
+Erros: `422` (corpo inválido; `detail` é uma lista). Nada é criado nesse caso. Uma falha **durante** a geração não volta nesta resposta: aparece em `/generation`.
+
+### `GET /api/v1/questions/{id}/generation` {#get-api-v1-generation}
+
+```json title="200"
+{
+  "question_id": "20261105T142233Z-1a2b3c4d",
+  "run_id": "20261105T142233Z-1a2b3c4d",
+  "status": "GERANDO",
+  "completed_steps": 2,
+  "failure_reason": null
+}
+```
+
+| `status` | Quando |
+| --- | --- |
+| `GERANDO` | O job não terminou nem falhou |
+| `GERADA` | As cinco etapas terminaram; `completed_steps` é `5` |
+| `FALHOU_VERIFICACAO` | Alguma etapa falhou. `completed_steps` conta as que terminaram; `failure_reason` explica em português, sem stack trace nem saída do compilador (o detalhe fica no log do servidor, com o `run_id`) |
+
+`completed_steps` vem de `meta.json → steps` (enunciado, solução, entradas, casos de teste), mais um quando a execução é concluída pela exportação. Erros: `404`.
+
+### `GET /api/v1/questions/{id}` {#get-api-v1-question}
+
+Responde em qualquer estado, porque o front carrega a questão antes de escolher entre a tela de andamento e a de revisão. Campos que uma etapa ainda não produziu vêm vazios.
+
+```json title="200"
+{
+  "id": "20261105T142233Z-1a2b3c4d",
+  "code": "20261105T142233Z-1a2b3c4d",
+  "title": "Tarifa de estacionamento",
+  "description": "Tarifa de estacionamento",
+  "content_id": "condicionais",
+  "difficulty_min": 1200,
+  "difficulty_max": 1600,
+  "status": "GERADA",
+  "test_case_count": 1,
+  "statement": { "text": "...", "input": "", "output": "", "example": null },
+  "solution": "#include <stdio.h>\n...",
+  "test_cases": [
+    { "id": "caso-1", "input": "3\n", "expected_output": "6\n", "actual_output": null, "passed": null }
+  ],
+  "structures": { "required": ["if"], "allowed": ["else"], "forbidden": ["for"] },
+  "constraints": [],
+  "compilation": null,
+  "failure_reason": null
+}
+```
+
+| Campo | Origem |
+| --- | --- |
+| `title`, `statement.text` | `statement.json`. Antes da etapa 1, `title` é "Enunciado ainda não gerado" e `text` é vazio |
+| `description`, `content_id`, `difficulty_*`, `structures` | O pedido original, guardado em `draft.json` |
+| `solution` | `solution.c`, ou `null` antes da etapa 2 |
+| `test_cases[].expected_output` | A saída real da execução da solução (etapa 4), nunca do modelo |
+| `code` | O próprio `run_id`; o backend não numera questões |
+| `statement.input`, `statement.output` | Sempre vazios: o enunciado ainda não é separado em blocos |
+| `statement.example`, `actual_output`, `passed`, `compilation` | Sempre `null`: nada os produz ainda |
+| `constraints` | Sempre `[]`: a verificação de escopo (FEAT-024) não existe |
+
+Erros: `404` para id desconhecido, malformado ou de uma execução criada pelas rotas RPC (sem `draft.json`). As rotas RPC continuam funcionando, inclusive `GET /questions/{run_id}` para uma questão criada aqui.
+
+---
+
 ## Erros {#erros}
 
 Os serviços levantam exceções de domínio; `api/errors.py` traduz cada uma pela tabela `STATUS_BY_ERROR`. Exceção fora da tabela vira `500`, com traceback no log.
@@ -242,6 +347,6 @@ Estruturas desconhecidas e combinações conflitantes são bloqueadas antes do e
 
 No modo `mock`, o serviço usa uma resposta de exemplo em
 `frontend/src/services/mock/structures.json`, conferida contra a API por teste.
-A geração e os demais endpoints `/api/v1/questions` continuam sendo o contrato
-planejado do frontend: esta alteração não conecta as listas ao pipeline legado.
-A demonstração completa do formulário deve usar o modo `mock` até essa integração.
+No modo `http`, o envio do formulário vai para
+[`POST /api/v1/questions`](#post-api-v1-questions); o roteiro local está em
+[Demonstrar o formulário ligado à API](../guides/form-to-database.md).
