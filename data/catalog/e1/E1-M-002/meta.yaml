@@ -4,4 +4,4 @@ nivel: "M"
 estruturas:
   - "math.h"
 origem: "Exercício de geometria analítica — precisa de math.h"
-direitos_restritos: false
+direitos_restritos: true

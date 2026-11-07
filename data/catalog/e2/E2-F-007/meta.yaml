@@ -5,4 +5,4 @@ estruturas:
   - "while"
   - "if"
 origem: "Exercício de contagem de dígitos"
-direitos_restritos: false
+direitos_restritos: true

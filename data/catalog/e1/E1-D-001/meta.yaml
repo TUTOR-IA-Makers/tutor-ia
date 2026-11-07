@@ -4,4 +4,4 @@ nivel: "D"
 estruturas:
   - "math.h"
 origem: "Exercício de geometria de polígonos regulares — precisa de math.h"
-direitos_restritos: false
+direitos_restritos: true

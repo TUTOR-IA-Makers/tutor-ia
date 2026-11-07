@@ -4,4 +4,4 @@ nivel: "MD"
 estruturas:
   []
 origem: "Geometria analítica avançada sem desvios condicionais explícitos"
-direitos_restritos: false
+direitos_restritos: true

@@ -4,4 +4,4 @@ nivel: "MD"
 estruturas:
   - "math.h"
 origem: "Matemática financeira inversa e capitalização composta"
-direitos_restritos: false
+direitos_restritos: true

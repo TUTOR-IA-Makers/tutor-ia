@@ -4,4 +4,4 @@ nivel: "MD"
 estruturas:
   - "math.h"
 origem: "Identidades trigonométricas fundamentais em ponto flutuante"
-direitos_restritos: false
+direitos_restritos: true

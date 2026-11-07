@@ -5,4 +5,4 @@ estruturas:
   - "while"
   - "if"
 origem: "Exercício de leitura até EOF com estatísticas"
-direitos_restritos: false
+direitos_restritos: true

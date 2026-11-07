@@ -4,4 +4,4 @@ nivel: "F"
 estruturas:
   - "while"
 origem: "Exercício de laço com sentinela"
-direitos_restritos: false
+direitos_restritos: true
