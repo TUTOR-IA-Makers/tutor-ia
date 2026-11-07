@@ -1,0 +1,1 @@
+Leia o valor de um capital inicial, a taxa de inflação anual e o número de anos. Calcule o poder de compra final corrigido pela inflação e imprima o resultado com 2 casas decimais.

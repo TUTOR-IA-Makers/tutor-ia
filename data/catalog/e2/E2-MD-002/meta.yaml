@@ -1,0 +1,9 @@
+id: "E2-MD-002"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "for"
+  - "while"
+  - "if"
+origem: "Exercício de soma de Fibonacci com limite"
+direitos_restritos: false

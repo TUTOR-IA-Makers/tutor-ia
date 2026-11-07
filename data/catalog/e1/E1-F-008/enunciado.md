@@ -1,0 +1,1 @@
+Leia a potência de um aparelho em watts (real) e o número de horas de uso por dia (real). Calcule o consumo em kWh por mês (30 dias). Imprima com 2 casas decimais.

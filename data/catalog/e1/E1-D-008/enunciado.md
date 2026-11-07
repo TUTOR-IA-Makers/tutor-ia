@@ -1,0 +1,1 @@
+Leia a largura e o comprimento de uma sala retangular e o custo do piso por metro quadrado. Calcule a quantidade necessária de piso (com 10% de margem para perdas) e o custo total. Imprima cada valor em uma linha com 2 casas decimais.

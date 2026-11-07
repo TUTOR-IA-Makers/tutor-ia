@@ -1,0 +1,1 @@
+Dado `N` (1 ≤ N ≤ 10^6), calcule a soma de todos os números de Fibonacci menores ou iguais a N usando aritmética long long. Imprima o resultado.

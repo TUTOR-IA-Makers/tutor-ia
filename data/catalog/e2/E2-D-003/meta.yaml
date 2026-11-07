@@ -1,0 +1,9 @@
+id: "E2-D-003"
+eixo: "E2"
+nivel: "D"
+estruturas:
+  - "for"
+  - "if"
+  - "switch"
+origem: "Exercício de múltiplas condições e contagem"
+direitos_restritos: false

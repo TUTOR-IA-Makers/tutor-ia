@@ -1,0 +1,8 @@
+id: "E2-M-008"
+eixo: "E2"
+nivel: "M"
+estruturas:
+  - "while"
+  - "if"
+origem: "Exercício de verificação de propriedade em sequência"
+direitos_restritos: false

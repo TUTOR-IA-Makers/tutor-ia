@@ -1,0 +1,1 @@
+Leia a aceleração e o tempo de um veículo em movimento uniformemente variado partindo do repouso. Calcule a distância percorrida e a velocidade final com 2 casas decimais, cada uma em uma linha.
