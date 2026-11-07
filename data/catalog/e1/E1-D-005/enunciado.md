@@ -1,0 +1,1 @@
+Leia três coeficientes que determinam uma progressão aritmética e calcule o sexagésimo termo utilizando apenas a fórmula fechada (sem laço). Imprima o resultado.

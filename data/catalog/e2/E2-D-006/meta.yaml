@@ -1,0 +1,8 @@
+id: "E2-D-006"
+eixo: "E2"
+nivel: "D"
+estruturas:
+  - "while"
+  - "if"
+origem: "Exercício de conversão de base"
+direitos_restritos: true

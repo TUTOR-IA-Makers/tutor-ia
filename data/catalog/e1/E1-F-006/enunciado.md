@@ -1,0 +1,1 @@
+Leia três lados de um triângulo (reais) e calcule o perímetro. Imprima com 2 casas decimais.

@@ -1,0 +1,8 @@
+id: "E2-D-008"
+eixo: "E2"
+nivel: "D"
+estruturas:
+  - "for"
+  - "if"
+origem: "Exercício de cálculo numérico com laço"
+direitos_restritos: true

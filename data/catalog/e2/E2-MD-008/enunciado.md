@@ -1,0 +1,1 @@
+Uma aproximação para Pi é dada pela Série de Leibniz: π/4 = 1 - 1/3 + 1/5 - 1/7 + ... Leia um valor real de tolerância (ex: 0.0001). Calcule a aproximação de Pi até que o valor absoluto do termo atual seja estritamente menor que a tolerância. Imprima o valor de Pi (com 6 casas decimais) e o número de termos utilizados.

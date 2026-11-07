@@ -1,0 +1,1 @@
+Leia um inteiro de 1 a 12 representando um mês. Imprima o número de dias desse mês (assuma que fevereiro tem 28 dias).

@@ -1,0 +1,1 @@
+Dada a série de Taylor para a função exponencial: e^x = 1 + x + x^2/2! + x^3/3! + ... Leia um número real `X` e um inteiro `N` (termos da série). Calcule a aproximação de e^x somando os `N` primeiros termos. Imprima com 4 casas decimais.

@@ -1,0 +1,1 @@
+Leia o lado de um quadrado (inteiro) e imprima o perímetro e a área, cada um em uma linha.

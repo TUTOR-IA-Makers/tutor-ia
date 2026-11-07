@@ -1,0 +1,8 @@
+id: "E2-MD-006"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "for"
+  - "if"
+origem: "Exercício avançado de laços aninhados - Losango"
+direitos_restritos: true

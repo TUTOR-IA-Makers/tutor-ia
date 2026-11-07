@@ -1,0 +1,7 @@
+id: "E2-F-005"
+eixo: "E2"
+nivel: "F"
+estruturas:
+  - "while"
+origem: "Exercício de laço com sentinela"
+direitos_restritos: true

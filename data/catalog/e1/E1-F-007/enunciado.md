@@ -1,0 +1,1 @@
+Leia o salário bruto de um funcionário (real) e calcule o salário líquido após descontar 11% de INSS e 7,5% de IR. Imprima o resultado com 2 casas decimais.

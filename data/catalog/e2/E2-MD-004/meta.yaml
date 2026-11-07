@@ -1,0 +1,9 @@
+id: "E2-MD-004"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "while"
+  - "for"
+  - "if"
+origem: "Exercício de Fatoração Primal"
+direitos_restritos: true

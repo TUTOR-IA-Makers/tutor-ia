@@ -1,0 +1,1 @@
+Leia um número binário de até 10 dígitos (como um único inteiro composto apenas por 0s e 1s). Converta esse número para a base decimal e imprima o resultado.

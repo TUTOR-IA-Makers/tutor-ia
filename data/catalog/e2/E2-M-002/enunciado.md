@@ -1,0 +1,1 @@
+Leia um número inteiro positivo e imprima o inverso dos dígitos. (Ex: 1234 → 4321).

@@ -1,0 +1,8 @@
+id: "E2-F-002"
+eixo: "E2"
+nivel: "F"
+estruturas:
+  - "if"
+  - "else"
+origem: "Exercício de classificação de triângulos"
+direitos_restritos: true

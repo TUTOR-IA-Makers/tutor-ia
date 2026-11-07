@@ -1,0 +1,1 @@
+Leia dois inteiros `A` e `B` (ambos positivos, até 10^9). Imprima quantos inteiros entre `A` e `B` (inclusive) são divisíveis por 3 ou por 7, usando aritmética de inclusão-exclusão (sem laço).

@@ -1,0 +1,1 @@
+Leia um inteiro ímpar `N` e imprima um losango (diamante) de asteriscos (`*`) cuja largura máxima (centro) tem `N` asteriscos. Preencha o lado esquerdo com espaços.

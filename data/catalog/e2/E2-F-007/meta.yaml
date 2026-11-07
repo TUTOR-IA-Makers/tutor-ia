@@ -1,0 +1,8 @@
+id: "E2-F-007"
+eixo: "E2"
+nivel: "F"
+estruturas:
+  - "while"
+  - "if"
+origem: "Exercício de contagem de dígitos"
+direitos_restritos: true

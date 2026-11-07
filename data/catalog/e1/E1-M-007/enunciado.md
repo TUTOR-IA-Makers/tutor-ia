@@ -1,0 +1,1 @@
+Leia os coeficientes `a`, `b` e `c` de uma equação do segundo grau. Calcule o discriminante `Δ = b² - 4ac` e as duas raízes reais (assuma que `Δ ≥ 0`). Imprima `Δ`, `x1` e `x2` com 4 casas decimais, cada um em uma linha.

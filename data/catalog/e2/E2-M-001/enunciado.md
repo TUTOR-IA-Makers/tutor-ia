@@ -1,0 +1,1 @@
+Leia `N` notas reais. Imprima a maior nota, a menor nota e a média, cada uma em uma linha com 2 casas decimais.

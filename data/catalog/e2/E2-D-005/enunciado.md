@@ -1,0 +1,1 @@
+Leia dois inteiros positivos `A` e `B`. Calcule o Máximo Divisor Comum (MDC) entre eles utilizando o Algoritmo de Euclides (divisões sucessivas) e imprima o resultado.
