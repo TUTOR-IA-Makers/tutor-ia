@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 # Make scripts/ importable without installing the package.
-SCRIPTS_DIR = Path(__file__).parent.parent.parent / "scripts"
+SCRIPTS_DIR = Path(__file__).parent.parent.parent.parent / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 # Caminho para o novo validador
@@ -110,11 +110,11 @@ def test_missing_essential_files_fails(tmp_path: Path) -> None:
 
 def test_real_e1_catalog_exists() -> None:
     """Garante que a pasta data/catalog/e1 existe. (Sem skip!)"""
-    catalog_dir = Path(__file__).parent.parent.parent / "data" / "catalog" / "e1"
+    catalog_dir = Path(__file__).parent.parent.parent.parent / "data" / "catalog" / "e1"
     assert catalog_dir.exists(), "A pasta do catálogo E1 não foi encontrada!"
 
 
 def test_real_e2_catalog_exists() -> None:
     """Garante que a pasta data/catalog/e2 existe. (Sem skip!)"""
-    catalog_dir = Path(__file__).parent.parent.parent / "data" / "catalog" / "e2"
+    catalog_dir = Path(__file__).parent.parent.parent.parent / "data" / "catalog" / "e2"
     assert catalog_dir.exists(), "A pasta do catálogo E2 não foi encontrada!"
