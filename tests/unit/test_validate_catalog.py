@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import sys
 from pathlib import Path
 
 # Make scripts/ importable without installing the package.
@@ -26,19 +27,29 @@ VALIDATOR_SCRIPT = SCRIPTS_DIR / "validate_catalog.py"
 def _create_mock_question(
     base_path: Path, q_id: str, eixo: str, nivel: str, valid_c: bool = True
 ) -> None:
+
+def _create_mock_question(
+    base_path: Path, q_id: str, eixo: str, nivel: str, valid_c: bool = True
+) -> None:
     """Cria a estrutura de pastas e arquivos de uma questão mockada."""
     q_dir = base_path / eixo.lower() / q_id
     q_dir.mkdir(parents=True, exist_ok=True)
+
 
     # meta.yaml
     meta_content = f'id: "{q_id}"\neixo: "{eixo}"\nnivel: "{nivel}"\ndireitos_restritos: true\n'
     (q_dir / "meta.yaml").write_text(meta_content, encoding="utf-8")
 
+
     # solucao.c
     c_code = (
         "#include <stdio.h>\nint main(){ return 0; }" if valid_c else "int main() { erro_sintaxe }"
     )
+    c_code = (
+        "#include <stdio.h>\nint main(){ return 0; }" if valid_c else "int main() { erro_sintaxe }"
+    )
     (q_dir / "solucao.c").write_text(c_code, encoding="utf-8")
+
 
     # entradas/01.txt
     entradas_dir = q_dir / "entradas"
@@ -55,9 +66,11 @@ def run_validator(catalog_dir: Path) -> subprocess.CompletedProcess:
     )
 
 
+
 # ---------------------------------------------------------------------------
 # Testes de Cobertura e Erros (Item 4 do PR)
 # ---------------------------------------------------------------------------
+
 
 
 def test_coverage_fails_if_below_8(tmp_path: Path) -> None:
@@ -65,6 +78,7 @@ def test_coverage_fails_if_below_8(tmp_path: Path) -> None:
     # Cria apenas 7 questões para o E1-MF
     for i in range(1, 8):
         _create_mock_question(tmp_path, f"E1-MF-00{i}", "E1", "MF")
+
 
     result = run_validator(tmp_path)
     assert result.returncode != 0
@@ -77,6 +91,9 @@ def test_coverage_passes_if_exactly_8(tmp_path: Path) -> None:
     # Cria 8 questões para o E1-MF
     for i in range(1, 9):
         _create_mock_question(tmp_path, f"E1-MF-00{i}", "E1", "MF")
+
+    # Como o validador exige E1 e E2 completos, precisamos mockar todos os níveis
+    # para ele retornar 0, ou adaptar o script para aceitar testes parciais.
 
     # Como o validador exige E1 e E2 completos, precisamos mockar todos os níveis
     # para ele retornar 0, ou adaptar o script para aceitar testes parciais.
@@ -98,14 +115,18 @@ def test_missing_essential_files_fails(tmp_path: Path) -> None:
     _create_mock_question(tmp_path, "E1-MF-001", "E1", "MF")
     (tmp_path / "e1" / "E1-MF-001" / "meta.yaml").unlink()  # Deleta o meta
 
+    (tmp_path / "e1" / "E1-MF-001" / "meta.yaml").unlink()  # Deleta o meta
+
     result = run_validator(tmp_path)
     assert result.returncode != 0
     assert "Arquivos essenciais" in result.stdout
 
 
+
 # ---------------------------------------------------------------------------
 # Testes do Catálogo Real (Sem pytest.skip)
 # ---------------------------------------------------------------------------
+
 
 
 def test_real_e1_catalog_exists() -> None:
