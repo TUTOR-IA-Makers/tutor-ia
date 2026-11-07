@@ -4,4 +4,4 @@ nivel: "D"
 estruturas:
   - "math.h"
 origem: "Exercício de geometria analítica — Fórmula de Shoelace"
-direitos_restritos: false
+direitos_restritos: true

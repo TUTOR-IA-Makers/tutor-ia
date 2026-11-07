@@ -25,7 +25,7 @@
       }
     ],
     "origem": "Exercício clássico de introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MF-002",
@@ -53,7 +53,7 @@
       }
     ],
     "origem": "Exercício clássico de introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MF-003",
@@ -81,7 +81,7 @@
       }
     ],
     "origem": "Exercício clássico de introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MF-004",
@@ -109,7 +109,7 @@
       }
     ],
     "origem": "Exercício clássico de conversão de unidades",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MF-005",
@@ -137,7 +137,7 @@
       }
     ],
     "origem": "Exercício clássico de aritmética inteira",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MF-006",
@@ -165,7 +165,7 @@
       }
     ],
     "origem": "Exercício clássico de geometria básica",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MF-007",
@@ -193,7 +193,7 @@
       }
     ],
     "origem": "Exercício clássico de conversão de unidades de tempo",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MF-008",
@@ -221,7 +221,7 @@
       }
     ],
     "origem": "Exercício clássico de operações comerciais",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-001",
@@ -249,7 +249,7 @@
       }
     ],
     "origem": "Exercício clássico de geometria",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-002",
@@ -277,7 +277,7 @@
       }
     ],
     "origem": "Exercício de média ponderada",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-003",
@@ -305,7 +305,7 @@
       }
     ],
     "origem": "Exercício clássico de geometria básica",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-004",
@@ -333,7 +333,7 @@
       }
     ],
     "origem": "Exercício clássico de física — cinemática",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-005",
@@ -361,7 +361,7 @@
       }
     ],
     "origem": "Exercício de aritmética básica",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-006",
@@ -389,7 +389,7 @@
       }
     ],
     "origem": "Exercício clássico de geometria",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-007",
@@ -417,7 +417,7 @@
       }
     ],
     "origem": "Exercício de cálculo salarial — introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-F-008",
@@ -445,7 +445,7 @@
       }
     ],
     "origem": "Exercício de eficiência energética — introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-001",
@@ -475,7 +475,7 @@
       }
     ],
     "origem": "Exercício de matemática financeira — precisa de math.h",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-002",
@@ -505,7 +505,7 @@
       }
     ],
     "origem": "Exercício de geometria analítica — precisa de math.h",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-003",
@@ -533,7 +533,7 @@
       }
     ],
     "origem": "Exercício clássico de formatação de saída",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-004",
@@ -561,7 +561,7 @@
       }
     ],
     "origem": "Exercício de conversão de unidades — termodinâmica",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-005",
@@ -589,7 +589,7 @@
       }
     ],
     "origem": "Exercício de geometria espacial — introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-006",
@@ -617,7 +617,7 @@
       }
     ],
     "origem": "Exercício de representação monetária — introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-007",
@@ -647,7 +647,7 @@
       }
     ],
     "origem": "Exercício de equação quadrática — precisa de math.h",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-M-008",
@@ -675,7 +675,7 @@
       }
     ],
     "origem": "Exercício clássico de aritmética modular",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-001",
@@ -705,7 +705,7 @@
       }
     ],
     "origem": "Exercício de geometria de polígonos regulares — precisa de math.h",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-002",
@@ -733,7 +733,7 @@
       }
     ],
     "origem": "Exercício de análise de parábola — geometria analítica",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-003",
@@ -763,7 +763,7 @@
       }
     ],
     "origem": "Exercício de geometria analítica — Fórmula de Shoelace",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-004",
@@ -783,7 +783,7 @@
       }
     ],
     "origem": "Exercício complementar de economia básica",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-005",
@@ -803,7 +803,7 @@
       }
     ],
     "origem": "Exercício de progressão aritmética direta",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-006",
@@ -825,7 +825,7 @@
       }
     ],
     "origem": "Exercício de cinemática vetorial",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-007",
@@ -845,7 +845,7 @@
       }
     ],
     "origem": "Exercício de matemática financeira aplicada",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-D-008",
@@ -865,7 +865,7 @@
       }
     ],
     "origem": "Exercício de cálculo de materiais e orçamento",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-001",
@@ -893,7 +893,7 @@
       }
     ],
     "origem": "Exercício de combinatória — inclusão-exclusão",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-002",
@@ -923,7 +923,7 @@
       }
     ],
     "origem": "Exercício avançado de trigonometria espacial — Fórmula de Haversine",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-003",
@@ -953,7 +953,7 @@
       }
     ],
     "origem": "Exercício de manipulação algébrica extrema e limite de eixo sem desvios lógicos",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-004",
@@ -975,7 +975,7 @@
       }
     ],
     "origem": "Exercício algébrico avançado — Fórmula de Herão",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-005",
@@ -995,7 +995,7 @@
       }
     ],
     "origem": "Geometria analítica avançada sem desvios condicionais explícitos",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-006",
@@ -1017,7 +1017,7 @@
       }
     ],
     "origem": "Física computacional de alta precisão",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-007",
@@ -1039,7 +1039,7 @@
       }
     ],
     "origem": "Identidades trigonométricas fundamentais em ponto flutuante",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E1-MD-008",
@@ -1061,7 +1061,7 @@
       }
     ],
     "origem": "Matemática financeira inversa e capitalização composta",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   
   {
@@ -1078,7 +1078,7 @@
       {"input": "100\n", "output": "positivo\n"}
     ],
     "origem": "Exercício clássico de condicionais",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MF-002",
@@ -1094,7 +1094,7 @@
       {"input": "-1 -2\n","output": "-1\n"}
     ],
     "origem": "Exercício clássico de condicionais",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MF-003",
@@ -1110,7 +1110,7 @@
       {"input": "3\n", "output": "dia util\n"}
     ],
     "origem": "Exercício clássico de condicionais",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MF-004",
@@ -1126,7 +1126,7 @@
       {"input": "-3\n", "output": "impar\n"}
     ],
     "origem": "Exercício clássico de condicionais — paridade",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MF-005",
@@ -1142,7 +1142,7 @@
       {"input": "7 4\n",  "output": "nao divisivel\n"}
     ],
     "origem": "Exercício clássico de divisibilidade",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MF-006",
@@ -1158,7 +1158,7 @@
       {"input": "65\n", "output": "maior de idade\n"}
     ],
     "origem": "Exercício clássico de condicionais",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MF-007",
@@ -1174,7 +1174,7 @@
       {"input": "-5 0 5\n","output": "crescente\n"}
     ],
     "origem": "Exercício clássico de condicionais compostos",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MF-008",
@@ -1190,7 +1190,7 @@
       {"input": "Z\n", "output": "consoante\n"}
     ],
     "origem": "Exercício clássico de condicionais com char",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-001",
@@ -1206,7 +1206,7 @@
       {"input": "3.0\n", "output": "D\n"}
     ],
     "origem": "Exercício de classificação por faixas — introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-002",
@@ -1222,7 +1222,7 @@
       {"input": "1.0 2.0 5.0\n", "output": "invalido\n"}
     ],
     "origem": "Exercício de classificação de triângulos",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-003",
@@ -1238,7 +1238,7 @@
       {"input": "12\n", "output": "31\n"}
     ],
     "origem": "Exercício clássico de switch",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-004",
@@ -1254,7 +1254,7 @@
       {"input": "2\n", "output": "3\n6\n"}
     ],
     "origem": "Exercício clássico de laço for",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-005",
@@ -1270,7 +1270,7 @@
       {"input": "10 20 30 0\n",  "output": "60\n"}
     ],
     "origem": "Exercício de laço com sentinela",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-006",
@@ -1286,7 +1286,7 @@
       {"input": "20\n", "output": "12\n"}
     ],
     "origem": "Exercício de contagem com condicionais em laço",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-007",
@@ -1302,7 +1302,7 @@
       {"input": "-1234\n","output": "4\n"}
     ],
     "origem": "Exercício de contagem de dígitos",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-F-008",
@@ -1318,7 +1318,7 @@
       {"input": "1\n",  "output": "1\n"}
     ],
     "origem": "Exercício de divisores — introdução à programação",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-001",
@@ -1334,7 +1334,7 @@
       {"input": "2\n5.5 5.5\n",           "output": "5.50\n5.50\n5.50\n"}
     ],
     "origem": "Exercício clássico de estatísticas simples com laço",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-002",
@@ -1350,7 +1350,7 @@
       {"input": "9876\n",  "output": "6789\n"}
     ],
     "origem": "Exercício de inversão de dígitos",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-003",
@@ -1366,7 +1366,7 @@
       {"input": "4\n-1 -2 -3 -4\n",  "output": "0\n4\n0\n"}
     ],
     "origem": "Exercício de contagem classificada",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-004",
@@ -1382,7 +1382,7 @@
       {"input": "60\n", "output": "15\n30\n45\n60\n"}
     ],
     "origem": "Exercício de FizzBuzz parcial",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-005",
@@ -1398,7 +1398,7 @@
       {"input": "496\n", "output": "perfeito\n"}
     ],
     "origem": "Exercício de número perfeito",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-006",
@@ -1414,7 +1414,7 @@
       {"input": "1\n-1 -5\n",      "output": "-1\n-1\n"}
     ],
     "origem": "Exercício de acumulação com condicional em laço",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-007",
@@ -1429,7 +1429,7 @@
       {"input": "5\n", "output": "*\n**\n***\n****\n*****\n"}
     ],
     "origem": "Exercício clássico de laços aninhados",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-M-008",
@@ -1445,7 +1445,7 @@
       {"input": "0\n", "output": "ordenada\n"}
     ],
     "origem": "Exercício de verificação de propriedade em sequência",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
 
   {
@@ -1462,7 +1462,7 @@
       {"input": "6\n",  "output": "1\n2\nFizz\n4\nBuzz\nFizz\n"}
     ],
     "origem": "Exercício clássico FizzBuzz",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-D-002",
@@ -1478,7 +1478,7 @@
       {"input": "",              "output": "vazio\n"}
     ],
     "origem": "Exercício de leitura até EOF com estatísticas",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-D-003",
@@ -1494,7 +1494,7 @@
       {"input": "3\n",  "output": "erro\nmetade\nquase\n0 1 1 1\n"}
     ],
     "origem": "Exercício de múltiplas condições e contagem",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-D-004",
@@ -1510,7 +1510,7 @@
       {"input": "9\n", "output": "composto\n"}
     ],
     "origem": "Exercício clássico de primalidade",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-D-005",
@@ -1526,7 +1526,7 @@
       {"input": "14 21\n", "output": "7\n"}
     ],
     "origem": "Algoritmo de Euclides (Matemática Discreta)",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-D-006",
@@ -1542,7 +1542,7 @@
       {"input": "1000000000\n", "output": "512\n"}
     ],
     "origem": "Exercício de conversão de base",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-D-007",
@@ -1558,7 +1558,7 @@
       {"input": "13\n", "output": "1101\n"}
     ],
     "origem": "Exercício de conversão de base",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-D-008",
@@ -1573,7 +1573,7 @@
       {"input": "0.5 3\n", "output": "1.6250\n"}
     ],
     "origem": "Exercício de cálculo numérico com laço",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-001",
@@ -1589,7 +1589,7 @@
       {"input": "1000\n", "output": "7.485471\n952\n"}
     ],
     "origem": "Exercício de série harmônica e constante de Euler",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-002",
@@ -1605,7 +1605,7 @@
       {"input": "1000000\n","output": "2178308\n"}
     ],
     "origem": "Exercício de soma de Fibonacci com limite",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-003",
@@ -1621,7 +1621,7 @@
       {"input": "1\n407\n",           "output": "sim\n"}
     ],
     "origem": "Exercício de número narcisista (Armstrong)",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-004",
@@ -1637,7 +1637,7 @@
       {"input": "1024\n", "output": "2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2\n"}
     ],
     "origem": "Exercício de Fatoração Primal",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-005",
@@ -1652,7 +1652,7 @@
       {"input": "9\n", "output": "9 28 14 7 22 11 34 17 52 26 13 40 20 10 5 16 8 4 2 1\n19\n"}
     ],
     "origem": "Problema Clássico de Collatz",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-006",
@@ -1667,7 +1667,7 @@
       {"input": "3\n", "output": " *\n***\n *\n"}
     ],
     "origem": "Exercício avançado de laços aninhados - Losango",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-007",
@@ -1682,7 +1682,7 @@
       {"input": "6\n", "output": "1 6 15 20 15 6 1\n"}
     ],
     "origem": "Gerador de linha do Triângulo de Pascal",
-    "direitos_restritos": false
+    "direitos_restritos": true
   },
   {
     "id": "E2-MD-008",
@@ -1697,6 +1697,6 @@
       {"input": "0.001\n", "output": "3.143589\n500\n"}
     ],
     "origem": "Exercício clássico de métodos numéricos (Leibniz)",
-    "direitos_restritos": false
+    "direitos_restritos": true
   }
 ]

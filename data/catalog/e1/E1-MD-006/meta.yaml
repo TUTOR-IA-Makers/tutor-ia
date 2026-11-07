@@ -4,4 +4,4 @@ nivel: "MD"
 estruturas:
   - "math.h"
 origem: "Física computacional de alta precisão"
-direitos_restritos: false
+direitos_restritos: true

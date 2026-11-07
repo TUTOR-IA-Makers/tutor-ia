@@ -5,4 +5,4 @@ estruturas:
   - "for"
   - "if"
 origem: "Exercício de contagem com condicionais em laço"
-direitos_restritos: false
+direitos_restritos: true

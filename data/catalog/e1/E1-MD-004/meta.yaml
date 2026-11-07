@@ -4,4 +4,4 @@ nivel: "MD"
 estruturas:
   - "math.h"
 origem: "Exercício algébrico avançado — Fórmula de Herão"
-direitos_restritos: false
+direitos_restritos: true

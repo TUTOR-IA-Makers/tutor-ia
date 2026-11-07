@@ -4,4 +4,4 @@ nivel: "MD"
 estruturas:
   - "stdlib.h"
 origem: "Exercício de manipulação algébrica extrema e limite de eixo sem desvios lógicos"
-direitos_restritos: false
+direitos_restritos: true

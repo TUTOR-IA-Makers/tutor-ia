@@ -6,4 +6,4 @@ estruturas:
   - "while"
   - "if"
 origem: "Exercício de soma de Fibonacci com limite"
-direitos_restritos: false
+direitos_restritos: true

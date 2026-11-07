@@ -4,4 +4,4 @@ nivel: "D"
 estruturas:
   - "math.h"
 origem: "Exercício de cinemática vetorial"
-direitos_restritos: false
+direitos_restritos: true

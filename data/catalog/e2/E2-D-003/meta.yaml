@@ -6,4 +6,4 @@ estruturas:
   - "if"
   - "switch"
 origem: "Exercício de múltiplas condições e contagem"
-direitos_restritos: false
+direitos_restritos: true
