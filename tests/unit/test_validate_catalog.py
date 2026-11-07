@@ -49,6 +49,7 @@ def _create_mock_question(
 def run_validator(catalog_dir: Path) -> subprocess.CompletedProcess:
     """Roda o validador injetando um diretório customizado."""
     env = {"CATALOG_DIR_OVERRIDE": str(catalog_dir)}
+    # O subprocesso é seguro pois não há input de usário externo
     return subprocess.run(  # noqa: S603
         [sys.executable, str(VALIDATOR_SCRIPT)], capture_output=True, text=True, env=env
     )
