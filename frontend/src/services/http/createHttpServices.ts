@@ -11,7 +11,16 @@ import {
   teacherDto,
 } from './dto'
 import { API_PREFIX, ENDPOINTS } from './endpoints'
-import { fromDraft, fromStatement, toGeneration, toQuery, toQuestion, toSummary } from './mappers'
+import {
+  fromCredentials,
+  fromDraft,
+  fromRegistration,
+  fromStatement,
+  toGeneration,
+  toQuery,
+  toQuestion,
+  toSummary,
+} from './mappers'
 
 export interface HttpServicesConfig {
   baseUrl?: string
@@ -58,6 +67,18 @@ export function createHttpServices({
     },
     session: {
       currentTeacher: (options = {}) => api.get(ENDPOINTS.session, teacherDto, options),
+      login: async (credentials, options = {}) => {
+        await api.post(ENDPOINTS.session, emptyDto, {
+          ...options,
+          body: fromCredentials(credentials),
+        })
+      },
+      register: async (registration, options = {}) => {
+        await api.post(ENDPOINTS.accounts, emptyDto, {
+          ...options,
+          body: fromRegistration(registration),
+        })
+      },
       logout: async () => {
         await api.post(ENDPOINTS.logout, emptyDto)
       },

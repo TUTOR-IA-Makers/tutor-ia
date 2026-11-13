@@ -26,7 +26,7 @@
 
     ---
 
-    - Produto genérico "feito por IA": gradientes decorativos, vidro fosco, brilhos, ícone de faíscas para gerar, cards idênticos com sombra difusa.
+    - Produto genérico "feito por IA": gradientes decorativos (exceção registrada em D9), vidro fosco, brilhos, ícone de faíscas para gerar, cards idênticos com sombra difusa.
     - Cópia do visual do Aprender3 ou da marca da UnB. As cores são da mesma família, nunca idênticas.
     - Ferramenta de desenvolvedor intimidante: terminal e jargão técnico na interface principal.
 
@@ -142,7 +142,7 @@ Entradas e saídas dos casos de teste continuam em fundo claro, com fonte mono.
 
 ### 4.6 Contraste verificado (WCAG 2.2)
 
-Cada amostra abaixo é o texto real sobre o fundo real. O `make check` recalcula 36 pares a partir de `tokens.css` com `npm run contrast` e falha abaixo de 4.5 para texto ou 3 para elementos que não são texto.
+Cada amostra abaixo é o texto real sobre o fundo real. O `make check` recalcula 37 pares a partir de `tokens.css` com `npm run contrast` e falha abaixo de 4.5 para texto ou 3 para elementos que não são texto.
 
 | Amostra | Par | Razão | Mínimo | Resultado |
 |---|---|---|---|---|
@@ -164,6 +164,7 @@ Cada amostra abaixo é o texto real sobre o fundo real. O `make check` recalcula
 | <span class="ce-id-pair" style="color:#B42318;background:#FFFFFF">Aa 123</span> | Erro / superfície<br><span class="ce-id-mono">#B42318 / #FFFFFF</span> | 6.57 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#B42318;background:#FDECEA">Aa 123</span> | Erro / fundo de erro<br><span class="ce-id-mono">#B42318 / #FDECEA</span> | 5.75 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#FFFFFF;background:#1E3557">Aa 123</span> | Branco / rodapé<br><span class="ce-id-mono">#FFFFFF / #1E3557</span> | 12.34 | 4.5 | <span class="ce-id-pass">AA</span> |
+| <span class="ce-id-pair" style="color:#FFFFFF;background:#355DA8">Aa 123</span> | Branco / chamada final da landing<br><span class="ce-id-mono">#FFFFFF / #355DA8</span> | 6.40 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#2456A6;background:#E8EFFA">Aa 123</span> | Gerando<br><span class="ce-id-mono">#2456A6 / #E8EFFA</span> | 6.14 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#8A5A00;background:#FDF3E1">Aa 123</span> | Aguardando revisão<br><span class="ce-id-mono">#8A5A00 / #FDF3E1</span> | 5.39 | 4.5 | <span class="ce-id-pass">AA</span> |
 | <span class="ce-id-pair" style="color:#12635A;background:#E3F2EF">Aa 123</span> | Aprovada<br><span class="ce-id-mono">#12635A / #E3F2EF</span> | 6.16 | 4.5 | <span class="ce-id-pass">AA</span> |
@@ -282,6 +283,7 @@ Escala de 4px. Todo espaçamento da interface usa um destes tokens. `--space-16`
 | Landing: seções ao rolar | os cartões do problema e do escopo entram uma vez, com opacidade e deslocamento de 16px, quando a seção aparece na tela; na seção "O produto em ação" a interface fica fixa e o conteúdo muda conforme a etapa que cruza o meio da tela. Com "reduzir movimento" ativo ou sem `IntersectionObserver`, tudo aparece direto |
 | Landing: prova de execução | o botão "Compilar e executar" percorre Código, Compilação, Execução e Saída esperada. A sequência reproduz uma execução gravada, identificada como exemplo na própria tela |
 | Landing: profundidade 3D | o hero empilha enunciado, código e testes em perspectiva (CSS `transform`, sem biblioteca) e inclina com o ponteiro; as etapas soltas convergem em um fluxo conforme a rolagem. Só em telas com ponteiro de hover e sem "reduzir movimento"; a página landing é a única que usa sombra de profundidade (`--shadow-float`, `--shadow-depth`) |
+| Entrar e criar conta | a tela divide-se ao meio: à esquerda, o mesmo gradiente e a mesma cena 3D do hero da landing, com a logo monocromática (a versão em cor some sobre o azul); à direita, o formulário. Trocar entre "Entrar" e "Criar conta" faz o painel aparecer com opacidade em `--dur-slow`. Abaixo de 1024px a marca vira uma faixa curta acima do formulário e a cena some. Com "reduzir movimento" ativo, nada se move |
 | Vídeo de demonstração (G5-3) | <span class="ce-badge ce-status--planned">Planejado</span> embutido na landing page |
 
 ## 9. Princípios de UX
@@ -500,6 +502,14 @@ Teste com leitor de tela e com professor de fora da equipe continuam <span class
     | Alternativas | vídeo em loop no fundo do hero; etapas marcadas conforme a rolagem (testada e descartada por chamar pouca atenção) |
     | Decisão | hero em azul sólido com um gerador de demonstração: o visitante escolhe Condicionais, Laços ou Vetores e vê as cinco etapas rodarem com uma questão pronta, cujas saídas esperadas foram obtidas compilando e executando a solução |
     | Consequências | sem arquivo pesado nem dependência de gravação; a demonstração usa os componentes do app; a animação só começa com o clique, como pede a seção 8; nova escala de destaque (`--text-display`, `--text-3xl`) e espaçamentos `--space-16` e `--space-24`, sem cor nova |
+
+??? note "D9: Gradiente só nas páginas públicas"
+    | Campo | Valor |
+    |---|---|
+    | Contexto | a seção 1 proíbe gradientes decorativos, mas o hero e a chamada final da landing já usam o gradiente azul para verde-azulado, e a tela de entrada repete o hero para parecer continuação da landing |
+    | Alternativas | voltar ao azul sólido nas duas páginas; liberar gradiente em todo o app |
+    | Decisão | os gradientes da marca (do azul `--color-primary-hover` ao verde-azulado `--color-accent` no hero e na tela de entrada; do azul ao `--color-closing-blue` na chamada final) valem só na landing e na tela de entrada. Dentro do app (biblioteca, geração, revisão) a regra da seção 1 continua |
+    | Consequências | doc e código voltam a dizer a mesma coisa; texto sobre o gradiente precisa passar no contraste com a ponta mais clara (branco sobre `#1B7A70`: 5.17; sobre `#355DA8`: 6.40); a logo em cor não vai sobre o gradiente, só a monocromática |
 
 ## 14. Como mudar a identidade
 

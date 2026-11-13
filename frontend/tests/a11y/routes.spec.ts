@@ -10,6 +10,8 @@ const ROUTES = [
   '/questoes/q-0141',
   '/questoes/q-0143',
   '/ajuda',
+  '/entrar',
+  '/criar-conta',
   '/nao-existe',
 ]
 

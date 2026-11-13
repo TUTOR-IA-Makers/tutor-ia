@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import { EMPTY_FILTERS } from '@/domain'
-import { CSRF_HEADER, ResponseShapeError } from '@/lib/http'
+import { CSRF_HEADER, CSRF_HEADER_VALUE, ResponseShapeError } from '@/lib/http'
 import { server } from '@/test/server'
 import { createHttpServices } from './createHttpServices'
 
@@ -226,6 +226,57 @@ describe('createHttpServices', () => {
     })
     await services.session.logout()
     expect(calls[1]).toMatchObject({ method: 'POST', path: '/api/v1/session/logout' })
+  })
+
+  it('entra com POST /session enviando só e-mail e senha, com o cabeçalho CSRF', async () => {
+    const calls = capture()
+    await services.session.login({ email: 'ana@universidade.br', password: 'segredo-123' })
+    expect(calls[0]).toMatchObject({
+      method: 'POST',
+      path: '/api/v1/session',
+      body: { email: 'ana@universidade.br', password: 'segredo-123' },
+    })
+    expect(Object.keys(calls[0]?.body as object)).toEqual(['email', 'password'])
+    expect(calls[0]?.csrf).toBe(CSRF_HEADER_VALUE)
+  })
+
+  it('cria a conta com POST /accounts e o convite em snake_case', async () => {
+    const calls = capture()
+    await services.session.register({
+      name: 'Ana Souza',
+      email: 'ana@universidade.br',
+      password: 'segredo-123',
+      inviteCode: 'DEMO-2026',
+    })
+    expect(calls[0]).toMatchObject({
+      method: 'POST',
+      path: '/api/v1/accounts',
+      body: {
+        name: 'Ana Souza',
+        email: 'ana@universidade.br',
+        password: 'segredo-123',
+        invite_code: 'DEMO-2026',
+      },
+    })
+    expect(calls[0]?.csrf).toBe(CSRF_HEADER_VALUE)
+  })
+
+  it('aceita 204 sem corpo na entrada', async () => {
+    server.use(http.post('*/api/v1/session', () => new HttpResponse(null, { status: 204 })))
+    await expect(
+      services.session.login({ email: 'ana@universidade.br', password: 'segredo-123' }),
+    ).resolves.toBeUndefined()
+  })
+
+  it('repassa o 401 da entrada como HttpError', async () => {
+    server.use(
+      http.post('*/api/v1/session', () =>
+        HttpResponse.json({ detail: 'Credenciais inválidas.' }, { status: 401 }),
+      ),
+    )
+    await expect(
+      services.session.login({ email: 'ana@universidade.br', password: 'segredo-123' }),
+    ).rejects.toMatchObject({ status: 401 })
   })
 
   it('consulta /health na raiz, fora do prefixo da API', async () => {
