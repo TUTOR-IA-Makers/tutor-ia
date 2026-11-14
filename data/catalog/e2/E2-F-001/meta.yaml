@@ -4,5 +4,5 @@ nivel: "F"
 estruturas:
   - "if"
   - "else"
-origem: "Exercício de classificação por faixas — introdução à programação"
-direitos_restritos: true
+origem: "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.3"
+direitos_restritos: false

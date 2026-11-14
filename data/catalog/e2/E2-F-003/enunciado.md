@@ -1,1 +1,1 @@
-Leia um inteiro de 1 a 12 representando um mês. Imprima o número de dias desse mês (assuma que fevereiro tem 28 dias).
+Leia dois números inteiros e informe o maior deles e se esse maior número é par ou ímpar. Se forem iguais, imprima `iguais`. Caso contrário, imprima `<maior> par` ou `<maior> impar`.

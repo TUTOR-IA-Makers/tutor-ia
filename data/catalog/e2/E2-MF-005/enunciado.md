@@ -1,1 +1,1 @@
-Leia dois reais `a` e `b`. Se `a` for divisível por `b` (sem resto), imprima `divisivel`; caso contrário, imprima `nao divisivel`. Assuma `b != 0` e ambos inteiros.
+Leia um número inteiro e verifique se ele é par ou ímpar, imprimindo `par` ou `impar`.

@@ -1,1 +1,1 @@
-Leia a nota de um aluno (real, 0 a 10). Classifique: ≥ 9 `A`, ≥ 7 `B`, ≥ 5 `C`, < 5 `D`. Imprima a letra.
+Leia a base e a altura de dois retângulos A e B (inteiros). Calcule e compare suas áreas, imprimindo `primeiro maior`, `segundo maior` ou `iguais`.
