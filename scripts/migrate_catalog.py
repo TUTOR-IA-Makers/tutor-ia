@@ -1,8 +1,8 @@
 import json
 import os
 
-JSON_PATH = "data/catalog/catalogo_atual.json"
-BASE_OUT_DIR = "data/catalog"
+JSON_PATH = "../data/catalog/catalogo_atual.json"
+BASE_OUT_DIR = "../data/catalog"
 
 def write_yaml(filepath, meta):
     yaml_lines = []

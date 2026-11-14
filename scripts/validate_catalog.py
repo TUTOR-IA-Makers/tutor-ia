@@ -3,7 +3,7 @@ import sys
 import subprocess
 import glob
 
-CATALOG_DIR = os.environ.get("CATALOG_DIR_OVERRIDE", "data/catalog")
+CATALOG_DIR = os.environ.get("CATALOG_DIR_OVERRIDE", "../data/catalog")
 REQUIRED_COVERAGE = 8
 
 EXPECTED_LEVELS = ["MF", "F", "M", "D", "MD"]
