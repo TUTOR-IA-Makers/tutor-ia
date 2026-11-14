@@ -1,5 +1,1 @@
-Leia um caractere (letra maiúscula). Classifique-o como `vogal` ou `consoante`.
-
-**Entrada:** um caractere A-Z.
-
-**Saída:** `vogal` ou `consoante`.
+Leia o salário bruto e o valor da prestação de um empréstimo (reais). O valor máximo da prestação não poderá ultrapassar 30% do salário bruto. Imprima `emprestimo concedido` ou `emprestimo negado`.

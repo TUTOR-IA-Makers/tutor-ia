@@ -1,14 +1,12 @@
 #include <stdio.h>
 
 int main(void) {
-    int n;
-    scanf("%d", &n);
-    long long c = 1;
-    for (int i = 1; i <= n + 1; i++) {
-        printf("%lld", c);
-        if (i <= n) printf(" ");
-        c = c * (n - i + 1) / i;
-    }
-    printf("\n");
+    double saldo, credito;
+    scanf("%lf", &saldo);
+    if (saldo <= 500.0) credito = 0.0;
+    else if (saldo <= 1000.0) credito = saldo * 0.3;
+    else if (saldo <= 3000.0) credito = saldo * 0.4;
+    else credito = saldo * 0.5;
+    printf("%.2f\n%.2f\n", saldo, credito);
     return 0;
 }

@@ -1,5 +1,1 @@
-Leia um inteiro e imprima `positivo`, `negativo` ou `zero` conforme o valor.
-
-**Entrada:** um inteiro.
-
-**Saída:** uma das três strings.
+Leia um número real e imprima-o caso seja maior que 20. Caso contrário, não imprima nada.

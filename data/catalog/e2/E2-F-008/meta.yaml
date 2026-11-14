@@ -2,7 +2,6 @@ id: "E2-F-008"
 eixo: "E2"
 nivel: "F"
 estruturas:
-  - "for"
-  - "if"
-origem: "Exercício de divisores — introdução à programação"
+  - "switch"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 148"
 direitos_restritos: true

@@ -2,7 +2,7 @@ id: "E2-MD-007"
 eixo: "E2"
 nivel: "MD"
 estruturas:
-  - "for"
-  - "while"
-origem: "Gerador de linha do Triângulo de Pascal"
+  - "if"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 144"
 direitos_restritos: true

@@ -1,12 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    long long n;
-    scanf("%lld", &n);
-    if (n == 0) { printf("1\n"); return 0; }
-    if (n < 0) n = -n;
-    int count = 0;
-    while (n > 0) { n /= 10; count++; }
-    printf("%d\n", count);
+    int n;
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++) {
+        printf("%d%s", 2 * i, i == n ? "" : " ");
+    }
+    printf("\n");
     return 0;
 }

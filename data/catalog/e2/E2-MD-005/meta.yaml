@@ -2,7 +2,7 @@ id: "E2-MD-005"
 eixo: "E2"
 nivel: "MD"
 estruturas:
-  - "while"
   - "if"
-origem: "Problema Clássico de Collatz"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 121"
 direitos_restritos: true

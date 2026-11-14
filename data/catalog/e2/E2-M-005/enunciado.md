@@ -1,1 +1,1 @@
-Um número é perfeito se a soma dos seus divisores próprios (excluindo ele mesmo) é igual a ele. Leia `N` e imprima `perfeito` ou `nao perfeito`.
+Leia um inteiro `N` (N >= 1) e, em seguida, `N` números reais (podendo ser negativos). Imprima o maior e o menor número digitados, cada um em uma linha com 2 casas decimais.

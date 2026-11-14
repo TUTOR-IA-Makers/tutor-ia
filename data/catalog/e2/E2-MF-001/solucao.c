@@ -1,10 +1,10 @@
 #include <stdio.h>
 
 int main(void) {
-    int n;
-    scanf("%d", &n);
-    if (n > 0) printf("positivo\n");
-    else if (n < 0) printf("negativo\n");
-    else printf("zero\n");
+    double numero;
+    scanf("%lf", &numero);
+    if (numero > 20.0) {
+        printf("%.2f\n", numero);
+    }
     return 0;
 }

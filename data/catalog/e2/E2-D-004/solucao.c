@@ -1,15 +1,14 @@
 #include <stdio.h>
+#include <math.h>
 
 int main(void) {
-    int n, is_prime = 1;
-    scanf("%d", &n);
-    for (int i = 2; i * i <= n; i++) {
-        if (n % i == 0) {
-            is_prime = 0;
-            break;
-        }
+    double x;
+    scanf("%lf", &x);
+    if (x > 4.0 || x < -4.0) {
+        double fx = (5.0 * x + 3.0) / sqrt(x * x - 16.0);
+        printf("%.4f\n", fx);
+    } else {
+        printf("NAO PODE SER FEITA\n");
     }
-    if (is_prime) printf("primo\n");
-    else printf("composto\n");
     return 0;
 }

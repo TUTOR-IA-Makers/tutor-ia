@@ -2,8 +2,7 @@ id: "E2-M-003"
 eixo: "E2"
 nivel: "M"
 estruturas:
-  - "for"
   - "if"
   - "else"
-origem: "Exercício de contagem classificada"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 152"
 direitos_restritos: true

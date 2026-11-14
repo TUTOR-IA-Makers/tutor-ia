@@ -1,1 +1,1 @@
-Leia um número binário de até 10 dígitos (como um único inteiro composto apenas por 0s e 1s). Converta esse número para a base decimal e imprima o resultado.
+Imprima uma tabela de conversão de Fahrenheit para Celsius. Leia a temperatura superior `F1`, a inferior `F2` e o decremento `D` (inteiros, F1 >= F2, D > 0). Para cada temperatura de `F1` até `F2` com passo `-D`, imprima `F C` onde `C = 5 * (F - 32) / 9` com 2 casas decimais.

@@ -1,9 +1,13 @@
 #include <stdio.h>
 
 int main(void) {
-    int n;
-    scanf("%d", &n);
-    for (int i = 1; i <= n; i++)
-        printf("%d\n", 3 * i);
+    int num, c;
+    scanf("%d", &num);
+    c = num / 100;
+    if (c % 2 == 0) {
+        printf("par\n");
+    } else {
+        printf("impar\n");
+    }
     return 0;
 }

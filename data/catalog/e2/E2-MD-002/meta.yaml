@@ -3,7 +3,5 @@ eixo: "E2"
 nivel: "MD"
 estruturas:
   - "for"
-  - "while"
-  - "if"
-origem: "Exercício de soma de Fibonacci com limite"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 167"
 direitos_restritos: true

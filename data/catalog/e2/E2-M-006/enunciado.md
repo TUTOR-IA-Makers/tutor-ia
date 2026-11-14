@@ -1,1 +1,1 @@
-Leia `N` pares de inteiros `(a, b)`. Para cada par, imprima o maior. Ao final, imprima a soma de todos os maiores.
+Calcule o produto de dois números inteiros não-negativos `A` e `B` utilizando exclusivamente somas sucessivas em um laço de repetição. Imprima o resultado.

@@ -1,1 +1,1 @@
-Leia um inteiro `N` e imprima quantos números entre 1 e N são divisíveis por 2 ou por 5.
+Imprima todos os números de 1 até `N` (um por linha) e, na última linha, a soma de todos eles.

@@ -1,11 +1,12 @@
 #include <stdio.h>
 
 int main(void) {
-    char c;
-    scanf(" %c", &c);
-    if (c=='A'||c=='E'||c=='I'||c=='O'||c=='U')
-        printf("vogal\n");
-    else
-        printf("consoante\n");
+    double sb, vp;
+    scanf("%lf %lf", &sb, &vp);
+    if (vp <= 0.3 * sb) {
+        printf("emprestimo concedido\n");
+    } else {
+        printf("emprestimo negado\n");
+    }
     return 0;
 }

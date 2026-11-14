@@ -1,18 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    int n, count = 0, maior, menor;
-    double soma = 0;
-    while (scanf("%d", &n) == 1) {
-        if (count == 0) maior = menor = n;
-        else {
-            if (n > maior) maior = n;
-            if (n < menor) menor = n;
-        }
-        soma += n;
-        count++;
-    }
-    if (count == 0) { printf("vazio\n"); return 0; }
-    printf("%.2f\n%.2f\n%.2f\n", soma/count, (double)maior, (double)menor);
+    int a, b, c, aux;
+    scanf("%d %d %d", &a, &b, &c);
+    if (a > b) { aux = a; a = b; b = aux; }
+    if (a > c) { aux = a; a = c; c = aux; }
+    if (b > c) { aux = b; b = c; c = aux; }
+    printf("%d %d %d\n", a, b, c);
     return 0;
 }

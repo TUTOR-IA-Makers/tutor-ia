@@ -1,1 +1,1 @@
-Leia um inteiro ímpar `N` e imprima um losango (diamante) de asteriscos (`*`) cuja largura máxima (centro) tem `N` asteriscos. Preencha o lado esquerdo com espaços.
+Em um campeonato nacional de arco-e-flecha, cada equipe possui três arqueiros com pontuações distintas. Leia os pontos inteiros dos três jogadores. Imprima os pontos em ordem decrescente (uma linha com os 3 valores separados por espaço). Em seguida, se a soma dos pontos for estritamente maior que 100, imprima a média aritmética com 2 casas decimais; senão, imprima `Equipe desclassificada`.

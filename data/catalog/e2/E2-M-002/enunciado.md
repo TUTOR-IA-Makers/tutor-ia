@@ -1,1 +1,1 @@
-Leia um número inteiro positivo e imprima o inverso dos dígitos. (Ex: 1234 → 4321).
+Leia três medidas reais `a`, `b` e `c` de um triângulo. Se não formarem triângulo, imprima `nao forma triangulo`. Caso contrário, classifique quanto aos ângulos: `retangulo`, `obtusangulo` ou `acutangulo`.

@@ -1,5 +1,1 @@
-Leia dois inteiros e imprima o maior deles. Se forem iguais, imprima qualquer um.
-
-**Entrada:** dois inteiros.
-
-**Saída:** o maior.
+Leia dois valores numéricos inteiros e efetue a adição; caso o resultado seja maior que 10, apresente a soma.

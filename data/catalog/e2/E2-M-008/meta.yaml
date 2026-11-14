@@ -2,7 +2,8 @@ id: "E2-M-008"
 eixo: "E2"
 nivel: "M"
 estruturas:
-  - "while"
+  - "for"
   - "if"
-origem: "Exercício de verificação de propriedade em sequência"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 210"
 direitos_restritos: true

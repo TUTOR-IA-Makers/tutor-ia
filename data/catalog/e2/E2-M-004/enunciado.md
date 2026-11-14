@@ -1,1 +1,1 @@
-Leia um inteiro `N` e imprima todos os números de 1 a N que são divisíveis por 3 e por 5 simultaneamente.
+Leia três inteiros representando dia, mês e ano de uma data (ano >= 1). Verifique se a data é válida no calendário gregoriano (considerando anos bissextos) e imprima `DATA VALIDA` ou `DATA INVALIDA`.

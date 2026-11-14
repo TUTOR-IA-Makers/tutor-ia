@@ -2,7 +2,7 @@ id: "E2-D-007"
 eixo: "E2"
 nivel: "D"
 estruturas:
-  - "while"
   - "if"
-origem: "Exercício de conversão de base"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 153"
 direitos_restritos: true

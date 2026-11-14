@@ -1,9 +1,13 @@
 #include <stdio.h>
 
 int main(void) {
-    int idade;
-    scanf("%d", &idade);
-    if (idade >= 18) printf("maior de idade\n");
-    else printf("menor de idade\n");
+    double a, b, soma;
+    scanf("%lf %lf", &a, &b);
+    soma = a + b;
+    if (soma > 20.0) {
+        printf("%.2f\n", soma + 8.0);
+    } else {
+        printf("%.2f\n", soma - 5.0);
+    }
     return 0;
 }

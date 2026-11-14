@@ -1,1 +1,1 @@
-Leia um inteiro `N` e imprima os `N` primeiros múltiplos de 3, um por linha (começando de 3).
+Leia um número inteiro de 3 casas decimais e imprima se o algarismo da casa das centenas é `par` ou `impar`.

@@ -2,7 +2,7 @@ id: "E2-M-005"
 eixo: "E2"
 nivel: "M"
 estruturas:
-  - "while"
+  - "for"
   - "if"
-origem: "Exercício de número perfeito"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 206"
 direitos_restritos: true

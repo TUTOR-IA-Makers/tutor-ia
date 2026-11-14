@@ -1,1 +1,1 @@
-Implemente o FizzBuzz: leia `N` e, para cada número de 1 a N, imprima `FizzBuzz` se divisível por 3 e 5, `Fizz` se só por 3, `Buzz` se só por 5, ou o próprio número.
+Leia os limites inferior `L` e superior `U` de um intervalo crescente e um inteiro positivo `K`. Imprima todos os múltiplos de `K` no intervalo aberto `(L, U)` separados por espaço. Se não houver nenhum, imprima uma linha vazia.

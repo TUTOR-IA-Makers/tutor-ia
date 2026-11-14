@@ -1,1 +1,1 @@
-Dada a série de Taylor para a função exponencial: e^x = 1 + x + x^2/2! + x^3/3! + ... Leia um número real `X` e um inteiro `N` (termos da série). Calcule a aproximação de e^x somando os `N` primeiros termos. Imprima com 4 casas decimais.
+Leia a altura (real em metros) e o sexo (`M` ou `F`) de uma pessoa. Calcule o peso ideal: para homens `(72.7 * h) - 58`; para mulheres `(62.1 * h) - 44.7`. Imprima o resultado com 2 casas decimais.

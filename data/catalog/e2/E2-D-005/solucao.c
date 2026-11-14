@@ -1,13 +1,16 @@
 #include <stdio.h>
 
 int main(void) {
-    int a, b, temp;
-    scanf("%d %d", &a, &b);
-    while (b != 0) {
-        temp = b;
-        b = a % b;
-        a = temp;
+    int base, expo;
+    scanf("%d %d", &base, &expo);
+    if (base >= 2 && expo > 1) {
+        long long pot = 1;
+        for (int i = 1; i <= expo; i++) {
+            pot *= base;
+        }
+        printf("%lld\n", pot);
+    } else {
+        printf("Nao satisfazem\n");
     }
-    printf("%d\n", a);
     return 0;
 }

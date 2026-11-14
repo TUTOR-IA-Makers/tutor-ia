@@ -1,17 +1,17 @@
 #include <stdio.h>
 
 int main(void) {
-    int atual, anterior = -1;
-    int ordenada = 1;
-    while (1) {
-        scanf("%d", &atual);
-        if (atual == 0) break;
-        if (anterior != -1 && atual <= anterior) {
-            ordenada = 0;
-        }
-        anterior = atual;
+    long long a1, a2, termo;
+    int n;
+    scanf("%lld %lld %d", &a1, &a2, &n);
+    printf("%lld %lld", a1, a2);
+    for (int i = 3; i <= n; i++) {
+        if (i % 2 == 0) termo = a2 - a1;
+        else termo = a2 + a1;
+        printf(" %lld", termo);
+        a1 = a2;
+        a2 = termo;
     }
-    if (ordenada) printf("ordenada\n");
-    else printf("desordenada\n");
+    printf("\n");
     return 0;
 }

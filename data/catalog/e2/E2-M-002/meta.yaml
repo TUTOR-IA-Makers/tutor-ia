@@ -2,7 +2,7 @@ id: "E2-M-002"
 eixo: "E2"
 nivel: "M"
 estruturas:
-  - "while"
   - "if"
-origem: "Exercício de inversão de dígitos"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 124"
 direitos_restritos: true
