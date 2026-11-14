@@ -1,1 +1,1 @@
-Conjectura de Collatz: se par, divida por 2; se ímpar, multiplique por 3 e some 1. Leia um inteiro positivo `N` e imprima a sequência gerada até atingir 1, separando os números por espaço. Na linha seguinte, imprima o total de passos.
+Leia cinco números inteiros. Verifique se todos são distintos entre si; caso haja repetidos, imprima `Os valores devem ser diferentes`. Caso todos sejam diferentes, imprima o maior e o menor valor, cada um em uma linha.

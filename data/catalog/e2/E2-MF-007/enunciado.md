@@ -1,1 +1,1 @@
-Leia três inteiros. Imprima `crescente` se estiverem em ordem estritamente crescente, senão imprima `nao crescente`.
+Leia um número inteiro e informe se ele é divisível por 3 e por 7 simultaneamente, imprimindo `divisivel por 3 e por 7` ou `nao e divisivel por 3 e por 7`.

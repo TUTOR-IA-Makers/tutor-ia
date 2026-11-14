@@ -1,1 +1,1 @@
-Leia um inteiro `N`. Imprima o número de dígitos de `N`. Para `N = 0`, imprima 1.
+Leia um número inteiro positivo `N` e imprima os `N` primeiros números pares a partir de 2, separados por espaço.

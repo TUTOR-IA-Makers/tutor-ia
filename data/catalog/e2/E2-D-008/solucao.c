@@ -1,13 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    double x, soma = 1.0, termo = 1.0;
-    int n;
-    scanf("%lf %d", &x, &n);
-    for (int i = 1; i < n; i++) {
-        termo = termo * x / i;
-        soma += termo;
-    }
-    printf("%.4f\n", soma);
+    double h, peso;
+    char sexo;
+    scanf("%lf %c", &h, &sexo);
+    if (sexo == 'M' || sexo == 'm') peso = 72.7 * h - 58.0;
+    else peso = 62.1 * h - 44.7;
+    printf("%.2f\n", peso);
     return 0;
 }

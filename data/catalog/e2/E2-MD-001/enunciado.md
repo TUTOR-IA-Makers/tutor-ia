@@ -1,1 +1,1 @@
-Leia `N` e calcule o somatório `S = Σ 1/i` para i de 1 a N (série harmônica). Imprima com 6 casas decimais. Adicionalmente, encontre o menor `M` tal que `S_M > ln(N) + 0.5772` (usando essa estimativa para a constante de Euler). Imprima `M` na segunda linha.
+Imprima todos os números inteiros positivos no intervalo aberto `(10, 100)` de modo que não terminem em zero e, se o dígito da direita for removido, o número restante seja divisor do número original. Imprima um por linha.

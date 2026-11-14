@@ -1,1 +1,1 @@
-Leia `N` notas reais. Imprima a maior nota, a menor nota e a média, cada uma em uma linha com 2 casas decimais.
+Leia três medidas reais `a`, `b` e `c`. Verifique se podem formar um triângulo. Se não puderem, imprima `nao forma triangulo`. Caso formem, classifique quanto aos lados imprimindo `equilatero`, `isosceles` ou `escaleno`.

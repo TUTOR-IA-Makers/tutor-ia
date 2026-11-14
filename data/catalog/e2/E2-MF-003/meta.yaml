@@ -4,5 +4,5 @@ nivel: "MF"
 estruturas:
   - "if"
   - "else"
-origem: "Exercício clássico de condicionais"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 94"
 direitos_restritos: true

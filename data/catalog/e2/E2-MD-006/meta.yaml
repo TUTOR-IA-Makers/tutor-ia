@@ -2,7 +2,7 @@ id: "E2-MD-006"
 eixo: "E2"
 nivel: "MD"
 estruturas:
-  - "for"
   - "if"
-origem: "Exercício avançado de laços aninhados - Losango"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 142"
 direitos_restritos: true

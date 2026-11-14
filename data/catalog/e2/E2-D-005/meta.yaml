@@ -2,7 +2,7 @@ id: "E2-D-005"
 eixo: "E2"
 nivel: "D"
 estruturas:
-  - "while"
+  - "for"
   - "if"
-origem: "Algoritmo de Euclides (Matemática Discreta)"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 187"
 direitos_restritos: true

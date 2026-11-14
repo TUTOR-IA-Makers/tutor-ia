@@ -1,1 +1,1 @@
-Leia um inteiro `N` (N > 1) e imprima sua decomposição em fatores primos. Formato: `fator1 * fator2 * ...`. Ex: 12 gera `2 * 2 * 3`.
+Leia três coeficientes reais `a`, `b` e `c` de uma equação do segundo grau (`ax² + bx + c = 0`). Se `a == 0`, imprima `Nao e equacao do 2 grau`. Se o discriminante for negativo, imprima `Nao ha raizes reais`. Caso contrário, imprima as raízes `x1` e `x2` com 4 casas decimais, cada uma em uma linha.

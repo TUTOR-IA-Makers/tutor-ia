@@ -1,1 +1,1 @@
-Leia um inteiro `N` (N > 0) e imprima um triângulo retângulo de asteriscos (`*`) com `N` linhas. A primeira linha deve ter 1 asterisco, a segunda 2, e assim por diante.
+A série de RICCI difere da série de Fibonacci porque os dois primeiros termos são fornecidos pelo usuário. Leia o 1º termo, o 2º termo e `N` (N >= 3). Imprima os `N` primeiros termos da série de Ricci separados por espaço e, na linha seguinte, a soma de todos esses termos.

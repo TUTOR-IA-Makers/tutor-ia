@@ -1,1 +1,1 @@
-Leia um inteiro `N` (1 ≤ N ≤ 100) e imprima todos os divisores de `N` em ordem crescente, um por linha.
+Leia o código do destino (`1` Norte, `2` Nordeste, `3` Centro-Oeste, `4` Sul) e se inclui retorno (`1` Ida, `2` Ida e Volta). Imprima o preço da passagem com 2 casas decimais conforme tabela: Norte (500 / 900), Nordeste (350 / 650), Centro-Oeste (350 / 600), Sul (300 / 550).

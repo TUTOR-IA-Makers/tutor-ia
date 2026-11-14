@@ -1,1 +1,1 @@
-Dado `N` (1 ≤ N ≤ 10^6), calcule a soma de todos os números de Fibonacci menores ou iguais a N usando aritmética long long. Imprima o resultado.
+Leia um inteiro `N` (N >= 2) e imprima os índices `(L, C)` (1-indexados) localizados estritamente acima da diagonal principal de uma matriz quadrada de ordem `N`, no formato `L-C` separados por espaço em cada linha.

@@ -1,1 +1,1 @@
-Leia inteiros até EOF. Ao final, imprima a média, o maior e o menor valor, cada um em uma linha com 2 casas decimais. Se nenhum valor for lido, imprima `vazio`.
+Leia três inteiros `A`, `B` e `C`. Ordene os valores internamente usando apenas estruturas condicionais simples (`if`) e trocas de variáveis, e imprima os três números em ordem crescente em uma única linha separados por espaço.

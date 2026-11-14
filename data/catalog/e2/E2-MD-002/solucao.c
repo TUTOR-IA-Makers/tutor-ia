@@ -1,9 +1,13 @@
 #include <stdio.h>
 
 int main(void) {
-    long long n, soma = 0, a = 0, b = 1;
-    scanf("%lld", &n);
-    while (a <= n) { soma += a; long long t = a+b; a = b; b = t; }
-    printf("%lld\n", soma);
+    int n;
+    scanf("%d", &n);
+    for (int l = 1; l < n; l++) {
+        for (int c = l + 1; c <= n; c++) {
+            printf("%d-%d%s", l, c, c == n ? "" : " ");
+        }
+        printf("\n");
+    }
     return 0;
 }

@@ -2,8 +2,7 @@ id: "E2-D-003"
 eixo: "E2"
 nivel: "D"
 estruturas:
-  - "for"
   - "if"
-  - "switch"
-origem: "Exercício de múltiplas condições e contagem"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 157"
 direitos_restritos: true

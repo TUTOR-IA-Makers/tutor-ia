@@ -1,1 +1,1 @@
-Leia `T` casos de teste. Para cada caso, leia `N` e verifique se N é um número narcisista (igual à soma dos cubos de seus dígitos, ex: 153 = 1³+5³+3³). Imprima `sim` ou `nao`.
+Leia um inteiro `N` (N >= 2) e imprima os índices `(L, C)` (1-indexados) localizados estritamente abaixo da diagonal secundária de uma matriz quadrada de ordem `N`, no formato `L-C` separados por espaço em cada linha.

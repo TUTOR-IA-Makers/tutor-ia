@@ -3,5 +3,5 @@ eixo: "E2"
 nivel: "M"
 estruturas:
   - "for"
-origem: "Exercício clássico de laços aninhados"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 209"
 direitos_restritos: true

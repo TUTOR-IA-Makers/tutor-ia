@@ -1,13 +1,14 @@
 #include <stdio.h>
 
 int main(void) {
-    int n;
-    scanf("%d", &n);
-    for (int i = 1; i <= n; i++) {
-        if (i % 15 == 0)      printf("FizzBuzz\n");
-        else if (i % 3 == 0)  printf("Fizz\n");
-        else if (i % 5 == 0)  printf("Buzz\n");
-        else                  printf("%d\n", i);
+    int l, u, k, primeiro = 1;
+    scanf("%d %d %d", &l, &u, &k);
+    int ini = l + (k - ((l % k + k) % k));
+    for (int i = ini; i < u; i += k) {
+        if (!primeiro) printf(" ");
+        printf("%d", i);
+        primeiro = 0;
     }
+    printf("\n");
     return 0;
 }

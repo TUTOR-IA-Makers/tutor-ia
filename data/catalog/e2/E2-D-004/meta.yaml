@@ -2,7 +2,7 @@ id: "E2-D-004"
 eixo: "E2"
 nivel: "D"
 estruturas:
-  - "for"
   - "if"
-origem: "Exercício clássico de primalidade"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 159"
 direitos_restritos: true

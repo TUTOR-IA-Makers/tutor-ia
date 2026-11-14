@@ -1,19 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    int n;
-    scanf("%d", &n);
-    if (n == 0) {
-        printf("0\n");
-        return 0;
-    }
-    long long bin = 0, mult = 1;
-    while (n > 0) {
-        int resto = n % 2;
-        bin = bin + resto * mult;
-        mult *= 10;
-        n /= 2;
-    }
-    printf("%lld\n", bin);
+    double indice;
+    scanf("%lf", &indice);
+    if (indice >= 0.5) printf("grupos 1, 2 e 3\n");
+    else if (indice >= 0.4) printf("grupos 1 e 2\n");
+    else if (indice >= 0.3) printf("grupo 1\n");
+    else printf("aceitavel\n");
     return 0;
 }

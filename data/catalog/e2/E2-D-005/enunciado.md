@@ -1,1 +1,1 @@
-Leia dois inteiros positivos `A` e `B`. Calcule o Máximo Divisor Comum (MDC) entre eles utilizando o Algoritmo de Euclides (divisões sucessivas) e imprima o resultado.
+Leia dois inteiros `B` (B >= 2) e `E` (E > 1). Calcule e imprima a potência `B^E` utilizando um laço de repetição (sem `pow`). Caso os valores não satisfaçam as restrições, imprima `Nao satisfazem`.

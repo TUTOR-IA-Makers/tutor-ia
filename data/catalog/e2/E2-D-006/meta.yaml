@@ -2,7 +2,6 @@ id: "E2-D-006"
 eixo: "E2"
 nivel: "D"
 estruturas:
-  - "while"
-  - "if"
-origem: "Exercício de conversão de base"
+  - "for"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 189"
 direitos_restritos: true

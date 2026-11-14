@@ -1,15 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    long long bin;
-    scanf("%lld", &bin);
-    int dec = 0, base = 1;
-    while (bin > 0) {
-        int ultimo = bin % 10;
-        dec = dec + ultimo * base;
-        bin = bin / 10;
-        base = base * 2;
+    int f1, f2, dec;
+    scanf("%d %d %d", &f1, &f2, &dec);
+    for (int t = f1; t >= f2; t -= dec) {
+        double c = 5.0 * (t - 32) / 9.0;
+        printf("%d %.2f\n", t, c);
     }
-    printf("%d\n", dec);
     return 0;
 }

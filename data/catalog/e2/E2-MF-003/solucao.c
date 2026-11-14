@@ -1,9 +1,12 @@
 #include <stdio.h>
 
 int main(void) {
-    int d;
-    scanf("%d", &d);
-    if (d == 6 || d == 7) printf("fim de semana\n");
-    else printf("dia util\n");
+    int n;
+    scanf("%d", &n);
+    if (n % 3 == 0) {
+        printf("multiplo de 3\n");
+    } else {
+        printf("nao e multiplo de 3\n");
+    }
     return 0;
 }

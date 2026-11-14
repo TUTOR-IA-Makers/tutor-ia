@@ -1,14 +1,22 @@
 #include <stdio.h>
 
 int main(void) {
-    int n, v, pos = 0, neg = 0, zer = 0;
-    scanf("%d", &n);
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &v);
-        if (v > 0) pos++;
-        else if (v < 0) neg++;
-        else zer++;
+    int idade;
+    double peso, mg = 0;
+    scanf("%d %lf", &idade, &peso);
+    if (peso < 5.0) {
+        printf("nao pode tomar\n");
+        return 0;
     }
-    printf("%d\n%d\n%d\n", pos, neg, zer);
+    if (idade >= 12) {
+        mg = (peso >= 60.0) ? 1000.0 : 875.0;
+    } else {
+        if (peso <= 9.0) mg = 125.0;
+        else if (peso <= 16.0) mg = 250.0;
+        else if (peso <= 24.0) mg = 375.0;
+        else if (peso <= 30.0) mg = 500.0;
+        else mg = 750.0;
+    }
+    printf("%d\n", (int)(mg / 25.0));
     return 0;
 }

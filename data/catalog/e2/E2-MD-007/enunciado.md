@@ -1,1 +1,1 @@
-Leia um inteiro `N` (0 ≤ N ≤ 20). Calcule e imprima a N-ésima linha do Triângulo de Pascal iterativamente, em uma única linha com valores separados por espaço. Use tipo longo para evitar overflow.
+Calcule o crédito especial concedido por um banco conforme o saldo médio (real): 0 a 500 (nenhum crédito), acima de 500 até 1000 (30%), acima de 1000 até 3000 (40%), acima de 3000 (50%). Imprima o saldo médio e o valor do crédito com 2 casas decimais, cada um em uma linha.

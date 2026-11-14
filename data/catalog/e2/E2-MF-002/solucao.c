@@ -1,8 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    int a, b;
+    int a, b, soma;
     scanf("%d %d", &a, &b);
-    printf("%d\n", a >= b ? a : b);
+    soma = a + b;
+    if (soma > 10) {
+        printf("%d\n", soma);
+    }
     return 0;
 }
