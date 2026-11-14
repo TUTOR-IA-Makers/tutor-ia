@@ -1,9 +1,12 @@
 #include <stdio.h>
 
 int main(void) {
-    int a, b;
-    scanf("%d %d", &a, &b);
-    if (a % b == 0) printf("divisivel\n");
-    else printf("nao divisivel\n");
+    int num;
+    scanf("%d", &num);
+    if (num % 2 == 0) {
+        printf("par\n");
+    } else {
+        printf("impar\n");
+    }
     return 0;
 }

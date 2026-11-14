@@ -2,6 +2,7 @@ id: "E2-F-003"
 eixo: "E2"
 nivel: "F"
 estruturas:
-  - "switch"
-origem: "Exercício clássico de switch"
-direitos_restritos: true
+  - "if"
+  - "else"
+origem: "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.4"
+direitos_restritos: false

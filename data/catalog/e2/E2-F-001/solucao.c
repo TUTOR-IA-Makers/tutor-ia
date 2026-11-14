@@ -1,11 +1,16 @@
 #include <stdio.h>
 
 int main(void) {
-    double nota;
-    scanf("%lf", &nota);
-    if (nota >= 9.0)      printf("A\n");
-    else if (nota >= 7.0) printf("B\n");
-    else if (nota >= 5.0) printf("C\n");
-    else                  printf("D\n");
+    int b1, h1, b2, h2;
+    scanf("%d %d %d %d", &b1, &h1, &b2, &h2);
+    int a1 = b1 * h1;
+    int a2 = b2 * h2;
+    if (a1 > a2) {
+        printf("primeiro maior\n");
+    } else if (a2 > a1) {
+        printf("segundo maior\n");
+    } else {
+        printf("iguais\n");
+    }
     return 0;
 }

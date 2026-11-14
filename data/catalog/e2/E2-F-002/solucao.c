@@ -1,16 +1,14 @@
 #include <stdio.h>
 
 int main(void) {
-    double a, b, c;
-    scanf("%lf %lf %lf", &a, &b, &c);
-    if (a >= b+c || b >= a+c || c >= a+b) {
-        printf("invalido\n");
-    } else if (a == b && b == c) {
-        printf("equilatero\n");
-    } else if (a == b || b == c || a == c) {
-        printf("isosceles\n");
-    } else {
-        printf("escaleno\n");
-    }
+    int band, desc;
+    double kms, valor, corrida, min = 3.5;
+    scanf("%d %lf %d", &band, &kms, &desc);
+    if (band == 1) valor = 1.8;
+    else valor = 2.3;
+    corrida = valor * kms;
+    if (desc == 1) corrida *= 0.7;
+    if (corrida < min) corrida = min;
+    printf("%.2f\n", corrida);
     return 0;
 }

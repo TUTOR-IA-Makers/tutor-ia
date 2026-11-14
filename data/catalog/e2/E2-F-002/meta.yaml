@@ -4,5 +4,5 @@ nivel: "F"
 estruturas:
   - "if"
   - "else"
-origem: "Exercício de classificação de triângulos"
-direitos_restritos: true
+origem: "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.12"
+direitos_restritos: false
