@@ -12,8 +12,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from codeexpert.domain import Constraints
-from codeexpert.errors import CodeExpertError, RunNotFoundError
+from codeexpert.domain import Constraints, QuestionState
+from codeexpert.errors import CodeExpertError, InvalidTransitionError, RunNotFoundError
 from codeexpert.export import export_question
 from codeexpert.generation import (
     create_question,
@@ -112,6 +112,51 @@ def test_a_run_started_elsewhere_finishes_without_its_local_directory(
     assert export.question_count == 1
     assert second_process.is_complete()
     assert not (tmp_path / "runs" / first_process.run_id).exists()
+
+
+def test_a_new_run_is_gerando_and_its_state_survives_another_store(
+    make_store: StoreFactory,
+) -> None:
+    run_id = new_run_id()
+    make_store().create_run(run_id)
+    assert make_store().get_state(run_id) is QuestionState.GERANDO
+
+    assert make_store().set_state(run_id, QuestionState.GERANDO, QuestionState.GERADA)
+
+    assert make_store().get_state(run_id) is QuestionState.GERADA
+
+
+def test_set_state_refuses_a_change_it_did_not_see(make_store: StoreFactory) -> None:
+    """Two reviewers reading GERADA at once: only the first write wins."""
+    store = make_store()
+    run_id = new_run_id()
+    store.create_run(run_id)
+    store.set_state(run_id, QuestionState.GERANDO, QuestionState.GERADA)
+
+    assert store.set_state(run_id, QuestionState.GERADA, QuestionState.APROVADA)
+    assert not store.set_state(run_id, QuestionState.GERADA, QuestionState.REJEITADA)
+    assert store.get_state(run_id) is QuestionState.APROVADA
+
+
+def test_a_lost_race_is_a_conflict_not_an_overwrite(make_store: StoreFactory) -> None:
+    store = make_store()
+    first = RunWorkspace.create(store)
+    first.complete()
+    second = RunWorkspace.open(make_store(), first.run_id)
+
+    first.transition(QuestionState.REJEITADA)
+    with pytest.raises(InvalidTransitionError):
+        second.transition(QuestionState.APROVADA)
+    assert second.state is QuestionState.REJEITADA
+
+
+def test_a_local_run_from_before_the_lifecycle_reads_as_gerada(tmp_path: Path) -> None:
+    store = LocalFilesystemStore(tmp_path)
+    run_id = new_run_id()
+    store.create_run(run_id)
+    store.mark_complete(run_id)  # what a finished run looked like: no state file
+
+    assert store.get_state(run_id) is QuestionState.GERADA
 
 
 def test_opening_an_unknown_run_is_a_404_for_every_backend(make_store: StoreFactory) -> None:

@@ -7,7 +7,7 @@ from importlib import resources
 import pytest
 from pydantic import ValidationError
 
-from codeexpert.domain import Constraints, ContentAxis, Difficulty
+from codeexpert.domain import Constraints, ContentAxis, Difficulty, QuestionState
 
 
 def test_legacy_constraints_have_no_inferred_axis() -> None:
@@ -35,6 +35,9 @@ def _check_values(column: str) -> set[str]:
 
 # The database repeats the enums as literals; a new member must not be rejected
 # by Postgres at completion time without a test failing first.
-@pytest.mark.parametrize(("column", "enum"), [("difficulty", Difficulty), ("axis", ContentAxis)])
+@pytest.mark.parametrize(
+    ("column", "enum"),
+    [("difficulty", Difficulty), ("axis", ContentAxis), ("state", QuestionState)],
+)
 def test_schema_check_matches_enum(column: str, enum: type[StrEnum]) -> None:
     assert _check_values(column) == {member.value for member in enum}

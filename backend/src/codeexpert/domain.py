@@ -139,6 +139,6 @@ class StoredQuestion(BaseModel):
     constraints: Constraints | None = None
     difficulty: Difficulty | None = None
     axis: ContentAxis | None = None
-    state: str = "draft"
+    state: QuestionState
     testcases: list[TestCase] = Field(default_factory=list)
     metadata: RunMetadata
