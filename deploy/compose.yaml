@@ -1,0 +1,89 @@
+# Production on the Hostinger VPS (docs/adr/0011). Run by deploy.sh, never by hand
+# without the same variables:
+#
+#   SHA=<commit> docker compose --env-file /opt/codeexpert/production.env \
+#       -p codeexpert -f deploy/compose.yaml up -d --wait
+#
+# Only `proxy` publishes ports. `api` and `db` are reachable on the Compose
+# network only. Secrets are files on the VPS, mounted under /run/secrets; none
+# of them is an environment variable of any container, so `docker inspect`
+# does not show them.
+
+name: codeexpert
+
+services:
+  api:
+    # Built and pushed by .github/workflows/deploy.yml, tagged with the commit.
+    image: ${IMAGE:?set IMAGE in production.env}:${SHA:?SHA is the commit to deploy}
+    restart: unless-stopped
+    environment:
+      CODEEXPERT_COMMIT_SHA: ${SHA}
+      CODEEXPERT_STORE_BACKEND: postgres
+    secrets:
+      - source: llm_api_key
+        target: codeexpert_llm_api_key
+      - source: database_url
+        target: codeexpert_database_url
+    volumes:
+      # Exported XML and anything else the service still writes to disk.
+      - var:/app/var
+    depends_on:
+      db:
+        condition: service_healthy
+    # Not isolation: generated C runs inside this container (docs/adr/0004).
+    # These caps stop a fork bomb or a malloc loop from taking the whole VPS down.
+    mem_limit: 1g
+    pids_limit: 256
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: codeexpert
+      POSTGRES_DB: codeexpert
+      # The image reads the password from this file; it is not in the environment.
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "codeexpert", "-d", "codeexpert"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  proxy:
+    image: caddy:2.8
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in production.env}
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:?set BASIC_AUTH_USER in production.env}
+      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH:?set BASIC_AUTH_HASH in production.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Certificates. Losing this volume means asking Let's Encrypt again.
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+# Files created by bootstrap-vps.sh. Compose bind-mounts them, so the container
+# sees the host owner and mode: uid 1000 (`app`) for the API, 999 for Postgres.
+secrets:
+  llm_api_key:
+    file: /etc/codeexpert/secrets/llm_api_key
+  database_url:
+    file: /etc/codeexpert/secrets/database_url
+  postgres_password:
+    file: /etc/codeexpert/secrets/postgres_password
+
+volumes:
+  var:
+  pgdata:
+  caddy_data:
+  caddy_config:

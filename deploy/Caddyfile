@@ -1,0 +1,19 @@
+# TLS for $DOMAIN, obtained and renewed by Caddy. Everything except /health asks
+# for a password until invite-based access (G8-1) exists: .agents/rules/security.md
+# forbids exposing the service without authentication.
+#
+# An empty BASIC_AUTH_HASH makes this file fail to load, so the proxy cannot come
+# up open by mistake.
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	# Open on purpose: the deploy job checks the commit here, and it reveals
+	# only the version and the SHA, both public on GitHub.
+	@protected not path /health
+	basic_auth @protected {
+		{$BASIC_AUTH_USER} {$BASIC_AUTH_HASH}
+	}
+
+	reverse_proxy api:8000
+}
