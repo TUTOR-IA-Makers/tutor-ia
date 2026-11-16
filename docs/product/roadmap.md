@@ -36,7 +36,7 @@ Distribuição por dupla, estimativas e ordem de corte em [Plano de entrega](pla
 
 | Hoje | Mudança planejada | Estado esperado |
 | --- | --- | --- |
-| Roda com `make run` ou na imagem Docker com `gcc` (**G0-1**, [guia](../guides/docker.md)). Sem deploy: o workflow do **G0-2** publica no Cloud Run e nunca rodou | **G0-9** VPS da Hostinger com Docker Compose (API, Postgres, proxy com TLS); imagem no GitHub Container Registry e deploy por SSH a cada merge em `main` ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
+| Roda com `make run` ou na imagem Docker com `gcc` (**G0-1**, [guia](../guides/docker.md)). Sem deploy: o workflow, o Compose e os scripts do **G0-9** existem, mas ainda não rodaram numa VPS | **G0-9** VPS da Hostinger com Docker Compose (API, Postgres, proxy com TLS); imagem no GitHub Container Registry e deploy por SSH a cada merge em `main` ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
 | Chave no `.env` local | **G0-3** chave só na VPS, como arquivo montado em `/run/secrets` (S1) | Nenhuma chave no repositório, no GitHub, nos logs ou em `docker inspect` |
 | Logs em `stdout`, sem `run_id` | **G0-5** logs estruturados com `run_id`, etapa e duração (P1, sem sprint) | Uma geração inteira rastreável nos logs da VPS |
 
