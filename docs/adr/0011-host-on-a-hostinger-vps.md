@@ -1,6 +1,6 @@
 # ADR-0011 — Host the 30/11 delivery on a Hostinger VPS instead of Cloud Run
 
-- **Status** Proposed — supersedes ADR-0010 once accepted
+- **Status** Accepted — supersedes ADR-0010
 - **Date** 2026-10-28
 - **Deciders** the team (draft — a person accepts)
 

@@ -20,8 +20,8 @@
 | [0007](0007-configuration-from-the-environment.md) | Configuration from the environment | Accepted |
 | [0008](0008-one-gate-for-people-agents-and-ci.md) | One gate for people, agents and CI | Accepted |
 | [0009](0009-container-image-with-gcc.md) | One container image with the API and gcc | Proposed |
-| [0010](0010-continuous-deployment-after-the-gate.md) | Deploy `main` to Cloud Run after the gate, with keyless credentials | Proposed — superseded by 0011 if accepted |
-| [0011](0011-host-on-a-hostinger-vps.md) | Host the 30/11 delivery on a Hostinger VPS instead of Cloud Run | Proposed |
+| [0010](0010-continuous-deployment-after-the-gate.md) | Deploy `main` to Cloud Run after the gate, with keyless credentials | Superseded by 0011 |
+| [0011](0011-host-on-a-hostinger-vps.md) | Host the 30/11 delivery on a Hostinger VPS instead of Cloud Run | Accepted |
 | [0012](0012-artifact-store-in-postgres.md) | Run artefacts live in Postgres behind an `ArtifactStore` protocol | Proposed |
 | [0013](0013-resource-api-and-cookie-session.md) | Serve the web client from a resource API under /api/v1 with a cookie session | Proposed |
 | [0014](0014-structured-question-snapshot.md) | Store a structured snapshot of completed generations | Proposed |
