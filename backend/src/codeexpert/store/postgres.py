@@ -13,7 +13,8 @@ from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 from psycopg_pool import ConnectionPool
 
-from codeexpert.domain import RunMetadata, Statement, StoredQuestion, TestCase
+from codeexpert.domain import QuestionState, RunMetadata, Statement, StoredQuestion, TestCase
+from codeexpert.errors import RunNotFoundError
 
 
 def _save_question(conn: Connection, run_id: str) -> None:
@@ -135,7 +136,7 @@ class PostgresStore:
         with self._pool.connection() as conn, conn.cursor(row_factory=dict_row) as cursor:
             cursor.execute(
                 """
-                SELECT q.*, r.created_at, r.input_quantity, r.reviewed, r.steps,
+                SELECT q.*, r.created_at, r.input_quantity, r.reviewed, r.steps, r.state,
                     COALESCE((SELECT jsonb_agg(
                         jsonb_build_object('input', t.input, 'output', t.output)
                         ORDER BY t.position)
@@ -173,3 +174,20 @@ class PostgresStore:
                 "SELECT status = 'complete' FROM runs WHERE run_id = %s", (run_id,)
             ).fetchone()
         return bool(row and row[0])
+
+    def get_state(self, run_id: str) -> QuestionState:
+        with self._pool.connection() as conn:
+            row = conn.execute("SELECT state FROM runs WHERE run_id = %s", (run_id,)).fetchone()
+        if row is None:
+            raise RunNotFoundError(f"Run '{run_id}' not found.")
+        return QuestionState(row[0])
+
+    def set_state(self, run_id: str, expected: QuestionState, new: QuestionState) -> bool:
+        # Compare-and-set in one statement: two reviewers acting at once cannot
+        # both succeed from the same starting state.
+        with self._pool.connection() as conn:
+            cursor = conn.execute(
+                "UPDATE runs SET state = %s WHERE run_id = %s AND state = %s",
+                (new.value, run_id, expected.value),
+            )
+            return cursor.rowcount == 1

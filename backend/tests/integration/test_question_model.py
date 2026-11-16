@@ -10,7 +10,7 @@ from psycopg import sql
 from psycopg.conninfo import make_conninfo
 from pydantic import ValidationError
 
-from codeexpert.domain import Constraints, ContentAxis, Difficulty, StepRecord
+from codeexpert.domain import Constraints, ContentAxis, Difficulty, QuestionState, StepRecord
 from codeexpert.store.postgres import PostgresStore
 from codeexpert.workspace import RunWorkspace
 
@@ -78,7 +78,7 @@ def test_completed_question_survives_a_new_store(
         assert question.constraints == generated.read_metadata().constraints
         assert question.difficulty == Difficulty.MEDIO
         assert question.axis == ContentAxis.FUNDAMENTOS
-        assert question.state == "draft"
+        assert question.state == QuestionState.GERADA
         assert question.metadata == generated.read_metadata()
         assert [case.model_dump() for case in question.testcases] == (
             generated.read_json("testcases.json")["testcases"]
@@ -147,6 +147,18 @@ def test_delete_cascades_to_question_and_cases(
         ).fetchone() == (0,)
 
 
+def test_state_is_read_with_the_structured_question(
+    store: PostgresStore, generated: RunWorkspace
+) -> None:
+    generated.complete()
+    generated.transition(QuestionState.APROVADA)
+
+    question = store.get_question(generated.run_id)
+
+    assert question is not None
+    assert question.state is QuestionState.APROVADA
+
+
 def test_mismatched_metadata_cannot_link_another_run(
     store: PostgresStore, generated: RunWorkspace
 ) -> None:
@@ -182,12 +194,23 @@ def test_existing_schema_is_upgraded_without_losing_artifacts(store: PostgresSto
                         PRIMARY KEY (run_id, name)
                     );
                     INSERT INTO runs (run_id) VALUES ('legacy');
+                    INSERT INTO runs (run_id, status) VALUES ('legacy-done', 'complete');
+                    CREATE TABLE questions (
+                        run_id text PRIMARY KEY REFERENCES runs (run_id) ON DELETE CASCADE,
+                        name text NOT NULL,
+                        statement text NOT NULL,
+                        reference_solution text NOT NULL,
+                        state text NOT NULL DEFAULT 'draft' CHECK (state IN ('draft'))
+                    );
                     INSERT INTO run_artifacts (run_id, name, content)
                     VALUES ('legacy', 'solution.c', 'legacy source');
                 """)
             upgraded = PostgresStore(legacy_url)
             assert upgraded.get("legacy", "solution.c") == "legacy source"
             assert upgraded.get_question("legacy") is None
+            # G3-1: unfinished runs are still generating; finished ones await review.
+            assert upgraded.get_state("legacy") is QuestionState.GERANDO
+            assert upgraded.get_state("legacy-done") is QuestionState.GERADA
             with upgraded._pool.connection() as conn:
                 assert conn.execute(
                     "SELECT input_tokens, output_tokens, cost FROM runs WHERE run_id = 'legacy'"

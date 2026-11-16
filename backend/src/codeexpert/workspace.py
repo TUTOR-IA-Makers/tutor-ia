@@ -16,8 +16,9 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
-from codeexpert.domain import RunMetadata
-from codeexpert.errors import MissingArtefactError, RunNotFoundError
+from codeexpert.domain import QuestionState, RunMetadata
+from codeexpert.errors import InvalidTransitionError, MissingArtefactError, RunNotFoundError
+from codeexpert.lifecycle import check_transition
 from codeexpert.store import ArtifactStore
 
 STATEMENT = "statement.json"
@@ -78,11 +79,42 @@ class RunWorkspace:
         self._store.delete_run(self.run_id)
 
     def complete(self) -> None:
-        """Mark the run finished. Until then it is a draft and no question is shown."""
+        """Mark the run finished. Until then it is a draft and no question is shown.
+
+        A question still being generated becomes `GERADA`. One already reviewed,
+        or one whose last verification failed, keeps its state: finishing step 5
+        again is not a reason to forget a teacher's decision or a failed run.
+        """
         self._store.mark_complete(self.run_id)
+        if self.state is QuestionState.GERANDO:
+            self.transition(QuestionState.GERADA)
 
     def is_complete(self) -> bool:
         return self._store.is_complete(self.run_id)
+
+    # ── Question state ────────────────────────────────────────────────────────
+
+    @property
+    def state(self) -> QuestionState:
+        return self._store.get_state(self.run_id)
+
+    def transition(self, target: QuestionState) -> QuestionState:
+        """Move the question to `target`, or raise `InvalidTransitionError`.
+
+        The only way code changes a state. The rules are in `codeexpert.lifecycle`;
+        the store refuses the write if someone else changed the state between
+        reading and writing it, and the fresh state is then judged instead.
+        """
+        current = self.state
+        check_transition(self.run_id, current, target)
+        if not self._store.set_state(self.run_id, current, target):
+            check_transition(self.run_id, self.state, target)
+            # Valid from the new state too, yet the write lost a race: say so
+            # rather than retry blindly over a change this request never saw.
+            raise InvalidTransitionError(
+                f"Question '{self.run_id}' changed while it was being updated. Read it again."
+            )
+        return target
 
     # ── Artefacts ─────────────────────────────────────────────────────────────
 

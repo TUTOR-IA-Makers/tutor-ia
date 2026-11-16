@@ -8,8 +8,12 @@ run against. See docs/adr/0012.
 import shutil
 from pathlib import Path
 
-# Not an artefact name, so it cannot collide with one of the pipeline's files.
+from codeexpert.domain import QuestionState
+from codeexpert.lifecycle import INITIAL_STATE
+
+# Not artefact names, so they cannot collide with one of the pipeline's files.
 COMPLETE_MARKER = ".complete"
+STATE_FILE = ".state"
 
 
 class LocalFilesystemStore:
@@ -40,3 +44,19 @@ class LocalFilesystemStore:
 
     def is_complete(self, run_id: str) -> bool:
         return (self._dir(run_id) / COMPLETE_MARKER).is_file()
+
+    def get_state(self, run_id: str) -> QuestionState:
+        path = self._dir(run_id) / STATE_FILE
+        if path.is_file():
+            return QuestionState(path.read_text(encoding="utf-8").strip())
+        # Runs written before the lifecycle existed have no state file. A finished
+        # one is a generated question nobody has reviewed yet.
+        return QuestionState.GERADA if self.is_complete(run_id) else INITIAL_STATE
+
+    def set_state(self, run_id: str, expected: QuestionState, new: QuestionState) -> bool:
+        # Check-then-write is not atomic across processes. Acceptable for the
+        # development backend; the Postgres store does it in one statement.
+        if self.get_state(run_id) is not expected:
+            return False
+        (self._dir(run_id) / STATE_FILE).write_text(new.value, encoding="utf-8")
+        return True

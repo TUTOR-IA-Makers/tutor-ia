@@ -6,10 +6,11 @@
 
 | Tabela | Chave e campos | Papel |
 | --- | --- | --- |
-| `runs` | `run_id` (PK), `status`, `created_at`, `completed_at` | Execução; estado `draft` ou `complete` |
+| `runs` | `run_id` (PK), `status`, `created_at`, `completed_at` | Execução; `status` diz se os artefatos estão completos (`draft` ou `complete`) |
+| `runs` | `state` | Estado da questão: `GERANDO`, `GERADA`, `FALHOU_VERIFICACAO`, `APROVADA` ou `REJEITADA` ([Ciclo de vida](question-lifecycle.md)) |
 | `runs` | `constraints` (JSONB), `input_quantity`, `reviewed`, `steps` (JSONB) | Conteúdo de `meta.json` na última conclusão |
 | `runs` | `input_tokens`, `output_tokens` (bigint), `cost` (numeric) | Reservados para G2-4; permanecem `NULL`, não zero |
-| `questions` | `run_id` (PK e FK para `runs`), `name`, `statement`, `reference_solution`, `constraints` (JSONB), `difficulty`, `axis`, `state` | Uma questão por execução; estado inicial `draft`, sem aprovação implícita |
+| `questions` | `run_id` (PK e FK para `runs`), `name`, `statement`, `reference_solution`, `constraints` (JSONB), `difficulty`, `axis` | Uma questão por execução; o estado fica em `runs.state`, porque esta linha só existe depois da etapa 5 |
 | `test_cases` | (`run_id`, `position`) (PK), `input`, `output` | Casos ligados à questão; ordem a partir de zero, duplicatas e espaços preservados |
 | `run_artifacts` | (`run_id`, `name`) (PK), `content`, `updated_at` | Artefatos originais, inclusive trabalho ainda em andamento |
 
@@ -38,7 +39,7 @@ parcial de uma escrita concorrente.
 
 `PostgresStore.get_question(run_id)` devolve `StoredQuestion` ou `None`, lendo
 apenas as tabelas estruturadas. Inclui enunciado, solução, restrições, nível,
-eixo, estado, casos e metadados. A API existente continua lendo artefatos;
+eixo, estado (lido de `runs.state`), casos e metadados. A API existente continua lendo artefatos;
 endpoints de listagem e filtros não fazem parte desta entrega.
 
 Uma nova conclusão substitui o retrato anterior, sem criar versões. Alterações
@@ -54,6 +55,9 @@ Excluir uma execução remove artefatos, questão e casos por `ON DELETE CASCADE
 e `ADD COLUMN IF NOT EXISTS` permitem abrir um banco da versão anterior sem
 apagar dados. Questões antigas não recebem preenchimento automático; concluir
 novamente uma execução com seus artefatos completos popula as tabelas novas.
+A G3-1 acrescentou `runs.state`: execuções já concluídas passam a `GERADA`, as
+demais a `GERANDO`, e a coluna provisória `questions.state` (que só aceitava
+`draft`) é removida.
 O backend local continua guardando arquivos, sem tabelas relacionais.
 
 Para verificar com um **banco de teste descartável**, configure
@@ -63,6 +67,6 @@ todos os campos, custos nulos, independência dos artefatos, substituição dos
 casos, rollback e exclusão em cascata. Sem essa variável, os testes de Postgres
 são pulados explicitamente.
 
-Versionamento completo (G1-7), papéis de aprovador/solicitante e coleta de
+Versionamento completo (G1-7), registro de quem aprovou (G3-2) e coleta de
 tokens/custo (G2-4) permanecem planejados. A decisão está na
 [ADR-0014](../adr/0014-structured-question-snapshot.md).

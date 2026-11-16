@@ -7,7 +7,16 @@ so a client can drive the pipeline one step at a time.
 
 from pydantic import BaseModel, Field
 
-from codeexpert.domain import Constraints, Difficulty, RunMetadata, Statement, TestCase
+from codeexpert.domain import (
+    Constraints,
+    Difficulty,
+    QuestionState,
+    RunMetadata,
+    Statement,
+    TestCase,
+)
+
+_STATE_DESCRIPTION = "Lifecycle state. Only APROVADA may reach a student. See docs/adr/0015."
 
 
 class StatementRequest(Constraints):
@@ -80,6 +89,7 @@ class ExportResponse(BaseModel):
 
 class CreateQuestionResponse(BaseModel):
     run_id: str
+    state: QuestionState = Field(description=_STATE_DESCRIPTION)
     statement: Statement
     code: str
     inputs: list[str]
@@ -91,11 +101,23 @@ class QuestionDetail(BaseModel):
     """Everything the review screen needs, in one response."""
 
     run_id: str
+    state: QuestionState = Field(description=_STATE_DESCRIPTION)
     statement: Statement
     code: str
     inputs: list[str]
     testcases: list[TestCase]
     metadata: RunMetadata
+
+
+class QuestionStateResponse(BaseModel):
+    """The state after a review action.
+
+    Not the whole question: a question that failed verification can be rejected
+    but has no complete set of artefacts to show.
+    """
+
+    run_id: str
+    state: QuestionState = Field(description=_STATE_DESCRIPTION)
 
 
 __all__ = [
@@ -110,6 +132,8 @@ __all__ = [
     "InputRequest",
     "InputResponse",
     "QuestionDetail",
+    "QuestionState",
+    "QuestionStateResponse",
     "RunRequest",
     "StatementRequest",
     "StatementResponse",
