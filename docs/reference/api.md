@@ -1,8 +1,8 @@
 # API
 
-<p class="lead">Contrato HTTP de <code>main</code>: dois endpoints de diagnóstico, as cinco etapas do pipeline e um orquestrador. Todos públicos, síncronos e em JSON.</p>
+<p class="lead">Contrato HTTP de <code>main</code>: dois endpoints de diagnóstico, as cinco etapas do pipeline, um orquestrador e a revisão de uma questão. Todos públicos, síncronos e em JSON.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> Todos os endpoints desta página. Os endpoints previstos no plano (`POST /questions`, `GET /questions`, aprovação, exportação de seleção) estão em [Roadmap](../product/roadmap.md#estado-da-geracao).
+<span class="ce-badge ce-status--done">Implementado</span> Todos os endpoints desta página. Os endpoints previstos no plano (`POST /questions`, `GET /questions`, registro de quem aprovou, exportação de seleção) estão em [Roadmap](../product/roadmap.md#estado-da-geracao).
 
 ## Visão geral
 
@@ -24,6 +24,8 @@
 | <span class="ce-badge ce-badge--post">POST</span> | [`/export_moodle_xml_question`](#post-export_moodle_xml_question) | Etapa 5 — acrescenta a questão ao XML |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/create_question`](#post-create_question) | As cinco etapas numa chamada |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/questions/{run_id}`](#get-questions-run_id) | Tudo o que a tela de revisão precisa, de uma questão concluída |
+| <span class="ce-badge ce-badge--post">POST</span> | [`/questions/{run_id}/approve`](#post-questions-run_id-approve) | `GERADA` → `APROVADA` |
+| <span class="ce-badge ce-badge--post">POST</span> | [`/questions/{run_id}/reject`](#post-questions-run_id-reject) | `GERADA` ou `FALHOU_VERIFICACAO` → `REJEITADA` |
 
 Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem a forma `{"detail": "..."}`; erros de `/create_question` trazem também `run_id` (validação é diferente, ver [Erros](#erros)).
 
@@ -33,6 +35,8 @@ Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem
 | Etapas 1, 2, 3 | segundos | O modelo |
 | Etapa 4 | segundos | Compilação + `qty` execuções de até 5 s |
 | `/create_question` | dezenas de segundos | Tudo acima |
+
+Toda resposta que devolve uma questão traz `state`, o [estado do ciclo de vida](../architecture/question-lifecycle.md): `GERANDO`, `GERADA`, `FALHOU_VERIFICACAO`, `APROVADA` ou `REJEITADA`. Só `APROVADA` pode ir para o aluno.
 
 ---
 
@@ -118,7 +122,7 @@ Grava `solution.c`, sem cercas de markdown. Erros: `404`, `409` (falta o enuncia
 
 ## `POST /gen_testcases` {#post-gen_testcases}
 
-**Etapa 4.** Corpo: `{"run_id": "..."}`. Requer as etapas 2 e 3 e `gcc` no `PATH`. Não chama o modelo.
+**Etapa 4.** Corpo: `{"run_id": "..."}`. Requer as etapas 2 e 3 e `gcc` no `PATH`. Não chama o modelo. É a etapa que verifica a questão: se a solução não compila ou não termina numa entrada, a questão passa a `FALHOU_VERIFICACAO`; chamar de novo numa questão nesse estado a devolve a `GERANDO` antes de tentar.
 
 ```json title="200"
 { "run_id": "20260918T221305Z-1a2b3c4d", "testcases": [{ "input": "1\n5\n", "output": "5\n" }] }
@@ -158,6 +162,7 @@ As cinco etapas em sequência, numa execução nova (ou na indicada em `statemen
 ```json title="200"
 {
   "run_id": "20260918T221305Z-1a2b3c4d",
+  "state": "GERADA",
   "statement": { "name": "Soma dos numeros pares", "statement": "..." },
   "code": "#include <stdio.h>\n...",
   "inputs": ["5\n1\n2\n3\n4\n5\n"],
@@ -172,11 +177,12 @@ Se uma etapa falha, o erro dela é devolvido com o mesmo status do endpoint indi
 
 ## `GET /questions/{run_id}` {#get-questions-run_id}
 
-Devolve numa chamada o que a tela de revisão precisa: enunciado, solução, entradas, casos de teste e o `meta.json`.
+Devolve numa chamada o que a tela de revisão precisa: estado, enunciado, solução, entradas, casos de teste e o `meta.json`.
 
 ```json title="200"
 {
   "run_id": "20260918T221305Z-1a2b3c4d",
+  "state": "GERADA",
   "statement": { "name": "Soma de dois numeros", "statement": "..." },
   "code": "#include <stdio.h>
 ...",
@@ -195,6 +201,32 @@ Só responde para uma execução **concluída**, isto é, que terminou a etapa 5
 
 ---
 
+## `POST /questions/{run_id}/approve` {#post-questions-run_id-approve}
+
+Aprova uma questão `GERADA`. Sem corpo.
+
+```json title="200"
+{ "run_id": "20260918T221305Z-1a2b3c4d", "state": "APROVADA" }
+```
+
+O estado fica gravado: o `GET /questions/{run_id}` seguinte responde `"state": "APROVADA"`. Ainda não registra quem aprovou nem quando, e não altera `metadata.reviewed` — isso é a G3-2. Erros: `404` (`run_id` desconhecido), `409` (qualquer estado que não `GERADA`, inclusive aprovar duas vezes).
+
+```json title="409"
+{ "detail": "Question '20260918T221305Z-1a2b3c4d' is FALHOU_VERIFICACAO and cannot become APROVADA. A question that failed verification cannot be approved. Fix or regenerate the solution and run the test cases again (POST /gen_testcases)." }
+```
+
+## `POST /questions/{run_id}/reject` {#post-questions-run_id-reject}
+
+Rejeita uma questão `GERADA` ou `FALHOU_VERIFICACAO`. Sem corpo. Funciona também numa questão que não concluiu a etapa 5, por isso a resposta traz só o estado, não a questão.
+
+```json title="200"
+{ "run_id": "20260918T221305Z-1a2b3c4d", "state": "REJEITADA" }
+```
+
+Erros: `404`, `409` (`GERANDO`, `APROVADA` ou já `REJEITADA`). As transições permitidas estão em [Ciclo de vida da questão](../architecture/question-lifecycle.md).
+
+---
+
 ## Erros {#erros}
 
 Os serviços levantam exceções de domínio; `api/errors.py` traduz cada uma pela tabela `STATUS_BY_ERROR`. Exceção fora da tabela vira `500`, com traceback no log.
@@ -203,6 +235,7 @@ Os serviços levantam exceções de domínio; `api/errors.py` traduz cada uma pe
 | --- | --- | --- |
 | `404` | `RunNotFoundError` | `run_id` inexistente ou com formato inválido (inclusive `../../etc`) |
 | `409` | `MissingArtefactError` | Etapa chamada antes da anterior. A mensagem diz qual endpoint roda antes |
+| `409` | `InvalidTransitionError` | O estado atual da questão não permite a mudança pedida. A mensagem diz os dois estados |
 | `422` | `CompilationError` | A solução não compila; `detail` traz o `stderr` do `gcc` |
 | `422` | `ExecutionError` | Entrada que não terminou no tempo limite, ou `gcc` fora do `PATH` |
 | `422` | validação do Pydantic | Corpo inválido. Aqui `detail` é uma **lista** de objetos, não texto |

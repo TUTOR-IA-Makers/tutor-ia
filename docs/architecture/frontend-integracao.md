@@ -16,7 +16,7 @@ O front-end já chama uma API de recursos sob `/api/v1` (`frontend/src/services/
 | `POST /api/v1/questions` → `202 {id}` | `POST /create_question` síncrono, ou as quatro etapas `/gen_statement`, `/gen_code`, `/gen_inputs`, `/gen_testcases` | geração como job fora do ciclo da requisição (G0-8) |
 | `GET /api/v1/questions/{id}` | `GET /questions/{run_id}`, na raiz e por id de execução | questão completa com casos e restrições |
 | `GET /api/v1/questions/{id}/generation` | nada | andamento do job: etapa atual, estado, motivo da falha |
-| `POST /api/v1/questions/{id}/approve`, `/reject`, `/regenerate` | nada | ciclo de vida da questão (G3-1, G3-2) |
+| `POST /api/v1/questions/{id}/approve`, `/reject`, `/regenerate` | `POST /questions/{run_id}/approve` e `/reject`, na raiz, só com o estado ([ciclo de vida](question-lifecycle.md)) | quem aprovou e quando (G3-2); `/regenerate` (G0-8); rota sob `/api/v1` |
 | `PATCH /api/v1/questions/{id}/statement` | nada | edição do enunciado pelo professor |
 | `POST /api/v1/exports/moodle` com `question_ids` | `POST /export_moodle_xml_question`, que escreve num arquivo compartilhado | exportador puro que devolve o XML na resposta (G1-8) |
 | `GET /api/v1/session`, `POST /api/v1/session`, `POST /api/v1/session/logout` | nada | sessão (G4-9, G8-1) |

@@ -75,7 +75,7 @@ Todos <span class="ce-badge ce-status--planned">Planejados</span>. Plano B do G2
 | Editar exige mexer nos arquivos em `var/runs/` | **G3-3** editar enunciado, solução ou casos; editar a solução reexecuta compilação, verificação e saídas esperadas (S4) | Saída esperada nunca é digitada nem herdada — sempre recalculada |
 | Qualquer execução pode ser exportada | **G3-4** o exportador recusa o que não está `APROVADA` (S4) | Impossível levar para a turma algo que ninguém revisou |
 
-Todos <span class="ce-badge ce-status--planned">Planejados</span>. Aprovador ≠ solicitante e trilha de auditoria ficam fora (exigem papéis).
+G3-1 <span class="ce-badge ce-status--done">Implementado</span> ([Ciclo de vida da questão](../architecture/question-lifecycle.md)); o resto <span class="ce-badge ce-status--planned">Planejado</span>. Aprovador ≠ solicitante e trilha de auditoria ficam fora (exigem papéis).
 
 ### Interface do professor {#interface-do-professor}
 
