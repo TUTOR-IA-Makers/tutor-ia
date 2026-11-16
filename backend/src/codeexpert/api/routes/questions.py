@@ -22,12 +22,13 @@ from codeexpert.api.schemas import (
     InputRequest,
     InputResponse,
     QuestionDetail,
+    QuestionStateResponse,
     RunRequest,
     StatementRequest,
     StatementResponse,
     TestCaseResponse,
 )
-from codeexpert.domain import Constraints, Statement, TestCase
+from codeexpert.domain import Constraints, QuestionState, Statement, TestCase
 from codeexpert.errors import RunNotFoundError
 from codeexpert.export import export_question
 from codeexpert.generation import (
@@ -115,6 +116,7 @@ async def create_question_endpoint(
     result = create_question(workspace, constraints, quantity, llm, runner)
     return CreateQuestionResponse(
         run_id=result.run_id,
+        state=workspace.state,
         statement=result.statement,
         code=result.code,
         inputs=result.inputs,
@@ -139,6 +141,7 @@ async def get_question(run_id: str, store: StoreDep) -> QuestionDetail:
         raise RunNotFoundError(f"Question '{run_id}' is not complete. Finish the run to see it.")
     return QuestionDetail(
         run_id=run_id,
+        state=workspace.state,
         statement=Statement.model_validate(workspace.read_json(STATEMENT)),
         code=workspace.read_text(SOLUTION),
         inputs=workspace.read_json(INPUTS)["inputs"],
@@ -147,3 +150,24 @@ async def get_question(run_id: str, store: StoreDep) -> QuestionDetail:
         ],
         metadata=workspace.read_metadata(),
     )
+
+
+# Review actions. Which state may follow which is decided in codeexpert.lifecycle;
+# an action the current state forbids is a 409 from InvalidTransitionError. G3-2
+# adds who approved and when to the approval; G3-5 adds the rejection reason.
+
+
+@router.post("/questions/{run_id}/approve", response_model=QuestionStateResponse)
+async def approve_question(run_id: str, store: StoreDep) -> QuestionStateResponse:
+    """GERADA → APROVADA. Anything else, including FALHOU_VERIFICACAO, is a 409."""
+    workspace = open_run(run_id, store)
+    state = workspace.transition(QuestionState.APROVADA)
+    return QuestionStateResponse(run_id=run_id, state=state)
+
+
+@router.post("/questions/{run_id}/reject", response_model=QuestionStateResponse)
+async def reject_question(run_id: str, store: StoreDep) -> QuestionStateResponse:
+    """GERADA or FALHOU_VERIFICACAO → REJEITADA. Anything else is a 409."""
+    workspace = open_run(run_id, store)
+    state = workspace.transition(QuestionState.REJEITADA)
+    return QuestionStateResponse(run_id=run_id, state=state)
