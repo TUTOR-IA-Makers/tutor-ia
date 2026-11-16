@@ -11,7 +11,7 @@ from fastapi.responses import RedirectResponse
 
 from codeexpert import __version__
 from codeexpert.api.errors import register_error_handlers
-from codeexpert.api.routes import catalog, health, questions
+from codeexpert.api.routes import catalog, health, questions, resources
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(catalog.router)
     app.include_router(questions.router)
+    app.include_router(resources.router)
 
     @app.get("/", include_in_schema=False)
     async def root() -> RedirectResponse:

@@ -120,6 +120,7 @@ nav:
       - Primeiro dia: onboarding/index.md
       - Da issue ao PR: guides/first-task.md
       - Gerar uma questão: guides/generate-a-question.md
+      - Formulário ligado à API: guides/form-to-database.md
       - Rodar com Docker: guides/docker.md
       - Deploy: guides/deploy.md
       - Importar no Moodle: guides/import-into-moodle.md
