@@ -7,11 +7,10 @@ future worker process (G0-8) can run the same function.
 """
 
 import logging
-from enum import StrEnum
 
 from pydantic import BaseModel
 
-from codeexpert.domain import Constraints
+from codeexpert.domain import Constraints, QuestionState
 from codeexpert.errors import (
     CodeExpertError,
     CompilationError,
@@ -50,14 +49,8 @@ _REASONS: list[tuple[type[CodeExpertError], str]] = [
 _GENERIC_REASON = "A geração parou antes de terminar. Gere a questão de novo."
 
 
-class GenerationState(StrEnum):
-    RUNNING = "running"
-    COMPLETE = "complete"
-    FAILED = "failed"
-
-
 class GenerationProgress(BaseModel):
-    state: GenerationState
+    state: QuestionState
     completed_steps: int
     failure_reason: str | None = None
 
@@ -70,19 +63,34 @@ def _reason(exc: Exception) -> str:
 
 
 def read_progress(workspace: RunWorkspace) -> GenerationProgress:
-    """Where a run stands, from its artefacts alone, so any process can answer."""
-    if workspace.is_complete():
-        return GenerationProgress(state=GenerationState.COMPLETE, completed_steps=TOTAL_STEPS)
+    """Where a question stands: its lifecycle state, plus how far the job got.
 
-    # A set, because a step retried through the RPC routes is recorded twice.
-    recorded = {step.step for step in workspace.read_metadata().steps}
-    completed = sum(1 for step in RECORDED_STEPS if step in recorded)
-    if workspace.exists(FAILURE):
-        reason = workspace.read_json(FAILURE).get("reason") or _GENERIC_REASON
-        return GenerationProgress(
-            state=GenerationState.FAILED, completed_steps=completed, failure_reason=reason
-        )
-    return GenerationProgress(state=GenerationState.RUNNING, completed_steps=completed)
+    The state is the one `codeexpert.lifecycle` keeps (docs/adr/0015), so a
+    question approved or rejected through the review routes reads the same here.
+    One case has no lifecycle state of its own: a step before verification
+    failed (the model, say). The question is then still `GERANDO` in the store,
+    but nothing is running any more, so it is reported as `FALHOU_VERIFICACAO`
+    rather than leaving the screen polling forever. G0-8 gives that case a real
+    state.
+    """
+    state = workspace.state
+    if workspace.is_complete():
+        completed = TOTAL_STEPS
+    else:
+        # A set, because a step retried through the RPC routes is recorded twice.
+        recorded = {step.step for step in workspace.read_metadata().steps}
+        completed = sum(1 for step in RECORDED_STEPS if step in recorded)
+
+    failed = workspace.exists(FAILURE) and state in (
+        QuestionState.GERANDO,
+        QuestionState.FALHOU_VERIFICACAO,
+    )
+    if not failed:
+        return GenerationProgress(state=state, completed_steps=completed)
+    reason = workspace.read_json(FAILURE).get("reason") or _GENERIC_REASON
+    return GenerationProgress(
+        state=QuestionState.FALHOU_VERIFICACAO, completed_steps=completed, failure_reason=reason
+    )
 
 
 def run_generation(

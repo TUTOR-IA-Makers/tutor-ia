@@ -62,16 +62,16 @@ docker exec -it codeexpert-db psql -U codeexpert -d codeexpert
 ```
 
 ```sql
-SELECT run_id, status, completed_at FROM runs ORDER BY created_at DESC LIMIT 3;
+SELECT run_id, status, state, completed_at FROM runs ORDER BY created_at DESC LIMIT 3;
 
-SELECT run_id, name, difficulty, axis, state
+SELECT run_id, name, difficulty, axis
 FROM questions WHERE run_id = '20261105T142233Z-1a2b3c4d';
 
 SELECT position, input, output
 FROM test_cases WHERE run_id = '20261105T142233Z-1a2b3c4d' ORDER BY position;
 ```
 
-Troque o id de exemplo pelo seu. Uma questão `GERADA` tem `runs.status = 'complete'`, uma linha em `questions` e um caso por posição em `test_cases`. Uma questão que falhou fica `draft`, sem linha em `questions`; o motivo está em `run_artifacts`, no artefato `failure.json`.
+Troque o id de exemplo pelo seu. Uma questão `GERADA` tem `runs.status = 'complete'`, `runs.state = 'GERADA'`, uma linha em `questions` e um caso por posição em `test_cases`. Uma questão que falhou fica `draft`, sem linha em `questions`; o motivo está em `run_artifacts`, no artefato `failure.json`. Se a falha foi na compilação ou na execução, `runs.state` é `FALHOU_VERIFICACAO`; se foi antes (o modelo), continua `GERANDO`, e só a API responde `FALHOU_VERIFICACAO` (veja [API](../reference/api.md#get-api-v1-generation)).
 
 ## Desfazer
 

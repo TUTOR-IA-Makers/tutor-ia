@@ -7,6 +7,7 @@ client's contract, and it must terminate.
 
 import pytest
 
+from codeexpert.domain import QuestionState
 from codeexpert.errors import LLMError
 from codeexpert.execution import get_code_runner
 from codeexpert.llm import get_llm_client
@@ -116,6 +117,22 @@ class TestSuccess:
         _poll(client, question_id)
         assert client.get(f"/questions/{question_id}").status_code == 200
 
+    @pytest.mark.parametrize(
+        ("action", "state"), [("approve", "APROVADA"), ("reject", "REJEITADA")]
+    )
+    def test_a_review_shows_in_the_resource_api(self, client, question_id, action, state) -> None:
+        # The status is the lifecycle state (ADR-0015), not something this API
+        # works out on its own: a reviewed question must not read as GERADA.
+        _poll(client, question_id)
+        assert client.post(f"/questions/{question_id}/{action}").status_code == 200
+
+        generation = client.get(f"/api/v1/questions/{question_id}/generation").json()
+        question = client.get(f"/api/v1/questions/{question_id}").json()
+
+        assert generation["status"] == state
+        assert generation["completed_steps"] == 5
+        assert question["status"] == state
+
 
 class TestFailure:
     def test_compilation_failure_is_reported_not_generated(
@@ -134,6 +151,8 @@ class TestFailure:
         )
         store = LocalFilesystemStore(isolated_settings.workspace_root)
         assert not store.is_complete(question_id)
+        # The same state the review routes see, so it cannot be approved.
+        assert store.get_state(question_id) is QuestionState.FALHOU_VERIFICACAO
 
     def test_failed_question_is_readable_with_its_reason(self, client, statement_response) -> None:
         client.fake_llm._responses = [statement_response, SOLUTION_SOURCE, INPUTS]
@@ -162,6 +181,20 @@ class TestFailure:
         assert generation["completed_steps"] == 0
         assert "exploded" not in generation["failure_reason"]
         assert "Traceback" not in generation["failure_reason"]
+
+    def test_a_failure_before_verification_cannot_be_approved(self, client) -> None:
+        # Stopped at step 1: the lifecycle has no state for this yet (G0-8), so
+        # the store keeps GERANDO and the API reports the failure. Either way,
+        # approving is refused.
+        class BrokenLLM:
+            def complete(self, **_: object) -> str:
+                raise LLMError("provider down")
+
+        client.app.dependency_overrides[get_llm_client] = BrokenLLM
+        question_id = _create(client)
+        _poll(client, question_id)
+
+        assert client.post(f"/questions/{question_id}/approve").status_code == 409
 
     def test_an_unexpected_error_still_ends_the_generation(
         self, client, statement_response

@@ -21,29 +21,17 @@ from codeexpert.api.schemas import (
     CreatedResponse,
     GenerationResponse,
     QuestionResource,
-    QuestionStatus,
     StatementView,
     TestCaseView,
 )
 from codeexpert.domain import Statement, TestCase
 from codeexpert.errors import RunNotFoundError
-from codeexpert.generation.job import (
-    GenerationProgress,
-    GenerationState,
-    read_progress,
-    run_generation,
-)
+from codeexpert.generation.job import GenerationProgress, read_progress, run_generation
 from codeexpert.store import ArtifactStore
 from codeexpert.workspace import DRAFT, SOLUTION, STATEMENT, TESTCASES, RunWorkspace
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["questions"])
-
-STATUS: dict[GenerationState, QuestionStatus] = {
-    GenerationState.RUNNING: "GERANDO",
-    GenerationState.COMPLETE: "GERADA",
-    GenerationState.FAILED: "FALHOU_VERIFICACAO",
-}
 
 
 def _open_question(question_id: str, store: ArtifactStore) -> tuple[RunWorkspace, QuestionDraft]:
@@ -59,7 +47,7 @@ def _generation(question_id: str, progress: GenerationProgress) -> GenerationRes
     return GenerationResponse(
         question_id=question_id,
         run_id=question_id,
-        status=STATUS[progress.state],
+        status=progress.state,
         completed_steps=progress.completed_steps,
         failure_reason=progress.failure_reason,
     )
@@ -123,7 +111,7 @@ def get_question_resource(question_id: str, store: StoreDep) -> QuestionResource
         content_id=draft.content_id,
         difficulty_min=draft.difficulty_min,
         difficulty_max=draft.difficulty_max,
-        status=STATUS[progress.state],
+        status=progress.state,
         test_case_count=len(cases) if cases else draft.test_case_count,
         statement=StatementView(text=statement.statement if statement else ""),
         solution=workspace.read_text(SOLUTION) if workspace.exists(SOLUTION) else None,

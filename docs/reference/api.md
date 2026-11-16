@@ -285,6 +285,9 @@ Erros: `422` (corpo inválido; `detail` é uma lista). Nada é criado nesse caso
 | `GERANDO` | O job não terminou nem falhou |
 | `GERADA` | As cinco etapas terminaram; `completed_steps` é `5` |
 | `FALHOU_VERIFICACAO` | Alguma etapa falhou. `completed_steps` conta as que terminaram; `failure_reason` explica em português, sem stack trace nem saída do compilador (o detalhe fica no log do servidor, com o `run_id`) |
+| `APROVADA`, `REJEITADA` | A questão foi revisada por [`/approve`](#post-questions-run_id-approve) ou [`/reject`](#post-questions-run_id-reject) |
+
+O `status` é o estado do [ciclo de vida da questão](../architecture/question-lifecycle.md), o mesmo que as rotas de revisão leem e gravam. Uma exceção: se uma etapa **anterior** à verificação falha (o modelo, por exemplo), o ciclo de vida ainda não tem estado para isso e a questão continua `GERANDO` no banco. Como nada mais está rodando, a API responde `FALHOU_VERIFICACAO` com o motivo, para a tela não ficar consultando para sempre. Essa questão não pode ser aprovada nem rejeitada até a G0-8 dar um estado próprio a esse caso.
 
 `completed_steps` vem de `meta.json → steps` (enunciado, solução, entradas, casos de teste), mais um quando a execução é concluída pela exportação. Erros: `404`.
 
