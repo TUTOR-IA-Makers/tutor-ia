@@ -31,6 +31,10 @@ class MissingArtefactError(CodeExpertError):
     """A pipeline step ran before the step that produces its input."""
 
 
+class InvalidTransitionError(CodeExpertError):
+    """The question's current state does not allow the requested one."""
+
+
 class LLMError(CodeExpertError):
     """The language model provider failed or answered in an unusable shape."""
 

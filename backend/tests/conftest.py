@@ -16,6 +16,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from codeexpert.api.app import create_app
+from codeexpert.domain import QuestionState
 from codeexpert.execution import get_code_runner
 from codeexpert.execution.runner import RunOutcome
 from codeexpert.llm import get_llm_client
@@ -73,11 +74,13 @@ class MemoryStore:
     def __init__(self) -> None:
         self._artefacts: dict[tuple[str, str], str] = {}
         self._runs: dict[str, bool] = {}
+        self._states: dict[str, QuestionState] = {}
 
     def create_run(self, run_id: str) -> None:
         if run_id in self._runs:
             raise FileExistsError(run_id)
         self._runs[run_id] = False
+        self._states[run_id] = QuestionState.GERANDO
 
     def run_exists(self, run_id: str) -> bool:
         return run_id in self._runs
@@ -90,6 +93,7 @@ class MemoryStore:
 
     def delete_run(self, run_id: str) -> None:
         self._runs.pop(run_id, None)
+        self._states.pop(run_id, None)
         for key in [key for key in self._artefacts if key[0] == run_id]:
             del self._artefacts[key]
 
@@ -98,6 +102,15 @@ class MemoryStore:
 
     def is_complete(self, run_id: str) -> bool:
         return self._runs.get(run_id, False)
+
+    def get_state(self, run_id: str) -> QuestionState:
+        return self._states[run_id]
+
+    def set_state(self, run_id: str, expected: QuestionState, new: QuestionState) -> bool:
+        if self._states.get(run_id) is not expected:
+            return False
+        self._states[run_id] = new
+        return True
 
 
 @pytest.fixture(autouse=True)

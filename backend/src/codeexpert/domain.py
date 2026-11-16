@@ -64,6 +64,21 @@ class CStructure(StrEnum):
     STDLIB = "stdlib.h"
 
 
+class QuestionState(StrEnum):
+    """Where a question is in its life, from generation to a teacher's decision.
+
+    The values are the names the plan and the review screen use, so the wire,
+    the database and the documentation all say the same word. Which state may
+    follow which lives in `codeexpert.lifecycle`, and nowhere else.
+    """
+
+    GERANDO = "GERANDO"
+    GERADA = "GERADA"
+    FALHOU_VERIFICACAO = "FALHOU_VERIFICACAO"
+    APROVADA = "APROVADA"
+    REJEITADA = "REJEITADA"
+
+
 class Constraints(BaseModel):
     """The pedagogical restrictions an exercise must respect.
 
@@ -124,6 +139,6 @@ class StoredQuestion(BaseModel):
     constraints: Constraints | None = None
     difficulty: Difficulty | None = None
     axis: ContentAxis | None = None
-    state: str = "draft"
+    state: QuestionState
     testcases: list[TestCase] = Field(default_factory=list)
     metadata: RunMetadata

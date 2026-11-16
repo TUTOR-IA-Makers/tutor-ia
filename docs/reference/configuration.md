@@ -80,7 +80,7 @@ Qualquer variável da tabela acima também pode vir de um arquivo em `/run/secre
 
 A ordem de precedência é: variável de ambiente, depois `.env`, depois o arquivo, depois o padrão. O arquivo só é lido quando nenhuma das duas primeiras fontes define a variável. Se `/run/secrets` não existe, como num notebook ou no CI, essa fonte é ignorada e nada muda em relação ao `.env`.
 
-É assim que a chave chega ao container sem virar variável de ambiente, e por isso não aparece em `docker inspect` nem em `/proc/1/environ`. Montar o arquivo na VPS é parte do [deploy](../guides/deploy.md#chave-do-modelo), <span class="ce-badge ce-status--planned">Planejado</span>.
+É assim que a chave chega ao container sem virar variável de ambiente, e por isso não aparece em `docker inspect` nem em `/proc/1/environ`. Na VPS, `deploy/compose.yaml` monta assim a chave e a URL do banco ([Deploy](../guides/deploy.md#na-vps)), <span class="ce-badge ce-status--wip">Em desenvolvimento</span>.
 
 ## Portas e caminhos
 
