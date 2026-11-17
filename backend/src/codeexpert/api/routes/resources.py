@@ -18,6 +18,7 @@ from fastapi import APIRouter, BackgroundTasks, status
 from codeexpert.api.deps import LLMDep, RunnerDep, StoreDep, create_run, open_run
 from codeexpert.api.drafts import QuestionDraft, to_constraints
 from codeexpert.api.schemas import (
+    ApproveRequest,
     CreatedResponse,
     GenerationResponse,
     QuestionResource,
@@ -82,16 +83,9 @@ def get_generation(question_id: str, store: StoreDep) -> GenerationResponse:
     return _generation(question_id, read_progress(workspace))
 
 
-@router.get("/questions/{question_id}", response_model=QuestionResource)
-def get_question_resource(question_id: str, store: StoreDep) -> QuestionResource:
-    """The question in whatever state it is in.
-
-    The client loads the question before choosing between the progress and the
-    review screen, so a question still in GERANDO answers with what exists so far
-    rather than a 404.
-    """
-    workspace, draft = _open_question(question_id, store)
+def _resource(question_id: str, workspace: RunWorkspace, draft: QuestionDraft) -> QuestionResource:
     progress = read_progress(workspace)
+    metadata = workspace.read_metadata()
 
     statement = (
         Statement.model_validate(workspace.read_json(STATEMENT))
@@ -121,4 +115,32 @@ def get_question_resource(question_id: str, store: StoreDep) -> QuestionResource
         ],
         structures=draft.structures,
         failure_reason=progress.failure_reason,
+        reviewed=metadata.reviewed,
+        approved_by=metadata.approved_by,
+        approved_at=metadata.approved_at,
     )
+
+
+@router.get("/questions/{question_id}", response_model=QuestionResource)
+def get_question_resource(question_id: str, store: StoreDep) -> QuestionResource:
+    """The question in whatever state it is in.
+
+    The client loads the question before choosing between the progress and the
+    review screen, so a question still in GERANDO answers with what exists so far
+    rather than a 404.
+    """
+    workspace, draft = _open_question(question_id, store)
+    return _resource(question_id, workspace, draft)
+
+
+@router.post("/questions/{question_id}/approve", response_model=QuestionResource)
+def approve_question_resource(
+    question_id: str, request: ApproveRequest, store: StoreDep
+) -> QuestionResource:
+    """The review screen's Aprovar button. Same rules as `POST /questions/{id}/approve`.
+
+    Answers with the whole question, as the client replaces its copy with it.
+    """
+    workspace, draft = _open_question(question_id, store)
+    workspace.approve(request.approved_by)
+    return _resource(question_id, workspace, draft)

@@ -13,7 +13,7 @@ saw its files. See docs/adr/0012.
 import json
 import re
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, NoReturn
 from uuid import uuid4
 
 from codeexpert.domain import QuestionState, RunMetadata
@@ -113,13 +113,44 @@ class RunWorkspace:
         current = self.state
         check_transition(self.run_id, current, target)
         if not self._store.set_state(self.run_id, current, target):
-            check_transition(self.run_id, self.state, target)
-            # Valid from the new state too, yet the write lost a race: say so
-            # rather than retry blindly over a change this request never saw.
-            raise InvalidTransitionError(
-                f"Question '{self.run_id}' changed while it was being updated. Read it again."
-            )
+            self._raise_lost_race(target)
         return target
+
+    def approve(self, approved_by: str) -> RunMetadata:
+        """Move the question to `APROVADA`, recording who approved it and when.
+
+        Idempotent: on a question that is already `APROVADA` nothing is written
+        and the first approval's record is returned, whoever asks. Every other
+        state is judged by `codeexpert.lifecycle`, so `FALHOU_VERIFICACAO` and the
+        rest raise `InvalidTransitionError`.
+        """
+        current = self.state
+        if current is QuestionState.APROVADA:
+            return self.read_metadata()
+        check_transition(self.run_id, current, QuestionState.APROVADA)
+
+        metadata = self.read_metadata().model_copy(
+            update={
+                "reviewed": True,
+                "approved_by": approved_by,
+                "approved_at": datetime.now(UTC).isoformat(),
+            }
+        )
+        if self._store.record_approval(self.run_id, current, metadata):
+            return metadata
+        # Another approval won the race. The outcome the caller asked for holds,
+        # so this is the idempotent case, not a conflict.
+        if self.state is QuestionState.APROVADA:
+            return self.read_metadata()
+        self._raise_lost_race(QuestionState.APROVADA)
+
+    def _raise_lost_race(self, target: QuestionState) -> NoReturn:
+        check_transition(self.run_id, self.state, target)
+        # Valid from the new state too, yet the write lost a race: say so rather
+        # than retry blindly over a change this request never saw.
+        raise InvalidTransitionError(
+            f"Question '{self.run_id}' changed while it was being updated. Read it again."
+        )
 
     # ── Artefacts ─────────────────────────────────────────────────────────────
 

@@ -5,9 +5,9 @@ shape without silently changing the API, and every response carries the `run_id`
 so a client can drive the pipeline one step at a time.
 """
 
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 from codeexpert.api.drafts import StructureRules
 from codeexpert.domain import (
@@ -123,6 +123,32 @@ class QuestionStateResponse(BaseModel):
     state: QuestionState = Field(description=_STATE_DESCRIPTION)
 
 
+ApproverName = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+]
+
+
+class ApproveRequest(BaseModel):
+    """Who is approving. From the body until there is a session (G8-1)."""
+
+    approved_by: ApproverName = Field(
+        description="Name of the teacher responsible for the question. Required, not blank."
+    )
+
+
+_APPROVED_BY = "Who approved. Null until approved; a repeated approval keeps the first."
+_APPROVED_AT = "When it was approved, ISO 8601 in UTC. Null until approved."
+_REVIEWED = "True once a teacher approved the question."
+
+
+class ApprovalResponse(QuestionStateResponse):
+    """The state after an approval, and the approval record it left."""
+
+    reviewed: bool = Field(description=_REVIEWED)
+    approved_by: str | None = Field(description=_APPROVED_BY)
+    approved_at: str | None = Field(description=_APPROVED_AT)
+
+
 # ── Resource API under /api/v1 ───────────────────────────────────────────────
 # Field names follow frontend/src/services/http/dto.ts, which validates every
 # response with zod: a renamed field here is a ResponseShapeError on the screen.
@@ -196,9 +222,14 @@ class QuestionResource(BaseModel):
     )
     compilation: CompilationView | None = Field(default=None, description="Always null for now.")
     failure_reason: str | None = None
+    reviewed: bool = Field(default=False, description=_REVIEWED)
+    approved_by: str | None = Field(default=None, description=_APPROVED_BY)
+    approved_at: str | None = Field(default=None, description=_APPROVED_AT)
 
 
 __all__ = [
+    "ApprovalResponse",
+    "ApproveRequest",
     "CodeResponse",
     "ConfigResponse",
     "Constraints",

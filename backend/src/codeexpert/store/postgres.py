@@ -41,13 +41,16 @@ def _save_question(conn: Connection, run_id: str) -> None:
     conn.execute(
         """
         UPDATE runs SET created_at = %s, constraints = %s, input_quantity = %s,
-                        reviewed = %s, steps = %s WHERE run_id = %s
+                        reviewed = %s, approved_by = %s, approved_at = %s, steps = %s
+        WHERE run_id = %s
         """,
         (
             metadata.created_at,
             requested,
             metadata.input_quantity,
             metadata.reviewed,
+            metadata.approved_by,
+            metadata.approved_at,
             Jsonb([step.model_dump(mode="json") for step in metadata.steps]),
             run_id,
         ),
@@ -137,6 +140,7 @@ class PostgresStore:
             cursor.execute(
                 """
                 SELECT q.*, r.created_at, r.input_quantity, r.reviewed, r.steps, r.state,
+                    r.approved_by, r.approved_at,
                     COALESCE((SELECT jsonb_agg(
                         jsonb_build_object('input', t.input, 'output', t.output)
                         ORDER BY t.position)
@@ -165,6 +169,8 @@ class PostgresStore:
                 input_quantity=row["input_quantity"],
                 reviewed=row["reviewed"],
                 steps=row["steps"],
+                approved_by=row["approved_by"],
+                approved_at=row["approved_at"].isoformat() if row["approved_at"] else None,
             ),
         )
 
@@ -191,3 +197,32 @@ class PostgresStore:
                 (new.value, run_id, expected.value),
             )
             return cursor.rowcount == 1
+
+    def record_approval(self, run_id: str, expected: QuestionState, metadata: RunMetadata) -> bool:
+        # One transaction: the compare-and-set picks the single winner, and only the
+        # winner's record reaches meta.json and the structured columns.
+        with self._pool.connection() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE runs SET state = %s, reviewed = true, approved_by = %s, approved_at = %s
+                WHERE run_id = %s AND state = %s
+                """,
+                (
+                    QuestionState.APROVADA.value,
+                    metadata.approved_by,
+                    metadata.approved_at,
+                    run_id,
+                    expected.value,
+                ),
+            )
+            if cursor.rowcount != 1:
+                return False
+            conn.execute(
+                """
+                INSERT INTO run_artifacts (run_id, name, content) VALUES (%s, 'meta.json', %s)
+                ON CONFLICT (run_id, name)
+                DO UPDATE SET content = EXCLUDED.content, updated_at = now()
+                """,
+                (run_id, metadata.model_dump_json(indent=2) + "\n"),
+            )
+            return True

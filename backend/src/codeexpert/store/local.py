@@ -8,12 +8,13 @@ run against. See docs/adr/0012.
 import shutil
 from pathlib import Path
 
-from codeexpert.domain import QuestionState
+from codeexpert.domain import QuestionState, RunMetadata
 from codeexpert.lifecycle import INITIAL_STATE
 
 # Not artefact names, so they cannot collide with one of the pipeline's files.
 COMPLETE_MARKER = ".complete"
 STATE_FILE = ".state"
+META = "meta.json"
 
 
 class LocalFilesystemStore:
@@ -60,3 +61,11 @@ class LocalFilesystemStore:
             return False
         (self._dir(run_id) / STATE_FILE).write_text(new.value, encoding="utf-8")
         return True
+
+    def record_approval(self, run_id: str, expected: QuestionState, metadata: RunMetadata) -> bool:
+        if self.get_state(run_id) is not expected:
+            return False
+        # Record first, state second: a crash in between leaves a question that is
+        # still GERADA, and approving it again overwrites the orphaned record.
+        self.put(run_id, META, metadata.model_dump_json(indent=2) + "\n")
+        return self.set_state(run_id, expected, QuestionState.APROVADA)

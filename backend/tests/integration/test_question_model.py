@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import Iterator
+from datetime import datetime
 from uuid import uuid4
 
 import psycopg
@@ -157,6 +158,23 @@ def test_state_is_read_with_the_structured_question(
 
     assert question is not None
     assert question.state is QuestionState.APROVADA
+
+
+def test_the_approval_is_in_the_structured_columns(
+    store: PostgresStore, generated: RunWorkspace
+) -> None:
+    generated.complete()
+    recorded = generated.approve("Profa. Ana Lima")
+
+    question = store.get_question(generated.run_id)
+
+    assert question is not None
+    assert question.metadata.reviewed is True
+    assert question.metadata.approved_by == "Profa. Ana Lima"
+    assert question.metadata.approved_at is not None
+    assert datetime.fromisoformat(question.metadata.approved_at) == datetime.fromisoformat(
+        recorded.approved_at
+    )
 
 
 def test_mismatched_metadata_cannot_link_another_run(

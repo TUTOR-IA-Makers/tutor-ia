@@ -128,6 +128,10 @@ class RunMetadata(BaseModel):
     input_quantity: int | None = None
     steps: list[StepRecord] = Field(default_factory=list)
     reviewed: bool = False
+    # Set once, by the approval that moved the question to APROVADA. A repeated
+    # approval leaves them as they are. See docs/adr/0016.
+    approved_by: str | None = None
+    approved_at: str | None = None
 
 
 class StoredQuestion(BaseModel):
