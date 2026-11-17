@@ -26,6 +26,7 @@
 | [0013](0013-resource-api-and-cookie-session.md) | Serve the web client from a resource API under /api/v1 with a cookie session | Proposed |
 | [0014](0014-structured-question-snapshot.md) | Store a structured snapshot of completed generations | Proposed |
 | [0015](0015-question-lifecycle-on-runs.md) | Keep the question lifecycle in one transition table and one column on runs | Proposed |
+| [0016](0016-approval-record-on-runs.md) | Record the approval on runs, written with the state, and make approving idempotent | Proposed |
 
 Para escrever uma nova, ver [`.agents/workflows/add-adr.md`](https://github.com/HugoRosa29/coderunner_v2/blob/main/.agents/workflows/add-adr.md) e o [modelo](0000-template.md).
 

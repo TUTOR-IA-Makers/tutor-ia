@@ -9,6 +9,7 @@
 | `runs` | `run_id` (PK), `status`, `created_at`, `completed_at` | Execução; `status` diz se os artefatos estão completos (`draft` ou `complete`) |
 | `runs` | `state` | Estado da questão: `GERANDO`, `GERADA`, `FALHOU_VERIFICACAO`, `APROVADA` ou `REJEITADA` ([Ciclo de vida](question-lifecycle.md)) |
 | `runs` | `constraints` (JSONB), `input_quantity`, `reviewed`, `steps` (JSONB) | Conteúdo de `meta.json` na última conclusão |
+| `runs` | `approved_by` (text), `approved_at` (timestamptz) | Quem aprovou e quando; `NULL` até a aprovação. Gravados com `state = 'APROVADA'` na mesma instrução ([ADR-0016](../adr/0016-approval-record-on-runs.md)) |
 | `runs` | `input_tokens`, `output_tokens` (bigint), `cost` (numeric) | Reservados para G2-4; permanecem `NULL`, não zero |
 | `questions` | `run_id` (PK e FK para `runs`), `name`, `statement`, `reference_solution`, `constraints` (JSONB), `difficulty`, `axis` | Uma questão por execução; o estado fica em `runs.state`, porque esta linha só existe depois da etapa 5 |
 | `test_cases` | (`run_id`, `position`) (PK), `input`, `output` | Casos ligados à questão; ordem a partir de zero, duplicatas e espaços preservados |
@@ -67,6 +68,6 @@ todos os campos, custos nulos, independência dos artefatos, substituição dos
 casos, rollback e exclusão em cascata. Sem essa variável, os testes de Postgres
 são pulados explicitamente.
 
-Versionamento completo (G1-7), registro de quem aprovou (G3-2) e coleta de
-tokens/custo (G2-4) permanecem planejados. A decisão está na
+Versionamento completo (G1-7) e coleta de tokens/custo (G2-4) permanecem
+planejados. A decisão está na
 [ADR-0014](../adr/0014-structured-question-snapshot.md).

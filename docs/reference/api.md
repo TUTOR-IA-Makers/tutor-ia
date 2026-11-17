@@ -24,12 +24,13 @@
 | <span class="ce-badge ce-badge--post">POST</span> | [`/export_moodle_xml_question`](#post-export_moodle_xml_question) | Etapa 5 — acrescenta a questão ao XML |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/create_question`](#post-create_question) | As cinco etapas numa chamada |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/questions/{run_id}`](#get-questions-run_id) | Tudo o que a tela de revisão precisa, de uma questão concluída |
-| <span class="ce-badge ce-badge--post">POST</span> | [`/questions/{run_id}/approve`](#post-questions-run_id-approve) | `GERADA` → `APROVADA` |
+| <span class="ce-badge ce-badge--post">POST</span> | [`/questions/{run_id}/approve`](#post-questions-run_id-approve) | `GERADA` → `APROVADA`, com quem aprovou e quando |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/questions/{run_id}/reject`](#post-questions-run_id-reject) | `GERADA` ou `FALHOU_VERIFICACAO` → `REJEITADA` |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/structures`](#catalogo-de-estruturas-para-o-formulario) | Vocabulário de estruturas do formulário |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/api/v1/questions`](#post-api-v1-questions) | Cria uma questão a partir do formulário e responde `202` na hora |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/questions/{id}/generation`](#get-api-v1-generation) | Andamento da geração |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/questions/{id}`](#get-api-v1-question) | A questão, em qualquer estado |
+| <span class="ce-badge ce-badge--post">POST</span> | [`/api/v1/questions/{id}/approve`](#post-api-v1-approve) | O botão Aprovar da tela de revisão; devolve a questão inteira |
 
 Toda resposta de sucesso das etapas inclui o `run_id`. Toda resposta de erro tem a forma `{"detail": "..."}`; erros de `/create_question` trazem também `run_id` (validação é diferente, ver [Erros](#erros)).
 
@@ -197,7 +198,7 @@ Devolve numa chamada o que a tela de revisão precisa: estado, enunciado, soluç
 2
 ", "output": "3
 " }],
-  "metadata": { "run_id": "...", "created_at": "...", "steps": [], "reviewed": false }
+  "metadata": { "run_id": "...", "created_at": "...", "steps": [], "reviewed": false, "approved_by": null, "approved_at": null }
 }
 ```
 
@@ -207,17 +208,40 @@ Só responde para uma execução **concluída**, isto é, que terminou a etapa 5
 
 ## `POST /questions/{run_id}/approve` {#post-questions-run_id-approve}
 
-Aprova uma questão `GERADA`. Sem corpo.
+Aprova uma questão `GERADA` e registra o professor responsável. O corpo é obrigatório.
 
-```json title="200"
-{ "run_id": "20260918T221305Z-1a2b3c4d", "state": "APROVADA" }
+```json title="Corpo"
+{ "approved_by": "Profa. Ana Lima" }
 ```
 
-O estado fica gravado: o `GET /questions/{run_id}` seguinte responde `"state": "APROVADA"`. Ainda não registra quem aprovou nem quando, e não altera `metadata.reviewed` — isso é a G3-2. Erros: `404` (`run_id` desconhecido), `409` (qualquer estado que não `GERADA`, inclusive aprovar duas vezes).
+| Campo | Regra |
+| --- | --- |
+| `approved_by` | Obrigatório. Espaços nas pontas são removidos; vazio ou só espaços é `422`. Até 120 caracteres |
+
+```json title="200"
+{
+  "run_id": "20260918T221305Z-1a2b3c4d",
+  "state": "APROVADA",
+  "reviewed": true,
+  "approved_by": "Profa. Ana Lima",
+  "approved_at": "2026-11-17T14:02:11.482913+00:00"
+}
+```
+
+O registro fica gravado: o `GET /questions/{run_id}` seguinte traz `state: "APROVADA"` e, em `metadata`, os mesmos `reviewed`, `approved_by` e `approved_at`. `approved_at` é ISO 8601 em UTC, definido pelo servidor.
+
+**Idempotente.** Aprovar uma questão que já está `APROVADA` responde `200` com o registro **da primeira aprovação**, mesmo que o corpo traga outro nome. Nada é regravado. Se dois professores aprovam ao mesmo tempo, os dois recebem `200` e fica o nome de quem gravou primeiro.
+
+Erros: `404` (`run_id` desconhecido), `422` (sem `approved_by`), `409` (`GERANDO`, `FALHOU_VERIFICACAO` ou `REJEITADA`). Uma recusa não grava nada.
 
 ```json title="409"
 { "detail": "Question '20260918T221305Z-1a2b3c4d' is FALHOU_VERIFICACAO and cannot become APROVADA. A question that failed verification cannot be approved. Fix or regenerate the solution and run the test cases again (POST /gen_testcases)." }
 ```
+
+!!! note "Por que o nome vem no corpo"
+    Ainda não há sessão. Quando houver (G8-1), o responsável passa a ser o
+    professor da sessão e este campo deixa de existir. Ver
+    [ADR-0016](../adr/0016-approval-record-on-runs.md).
 
 ## `POST /questions/{run_id}/reject` {#post-questions-run_id-reject}
 
@@ -314,7 +338,10 @@ Responde em qualquer estado, porque o front carrega a questão antes de escolher
   "structures": { "required": ["if"], "allowed": ["else"], "forbidden": ["for"] },
   "constraints": [],
   "compilation": null,
-  "failure_reason": null
+  "failure_reason": null,
+  "reviewed": false,
+  "approved_by": null,
+  "approved_at": null
 }
 ```
 
@@ -328,8 +355,38 @@ Responde em qualquer estado, porque o front carrega a questão antes de escolher
 | `statement.input`, `statement.output` | Sempre vazios: o enunciado ainda não é separado em blocos |
 | `statement.example`, `actual_output`, `passed`, `compilation` | Sempre `null`: nada os produz ainda |
 | `constraints` | Sempre `[]`: a verificação de escopo (FEAT-024) não existe |
+| `reviewed`, `approved_by`, `approved_at` | O registro da aprovação (`meta.json`). `false`, `null`, `null` até alguém aprovar |
 
 Erros: `404` para id desconhecido, malformado ou de uma execução criada pelas rotas RPC (sem `draft.json`). As rotas RPC continuam funcionando, inclusive `GET /questions/{run_id}` para uma questão criada aqui.
+
+### `POST /api/v1/questions/{id}/approve` {#post-api-v1-approve}
+
+O botão **Aprovar e salvar** da tela de revisão (G4-5). Mesmas regras de
+[`POST /questions/{run_id}/approve`](#post-questions-run_id-approve): mesmo corpo,
+idempotente, `409` para `FALHOU_VERIFICACAO`. A diferença é a resposta: a
+[questão inteira](#get-api-v1-question), já com `status: "APROVADA"`, porque o
+front substitui a sua cópia por ela.
+
+```json title="Corpo"
+{ "approved_by": "Profa. Ana Lima" }
+```
+
+```json title="200 (trecho)"
+{
+  "id": "20261105T142233Z-1a2b3c4d",
+  "status": "APROVADA",
+  "reviewed": true,
+  "approved_by": "Profa. Ana Lima",
+  "approved_at": "2026-11-17T14:02:11.482913+00:00"
+}
+```
+
+Erros: `404` (id desconhecido ou execução sem `draft.json`), `409`, `422`.
+
+!!! warning "O front ainda não envia o corpo"
+    Hoje `createHttpServices.ts` chama esta rota sem corpo e receberia `422`.
+    Para integrar, a G4-5 precisa enviar `approved_by` e, se quiser mostrar quem
+    aprovou, ler `reviewed`, `approved_by` e `approved_at` em `dto.ts`.
 
 ---
 

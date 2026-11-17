@@ -16,7 +16,8 @@ O front-end já chama uma API de recursos sob `/api/v1` (`frontend/src/services/
 | `POST /api/v1/questions` → `202 {id}` | o mesmo, com as cinco etapas numa `BackgroundTask` do FastAPI | job que sobrevive a um reinício e pode ser retomado, estado `INTERROMPIDO` (G0-8) |
 | `GET /api/v1/questions/{id}` | o mesmo, lido dos artefatos, em qualquer estado | verificação de restrições, resultado de compilação, `actual_output`/`passed` (hoje `[]` ou `null`) |
 | `GET /api/v1/questions/{id}/generation` | o mesmo: estado, etapas concluídas, motivo da falha em português | nada para a versão mínima |
-| `POST /api/v1/questions/{id}/approve`, `/reject`, `/regenerate` | `POST /questions/{run_id}/approve` e `/reject`, na raiz, só com o estado ([ciclo de vida](question-lifecycle.md)) | quem aprovou e quando (G3-2); `/regenerate` (G0-8); rota sob `/api/v1` |
+| `POST /api/v1/questions/{id}/approve` | o mesmo, com corpo `{"approved_by": "..."}`, devolvendo a questão com `reviewed`, `approved_by`, `approved_at` ([API](../reference/api.md#post-api-v1-approve)) | o front enviar `approved_by` (G4-5); até lá recebe `422` |
+| `POST /api/v1/questions/{id}/reject`, `/regenerate` | `POST /questions/{run_id}/reject` na raiz, só com o estado ([ciclo de vida](question-lifecycle.md)) | rota sob `/api/v1`; `/regenerate` (G0-8) |
 | `PATCH /api/v1/questions/{id}/statement` | nada | edição do enunciado pelo professor |
 | `POST /api/v1/exports/moodle` com `question_ids` | `POST /export_moodle_xml_question`, que escreve num arquivo compartilhado | exportador puro que devolve o XML na resposta (G1-8) |
 | `GET /api/v1/session`, `POST /api/v1/session`, `POST /api/v1/session/logout` | nada | sessão (G4-9, G8-1) |

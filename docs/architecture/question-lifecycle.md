@@ -2,8 +2,8 @@
 
 <p class="lead">Toda questão tem um estado explícito, de <code>GERANDO</code> até a decisão de um professor. O que pode ir para o aluno é <code>APROVADA</code>: uma coluna, não uma convenção. Esta é a entrega de G3-1 (#39).</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> Os cinco estados, a tabela de transições, a persistência nos dois backends e os endpoints `approve` e `reject`.
-<span class="ce-badge ce-status--planned">Planejado</span> Quem aprovou e quando (G3-2), edição antes de aprovar (G3-3) e exportação só do que está aprovado (G3-4) — ver [Roadmap](../product/roadmap.md#revisao-e-aprovacao).
+<span class="ce-badge ce-status--done">Implementado</span> Os cinco estados, a tabela de transições, a persistência nos dois backends, os endpoints `approve` e `reject`, e o registro de quem aprovou e quando (G3-2, #40).
+<span class="ce-badge ce-status--planned">Planejado</span> Edição antes de aprovar (G3-3) e exportação só do que está aprovado (G3-4) — ver [Roadmap](../product/roadmap.md#revisao-e-aprovacao).
 
 ## Estados
 
@@ -51,7 +51,8 @@ transição não é permitida.
 | Etapa 4 falha ao compilar ou por tempo | `generate_testcases()` | `GERANDO` → `FALHOU_VERIFICACAO` |
 | Etapa 4 roda numa questão que falhou | `generate_testcases()` | `FALHOU_VERIFICACAO` → `GERANDO` |
 | Etapa 5 conclui | `RunWorkspace.complete()` | `GERANDO` → `GERADA` |
-| Professor aprova ou rejeita | rotas `approve` e `reject` | conforme a tabela, ou `409` |
+| Professor aprova | rotas `approve` → `RunWorkspace.approve()` | `GERADA` → `APROVADA` com o registro; já `APROVADA` não muda nada; o resto é `409` |
+| Professor rejeita | rota `reject` | conforme a tabela, ou `409` |
 
 Alguns casos não mudam o estado, de propósito:
 
@@ -79,6 +80,19 @@ existe depois da etapa 5 ([Modelo de dados](data-model.md)). A escrita é um
 estado ainda é o esperado. Dois professores aprovando e rejeitando ao mesmo tempo
 não sobrescrevem um ao outro: o segundo recebe `409`.
 
-A decisão e as alternativas estão no
+## Registro da aprovação
+
+Aprovar grava, junto com o estado, quem aprovou e quando: `reviewed: true`,
+`approved_by` (o nome enviado no corpo) e `approved_at` (UTC, do servidor). Ficam
+em `meta.json` e, no Postgres, também em `runs.reviewed`, `runs.approved_by` e
+`runs.approved_at`. A escrita é o mesmo *compare-and-set* do estado, feita por
+`ArtifactStore.record_approval()`: estado e registro nunca discordam.
+
+Aprovar de novo é **idempotente**: responde `200` com o registro da primeira
+aprovação e não grava nada, mesmo com outro nome. Se duas aprovações correm ao
+mesmo tempo, a que perde também recebe `200` com o registro da que ganhou. A
+decisão está no [ADR-0016](../adr/0016-approval-record-on-runs.md).
+
+A decisão e as alternativas do ciclo de vida estão no
 [ADR-0015](../adr/0015-question-lifecycle-on-runs.md). O contrato HTTP está em
 [API](../reference/api.md#post-questions-run_id-approve).
