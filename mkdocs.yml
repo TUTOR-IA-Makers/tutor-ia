@@ -148,6 +148,7 @@ nav:
           - 0013 — Resource API and cookie session: adr/0013-resource-api-and-cookie-session.md
           - 0014 — Structured question snapshot: adr/0014-structured-question-snapshot.md
           - 0015 — Question lifecycle on runs: adr/0015-question-lifecycle-on-runs.md
+          - 0016 — Approval record on runs: adr/0016-approval-record-on-runs.md
           - Modelo: adr/0000-template.md
   - Design:
       - Identidade visual: design/identidade.md

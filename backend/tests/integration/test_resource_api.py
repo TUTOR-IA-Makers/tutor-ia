@@ -124,7 +124,8 @@ class TestSuccess:
         # The status is the lifecycle state (ADR-0015), not something this API
         # works out on its own: a reviewed question must not read as GERADA.
         _poll(client, question_id)
-        assert client.post(f"/questions/{question_id}/{action}").status_code == 200
+        body = {"approved_by": "Profa. Ana Lima"} if action == "approve" else None
+        assert client.post(f"/questions/{question_id}/{action}", json=body).status_code == 200
 
         generation = client.get(f"/api/v1/questions/{question_id}/generation").json()
         question = client.get(f"/api/v1/questions/{question_id}").json()
@@ -132,6 +133,46 @@ class TestSuccess:
         assert generation["status"] == state
         assert generation["completed_steps"] == 5
         assert question["status"] == state
+
+    def test_a_generated_question_has_no_approval_yet(self, client, question_id) -> None:
+        _poll(client, question_id)
+        question = client.get(f"/api/v1/questions/{question_id}").json()
+        assert question["reviewed"] is False
+        assert question["approved_by"] is None
+        assert question["approved_at"] is None
+
+    def test_approve_answers_with_the_whole_question(self, client, question_id) -> None:
+        # The review screen replaces its copy of the question with this response.
+        _poll(client, question_id)
+
+        response = client.post(
+            f"/api/v1/questions/{question_id}/approve", json={"approved_by": "Profa. Ana Lima"}
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["id"] == question_id
+        assert body["status"] == "APROVADA"
+        assert body["reviewed"] is True
+        assert body["approved_by"] == "Profa. Ana Lima"
+        assert body["approved_at"] is not None
+        assert body["test_case_count"] == 2
+        assert client.get(f"/api/v1/questions/{question_id}").json() == body
+
+    def test_approving_again_through_v1_keeps_the_first_record(self, client, question_id) -> None:
+        _poll(client, question_id)
+        route = f"/api/v1/questions/{question_id}/approve"
+        first = client.post(route, json={"approved_by": "Profa. Ana Lima"}).json()
+
+        again = client.post(route, json={"approved_by": "Prof. Outro"})
+
+        assert again.status_code == 200
+        assert again.json() == first
+
+    def test_approve_without_a_name_is_422(self, client, question_id) -> None:
+        _poll(client, question_id)
+        assert client.post(f"/api/v1/questions/{question_id}/approve").status_code == 422
+        assert client.get(f"/api/v1/questions/{question_id}").json()["status"] == "GERADA"
 
 
 class TestFailure:
@@ -194,7 +235,9 @@ class TestFailure:
         question_id = _create(client)
         _poll(client, question_id)
 
-        assert client.post(f"/questions/{question_id}/approve").status_code == 409
+        approve = f"/questions/{question_id}/approve"
+        assert client.post(approve, json={"approved_by": "Ana"}).status_code == 409
+        assert client.post(f"/api/v1{approve}", json={"approved_by": "Ana"}).status_code == 409
 
     def test_an_unexpected_error_still_ends_the_generation(
         self, client, statement_response

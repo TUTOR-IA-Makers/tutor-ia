@@ -16,7 +16,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from codeexpert.api.app import create_app
-from codeexpert.domain import QuestionState
+from codeexpert.domain import QuestionState, RunMetadata
 from codeexpert.execution import get_code_runner
 from codeexpert.execution.runner import RunOutcome
 from codeexpert.llm import get_llm_client
@@ -110,6 +110,13 @@ class MemoryStore:
         if self._states.get(run_id) is not expected:
             return False
         self._states[run_id] = new
+        return True
+
+    def record_approval(self, run_id: str, expected: QuestionState, metadata: RunMetadata) -> bool:
+        if self._states.get(run_id) is not expected:
+            return False
+        self._artefacts[(run_id, "meta.json")] = metadata.model_dump_json()
+        self._states[run_id] = QuestionState.APROVADA
         return True
 
 

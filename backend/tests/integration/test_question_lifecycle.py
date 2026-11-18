@@ -4,10 +4,12 @@ Each request builds its own store from settings, so every read here goes back to
 what was persisted, not to an object still held in memory.
 """
 
+from datetime import datetime
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from httpx import Response
 
 from codeexpert.domain import Constraints, QuestionState
 from codeexpert.errors import CompilationError, ExecutionError
@@ -22,6 +24,7 @@ pytestmark = pytest.mark.integration
 
 SOLUTION_SOURCE = "int main(void) { return 0; }"
 INPUTS_RESPONSE = '["1\\n2\\n", "10\\n20\\n"]'
+APPROVER = {"approved_by": "Profa. Ana Lima"}
 
 
 def _generate(client: TestClient, statement_response: str) -> str:
@@ -49,6 +52,12 @@ def _failed(client: TestClient, statement_response: str) -> str:
     return response.json()["run_id"]
 
 
+def _review(client: TestClient, run_id: str, action: str) -> Response:
+    """Approve or reject. Only approving names a responsible teacher."""
+    body = APPROVER if action == "approve" else None
+    return client.post(f"/questions/{run_id}/{action}", json=body)
+
+
 def _state_on_disk(run_id: str) -> QuestionState:
     """Read the state with a fresh store, the way another process would."""
     return LocalFilesystemStore(get_settings().workspace_root).get_state(run_id)
@@ -69,16 +78,70 @@ def test_a_question_is_gerando_until_step_5_then_gerada(
     assert body["state"] == "GERADA"
 
 
-def test_approving_a_gerada_question_is_persisted_and_read_back(
+def test_approving_records_who_and_when_and_survives_a_fresh_read(
     client: TestClient, statement_response: str
 ) -> None:
     run_id = _complete(client, statement_response)
 
-    response = client.post(f"/questions/{run_id}/approve")
+    response = client.post(f"/questions/{run_id}/approve", json=APPROVER)
 
     assert response.status_code == 200
-    assert response.json() == {"run_id": run_id, "state": "APROVADA"}
-    assert client.get(f"/questions/{run_id}").json()["state"] == "APROVADA"
+    body = response.json()
+    assert body["run_id"] == run_id
+    assert body["state"] == "APROVADA"
+    assert body["reviewed"] is True
+    assert body["approved_by"] == "Profa. Ana Lima"
+    assert datetime.fromisoformat(body["approved_at"]).tzinfo is not None
+    # Each request builds its own store, so this reads what was persisted.
+    detail = client.get(f"/questions/{run_id}").json()
+    assert detail["state"] == "APROVADA"
+    assert detail["metadata"]["reviewed"] is True
+    assert detail["metadata"]["approved_by"] == body["approved_by"]
+    assert detail["metadata"]["approved_at"] == body["approved_at"]
+
+
+def test_approving_twice_keeps_the_first_record(
+    client: TestClient, statement_response: str
+) -> None:
+    run_id = _complete(client, statement_response)
+    first = client.post(f"/questions/{run_id}/approve", json=APPROVER).json()
+
+    again = client.post(f"/questions/{run_id}/approve", json={"approved_by": "Prof. Outro"})
+
+    assert again.status_code == 200
+    assert again.json() == first
+    assert client.get(f"/questions/{run_id}").json()["metadata"]["approved_by"] == (
+        "Profa. Ana Lima"
+    )
+
+
+@pytest.mark.parametrize("body", [None, {}, {"approved_by": ""}, {"approved_by": "   "}])
+def test_approving_without_a_responsible_teacher_is_422(
+    client: TestClient, statement_response: str, body: dict | None
+) -> None:
+    run_id = _complete(client, statement_response)
+
+    assert client.post(f"/questions/{run_id}/approve", json=body).status_code == 422
+    assert _state_on_disk(run_id) is QuestionState.GERADA
+
+
+def test_the_approvers_name_is_stored_trimmed(client: TestClient, statement_response: str) -> None:
+    run_id = _complete(client, statement_response)
+    body = client.post(f"/questions/{run_id}/approve", json={"approved_by": "  Ana  "}).json()
+    assert body["approved_by"] == "Ana"
+
+
+def test_a_question_nobody_approved_has_no_approval_record(
+    client: TestClient, statement_response: str
+) -> None:
+    run_id = _complete(client, statement_response)
+    _review(client, run_id, "reject")
+
+    metadata = client.get(f"/questions/{run_id}").json()["metadata"]
+
+    assert metadata["reviewed"] is False
+    assert metadata["approved_by"] is None
+    assert metadata["approved_at"] is None
 
 
 def test_rejecting_a_gerada_question_is_persisted(
@@ -105,11 +168,15 @@ def test_approving_a_question_that_failed_verification_is_409(
     run_id = _failed(client, statement_response)
     assert _state_on_disk(run_id) is QuestionState.FALHOU_VERIFICACAO
 
-    response = client.post(f"/questions/{run_id}/approve")
+    response = client.post(f"/questions/{run_id}/approve", json=APPROVER)
 
     assert response.status_code == 409
     assert "failed verification cannot be approved" in response.json()["detail"]
     assert _state_on_disk(run_id) is QuestionState.FALHOU_VERIFICACAO
+    store = LocalFilesystemStore(get_settings().workspace_root)
+    metadata = RunWorkspace.open(store, run_id).read_metadata()
+    assert metadata.approved_by is None
+    assert metadata.reviewed is False
 
 
 def test_a_question_that_failed_verification_can_be_rejected(
@@ -126,7 +193,7 @@ def test_approving_a_question_still_in_generation_is_409(
 ) -> None:
     run_id = _generate(client, statement_response)
 
-    response = client.post(f"/questions/{run_id}/approve")
+    response = client.post(f"/questions/{run_id}/approve", json=APPROVER)
 
     assert response.status_code == 409
     assert "is GERANDO and cannot become APROVADA" in response.json()["detail"]
@@ -135,15 +202,15 @@ def test_approving_a_question_still_in_generation_is_409(
 
 @pytest.mark.parametrize(
     ("first", "second"),
-    [("approve", "approve"), ("approve", "reject"), ("reject", "approve"), ("reject", "reject")],
+    [("approve", "reject"), ("reject", "approve"), ("reject", "reject")],
 )
 def test_a_reviewed_question_is_final(
     client: TestClient, statement_response: str, first: str, second: str
 ) -> None:
     run_id = _complete(client, statement_response)
-    final = client.post(f"/questions/{run_id}/{first}").json()["state"]
+    final = _review(client, run_id, first).json()["state"]
 
-    response = client.post(f"/questions/{run_id}/{second}")
+    response = _review(client, run_id, second)
 
     assert response.status_code == 409
     assert f"{final} is final" in response.json()["detail"]
@@ -151,7 +218,10 @@ def test_a_reviewed_question_is_final(
 
 
 def test_reviewing_an_unknown_question_is_404(client: TestClient) -> None:
-    assert client.post("/questions/20260918T120000Z-deadbeef/approve").status_code == 404
+    assert (
+        client.post("/questions/20260918T120000Z-deadbeef/approve", json=APPROVER).status_code
+        == 404
+    )
     assert client.post("/questions/not-a-run-id/reject").status_code == 404
 
 
@@ -200,7 +270,7 @@ def test_finishing_step_5_again_keeps_the_review(
     client: TestClient, statement_response: str
 ) -> None:
     run_id = _complete(client, statement_response)
-    client.post(f"/questions/{run_id}/approve")
+    client.post(f"/questions/{run_id}/approve", json=APPROVER)
 
     assert client.post("/export_moodle_xml_question", json={"run_id": run_id}).status_code == 200
     assert client.get(f"/questions/{run_id}").json()["state"] == "APROVADA"
@@ -210,7 +280,7 @@ def test_a_failed_reverification_of_a_reviewed_question_keeps_its_state(
     client: TestClient, statement_response: str
 ) -> None:
     run_id = _complete(client, statement_response)
-    client.post(f"/questions/{run_id}/approve")
+    client.post(f"/questions/{run_id}/approve", json=APPROVER)
 
     client.fake_runner.fail_compile = "boom"
     assert client.post("/gen_testcases", json={"run_id": run_id}).status_code == 422
