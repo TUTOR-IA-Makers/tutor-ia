@@ -173,7 +173,7 @@ A tabela completa de status está em [API § Erros](../reference/api.md#erros).
 | --- | --- | --- |
 | Autenticação e autorização | Nenhuma. Todos os endpoints são públicos | Acesso por convite, cota por usuário — [G8](../product/roadmap.md#acesso-e-custo) |
 | Banco de dados | Artefatos no Postgres ou em arquivos locais; [modelo estruturado](data-model.md) de questões, casos e execuções no Postgres | Versionamento e consultas da biblioteca — [G1](../product/roadmap.md#estado-da-geracao) |
-| Front-end | Só o Swagger UI em `/docs` | Interface do professor — [G4](../product/roadmap.md#interface-do-professor) |
+| Front-end | SPA servida pela imagem da API, na mesma origem ([Rodar com Docker](../guides/docker.md)); Swagger UI em `/docs` | Interface do professor completa — [G4](../product/roadmap.md#interface-do-professor) |
 | Processamento assíncrono | Nenhum. O pedido fica aberto até o fim; as rotas são `async def` executando código síncrono, o que serializa os pedidos no processo | Geração como job com estado no banco — [G0-8](../product/roadmap.md#estado-da-geracao) |
 | Isolamento da execução | Limite de tempo e de saída; sem limite de memória, processos, rede ou sistema de arquivos | Continua assim; risco aceito e documentado — [G8-3](../product/roadmap.md#execucao-de-codigo) |
 | Deploy | Nenhum em produção ainda. Roda com `make run` ou na [imagem Docker](../guides/docker.md); o [workflow de deploy](../guides/deploy.md) publica na VPS da Hostinger por SSH, mas ainda não rodou contra uma VPS | VPS da Hostinger com deploy contínuo — [G0-9](../product/roadmap.md#infraestrutura-e-deploy) |

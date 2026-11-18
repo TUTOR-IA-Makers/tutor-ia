@@ -12,6 +12,8 @@ from fastapi.responses import RedirectResponse
 from codeexpert import __version__
 from codeexpert.api.errors import register_error_handlers
 from codeexpert.api.routes import catalog, health, questions, resources
+from codeexpert.api.spa import mount_spa
+from codeexpert.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +34,15 @@ def create_app() -> FastAPI:
     app.include_router(questions.router)
     app.include_router(resources.router)
 
-    @app.get("/", include_in_schema=False)
-    async def root() -> RedirectResponse:
-        return RedirectResponse(url="/docs")
+    # Last, so the SPA's catch-all only sees what the API routes left behind.
+    frontend_dir = get_settings().frontend_dir
+    if frontend_dir is not None:
+        mount_spa(app, frontend_dir)
+    else:
+
+        @app.get("/", include_in_schema=False)
+        async def root() -> RedirectResponse:
+            return RedirectResponse(url="/docs")
 
     return app
 

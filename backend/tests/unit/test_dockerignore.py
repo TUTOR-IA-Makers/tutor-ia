@@ -54,3 +54,18 @@ def test_dockerfile_does_not_bake_in_a_key() -> None:
     # lines) must not set it, or the key would live in an image layer.
     code = "\n".join(line for line in lines if not line.strip().startswith("#"))
     assert "CODEEXPERT_LLM_API_KEY" not in code
+
+
+def test_only_the_front_end_build_reaches_the_final_image() -> None:
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    # The spa stage sees all of frontend/; the final stage takes dist/ alone.
+    assert "COPY --from=spa /spa/dist ./frontend" in dockerfile
+    assert "ENV CODEEXPERT_FRONTEND_DIR=/app/frontend" in dockerfile
+    # A developer's frontend/.env must not decide the API mode of the image.
+    assert "ENV VITE_PUBLIC_API_MODE=http" in dockerfile
+
+
+@pytest.mark.parametrize("pattern", [".env", ".env.*", "node_modules/", "dist/"])
+def test_the_front_end_context_leaves_local_files_out(pattern: str) -> None:
+    lines = (ROOT.parent / "frontend" / ".dockerignore").read_text(encoding="utf-8").splitlines()
+    assert pattern in {line.strip() for line in lines if not line.startswith("#")}
