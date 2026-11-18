@@ -17,7 +17,7 @@ cd backend
 cp .env.example .env              # then fill in CODEEXPERT_LLM_API_KEY
 .venv/bin/uvicorn codeexpert.api.app:app --reload --port 8000
 .venv/bin/pytest
-docker build -t codeexpert .      # context = backend/
+docker build --build-context frontend=../frontend -t codeexpert .   # context = backend/, plus the SPA
 ```
 
 `.env` and `var/` (runs, questions) are resolved relative to the working
