@@ -6,6 +6,7 @@ artefacts never overwrite each other. See docs/adr/0012.
 """
 
 import json
+from datetime import UTC
 from importlib import resources
 
 from psycopg import Connection
@@ -170,7 +171,10 @@ class PostgresStore:
                 reviewed=row["reviewed"],
                 steps=row["steps"],
                 approved_by=row["approved_by"],
-                approved_at=row["approved_at"].isoformat() if row["approved_at"] else None,
+                # timestamptz comes back in the session's time zone; the contract is UTC.
+                approved_at=(
+                    row["approved_at"].astimezone(UTC).isoformat() if row["approved_at"] else None
+                ),
             ),
         )
 
