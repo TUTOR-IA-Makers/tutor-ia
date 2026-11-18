@@ -1,0 +1,20 @@
+# Build context exclusions for the `frontend` named context of backend/Dockerfile.
+# Only dist/ reaches the final image, but the build stage should not see a
+# developer's dependencies, previous builds or local configuration either.
+
+# ── Local configuration (VITE_PUBLIC_* only, but never meant for an image) ───
+.env
+.env.*
+
+# ── Installed and generated ──────────────────────────────────────────────────
+node_modules/
+dist/
+coverage/
+test-results/
+playwright-report/
+.vite/
+
+# ── Version control and tooling ──────────────────────────────────────────────
+.git
+.vscode/
+.idea/
