@@ -1,6 +1,6 @@
 # Front-end do CodeExpert
 
-SPA em React 19 + TypeScript estrito, empacotada pelo Vite. Gera arquivos estáticos que o FastAPI vai servir no mesmo container (ainda não implementado). Não existe servidor Node em produção.
+SPA em React 19 + TypeScript estrito, empacotada pelo Vite. Gera arquivos estáticos que o FastAPI serve na mesma imagem e na mesma origem da API: o `backend/Dockerfile` roda o build num estágio próprio e copia só o `dist/` ([Rodar com Docker](../docs/guides/docker.md)). Não existe servidor Node em produção.
 
 No `make front-dev` todas as telas rodam com **dados simulados** (modo `mock`). O build de produção usa a API real (modo `http`), a menos que `VITE_PUBLIC_API_MODE=mock` seja pedido explicitamente; ver [Integração com o FastAPI](#integração-com-o-fastapi).
 

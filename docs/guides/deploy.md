@@ -16,7 +16,7 @@ flowchart LR
     GH -->|"ssh deploy@vps &lt;sha&gt;"| D
     subgraph VPS["VPS Hostinger"]
         D["codeexpert-deploy<br/><small>comando forçado</small>"] -->|compose up| PX
-        PX["proxy<br/><small>Caddy, 80/443</small>"] --> API["api<br/><small>:8000</small>"]
+        PX["proxy<br/><small>Caddy, 80/443</small>"] --> API["api<br/><small>:8000, API + front-end</small>"]
         API --> DB[("db<br/><small>Postgres 16</small>")]
     end
     GHCR -.->|pull| D
@@ -24,7 +24,7 @@ flowchart LR
 
 1. O `ci.yml` termina verde num push em `main`. Falha, cancelamento ou PR não chegam ao deploy ([ADR-0008](../adr/0008-one-gate-for-people-agents-and-ci.md)).
 2. O `deploy.yml` confere que o commit ainda é a ponta de `main`; se não for, pula. Deploys nunca são cancelados no meio.
-3. Constrói a imagem de `backend/` e envia para `ghcr.io/tutor-ia-makers/codeexpert:<sha>` com o `GITHUB_TOKEN` do próprio job.
+3. Constrói a imagem de `backend/`, com o build de `frontend/` dentro dela, e envia para `ghcr.io/tutor-ia-makers/codeexpert:<sha>` com o `GITHUB_TOKEN` do próprio job. A mesma API serve o front-end em `/` e as rotas em `/api/v1` ([Rodar com Docker](docker.md#o-que-a-imagem-contem)), atrás da mesma senha do proxy.
 4. Entra por SSH como `deploy`. A chave só executa `/usr/local/bin/codeexpert-deploy`, que recebe o SHA e mais nada.
 5. Na VPS, o script recusa um SHA que não esteja em `origin/main`, faz checkout dele, baixa a imagem e sobe o Compose. Ele só termina quando a API responde saudável.
 6. O job chama `GET /health` pela URL pública e exige que `commit` seja o SHA publicado.

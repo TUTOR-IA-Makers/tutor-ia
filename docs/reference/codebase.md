@@ -37,6 +37,7 @@ backend/src/codeexpert/
     ├── deps.py          dependências injetáveis
     ├── errors.py        STATUS_BY_ERROR: exceção → status HTTP
     ├── schemas.py       contratos *Request / *Response
+    ├── spa.py           serve o build do front-end quando CODEEXPERT_FRONTEND_DIR existe
     └── routes/          health.py (/health, /config), questions.py (etapas)
 
 backend/tests/unit/      funções puras — sem rede, sem compilador
@@ -47,8 +48,9 @@ docs/                    este site; docs/adr/ em inglês
 .agents/                 regras, workflows e arquivos de tarefa (ver Harness)
 backend/main.py          atalho de compatibilidade para `python main.py`
 backend/pyproject.toml   dependências e configuração do ruff e do pytest
-backend/Dockerfile       imagem com a API e o gcc (ver Rodar com Docker)
+backend/Dockerfile       imagem com a API, o gcc e o front-end construído (ver Rodar com Docker)
 backend/.dockerignore    o que nunca entra no contexto de build: .env, var/, .git
+frontend/.dockerignore   o mesmo para o contexto do front: .env, node_modules/, dist/
 ```
 
 Cerca de 1.500 linhas em `backend/src/`. Um pacote Python só ([ADR-0002](../adr/0002-modular-monolith-src-layout.md)). Direção das dependências e invariantes em [Arquitetura](../architecture/index.md#direcao-das-dependencias).

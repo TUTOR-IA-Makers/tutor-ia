@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 DEPLOY = Path(__file__).resolve().parents[3] / "deploy"
+WORKFLOW = DEPLOY.parent / ".github" / "workflows" / "deploy.yml"
 # Absolute, because the script runs with an empty PATH: no git, no docker.
 BASH = shutil.which("bash") or "/bin/bash"
 
@@ -58,6 +59,12 @@ def test_caddy_protects_everything_but_health() -> None:
     caddyfile = (DEPLOY / "Caddyfile").read_text(encoding="utf-8")
     assert "@protected not path /health" in caddyfile
     assert "basic_auth @protected" in caddyfile
+
+
+def test_the_deploy_builds_the_front_end_into_the_image() -> None:
+    # Without the named context the spa stage has nothing to build, and the
+    # image would fail to build only after the merge to main.
+    assert "--build-context frontend=frontend" in WORKFLOW.read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize(

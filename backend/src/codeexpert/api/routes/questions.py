@@ -15,6 +15,8 @@ from fastapi import APIRouter
 
 from codeexpert.api.deps import LLMDep, RunnerDep, StoreDep, create_run, open_run
 from codeexpert.api.schemas import (
+    ApprovalResponse,
+    ApproveRequest,
     CodeResponse,
     CreateQuestionRequest,
     CreateQuestionResponse,
@@ -153,16 +155,28 @@ async def get_question(run_id: str, store: StoreDep) -> QuestionDetail:
 
 
 # Review actions. Which state may follow which is decided in codeexpert.lifecycle;
-# an action the current state forbids is a 409 from InvalidTransitionError. G3-2
-# adds who approved and when to the approval; G3-5 adds the rejection reason.
+# an action the current state forbids is a 409 from InvalidTransitionError. G3-5
+# adds the rejection reason.
 
 
-@router.post("/questions/{run_id}/approve", response_model=QuestionStateResponse)
-async def approve_question(run_id: str, store: StoreDep) -> QuestionStateResponse:
-    """GERADA → APROVADA. Anything else, including FALHOU_VERIFICACAO, is a 409."""
+@router.post("/questions/{run_id}/approve", response_model=ApprovalResponse)
+async def approve_question(
+    run_id: str, request: ApproveRequest, store: StoreDep
+) -> ApprovalResponse:
+    """GERADA → APROVADA, recording who and when.
+
+    Approving an APROVADA question again answers 200 with the first record.
+    Any other state, FALHOU_VERIFICACAO above all, is a 409.
+    """
     workspace = open_run(run_id, store)
-    state = workspace.transition(QuestionState.APROVADA)
-    return QuestionStateResponse(run_id=run_id, state=state)
+    metadata = workspace.approve(request.approved_by)
+    return ApprovalResponse(
+        run_id=run_id,
+        state=QuestionState.APROVADA,
+        reviewed=metadata.reviewed,
+        approved_by=metadata.approved_by,
+        approved_at=metadata.approved_at,
+    )
 
 
 @router.post("/questions/{run_id}/reject", response_model=QuestionStateResponse)

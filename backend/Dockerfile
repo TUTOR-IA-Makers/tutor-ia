@@ -4,6 +4,23 @@
 #
 # This image is NOT a sandbox: the runner only bounds time and output size.
 # Do not expose it to untrusted users or to the public internet.
+#
+# The SPA is built here too, so one image serves both (G4-1). The build context
+# stays backend/; the front-end arrives as a second, named context:
+#
+#   docker build --build-context frontend=frontend -t codeexpert:dev backend
+
+# ── The front-end build. Only its dist/ reaches the final image: no Node, no
+# node_modules, no sources. Version from frontend/.nvmrc.
+FROM node:24.21.0-slim AS spa
+WORKDIR /spa
+COPY --from=frontend package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY --from=frontend . .
+# Explicit, because Vite lets a frontend/.env override the production default
+# and a developer's `mock` would ship fake data. The environment wins over .env.
+ENV VITE_PUBLIC_API_MODE=http
+RUN npm run build
 
 FROM python:3.12-slim
 
@@ -26,10 +43,16 @@ RUN useradd --create-home --uid 1000 app \
 WORKDIR /app
 
 # pyproject.toml references README.md, so the package build needs it. The build
-# context is backend/ (`docker build backend`), so nothing outside it is visible.
+# context is backend/, so nothing outside it is visible except the `frontend`
+# context, which only the spa stage reads.
 COPY pyproject.toml README.md ./
 COPY src ./src
 RUN pip install .
+
+# Static files, read-only for `app`: root owns them. The API serves them when
+# this variable is set (codeexpert/api/spa.py).
+COPY --from=spa /spa/dist ./frontend
+ENV CODEEXPERT_FRONTEND_DIR=/app/frontend
 
 USER app
 

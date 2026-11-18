@@ -1,26 +1,29 @@
 # Rodar com Docker
 
-<p class="lead">A API e o <code>gcc</code> numa imagem só, para que o mesmo artefato rode na máquina de qualquer pessoa. Esta página mostra como construir a imagem, subir o container, conferir que ela está limpa e gerar uma questão de ponta a ponta.</p>
+<p class="lead">A API, o <code>gcc</code> e o front-end numa imagem só, para que o mesmo artefato rode na máquina de qualquer pessoa. Esta página mostra como construir a imagem, subir o container, conferir que ela está limpa e gerar uma questão de ponta a ponta.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` em `backend/`; o contexto de build é essa pasta. O [deploy na VPS da Hostinger](deploy.md) está <span class="ce-badge ce-status--wip">Em desenvolvimento</span>; o front-end na mesma imagem, <span class="ce-badge ce-status--planned">Planejado</span> ([Roadmap](../product/roadmap.md#infraestrutura-e-deploy)).
+<span class="ce-badge ce-status--done">Implementado</span> `Dockerfile` e `.dockerignore` em `backend/`; o contexto de build é essa pasta, e `frontend/` entra como um segundo contexto, com nome, só para o build do Vite (#56). O [deploy na VPS da Hostinger](deploy.md) está <span class="ce-badge ce-status--wip">Em desenvolvimento</span>.
 
 !!! danger "A imagem não é um sandbox"
     O container não acrescenta isolamento à execução do código gerado: o serviço continua só limitando tempo e tamanho de saída ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). Sem autenticação, não exponha a porta à internet. Veja [Arquitetura](../architecture/index.md).
 
-## O que a imagem contém
+## O que a imagem contém {#o-que-a-imagem-contem}
 
 - Python 3.12 (`python:3.12-slim`), `gcc` e `libc6-dev` (sem ele, nem `#include <stdio.h>` compila).
 - O pacote `codeexpert`, instalado a partir de `backend/pyproject.toml` e `backend/src/`.
+- O front-end já construído (`frontend/dist`) em `/app/frontend`, servido pela própria API em `/`, nas rotas da SPA e em `/assets` (`CODEEXPERT_FRONTEND_DIR`). O Node e o `node_modules` ficam num estágio de build e não chegam à imagem final.
 - Um usuário sem privilégios (`app`, UID 1000) e um `/app/var` vazio e gravável por ele.
 - Um `HEALTHCHECK` que chama `GET /health`.
 
-E o que **não** contém, garantido pelo `.dockerignore`: `.env`, chaves, `config/LLM_Config.txt`, `var/`, `cache/`, `Questions/`, `.git`, testes, documentação e scripts.
+E o que **não** contém, garantido pelo `.dockerignore`: `.env`, chaves, `config/LLM_Config.txt`, `var/`, `cache/`, `Questions/`, `.git`, testes, documentação e scripts. O `frontend/.dockerignore` deixa de fora `.env`, `node_modules/` e builds anteriores; o estágio do front fixa `VITE_PUBLIC_API_MODE=http`, então um `frontend/.env` em `mock` não muda a imagem.
 
 ## Construir
 
 ```bash
-docker build -t codeexpert:dev backend
+docker build --build-context frontend=frontend -t codeexpert:dev backend
 ```
+
+Rode da raiz do repositório. Sem `--build-context frontend=frontend` o build falha no estágio do front, porque o `Dockerfile` não encontra o contexto `frontend`.
 
 ## Subir o container
 
@@ -65,6 +68,8 @@ curl "http://127.0.0.1:8000/config?verify=true"
 docker ps --filter name=ce       # o estado deve terminar em (healthy)
 ```
 
+Abra <http://127.0.0.1:8000/> no navegador: é o front-end, falando com a API do mesmo container. O Swagger continua em `/docs`.
+
 **Compilar um `.c` dentro da imagem:**
 
 ```bash
@@ -103,7 +108,7 @@ docker run --rm --entrypoint sh codeexpert:dev -c \
   'ls -A /app; ls -A /app/var; find / -xdev -name ".env*" -not -path "/proc/*" 2>/dev/null'
 ```
 
-O esperado: `/app` com `README.md`, `pyproject.toml`, `src` e `var`; `var` vazio; nenhum arquivo `.env*`.
+O esperado: `/app` com `README.md`, `frontend`, `pyproject.toml`, `src` e `var`; `var` vazio; nenhum arquivo `.env*`.
 
 ## Limitações de hoje
 
@@ -112,7 +117,6 @@ O esperado: `/app` com `README.md`, `pyproject.toml`, `src` e `var`; `var` vazio
 | Porta | Fixa em `8000` (`backend/src/codeexpert/__main__.py`). Na VPS o proxy encaminha para ela pela rede do Compose, sem publicá-la (`deploy/compose.yaml`, [Deploy](deploy.md)) |
 | Recarga automática | Não há. Para desenvolver, use `make run` |
 | Estado | Em `/app/var` dentro do container, em disco local; cada container tem o seu |
-| Front-end | Não está na imagem — <span class="ce-badge ce-status--planned">Planejado</span> no G4-1 |
 
 ## Problemas comuns
 

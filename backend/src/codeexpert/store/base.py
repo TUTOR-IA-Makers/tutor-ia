@@ -7,7 +7,7 @@ idea as `CodeRunner` in docs/adr/0004. See docs/adr/0012.
 
 from typing import Protocol
 
-from codeexpert.domain import QuestionState
+from codeexpert.domain import QuestionState, RunMetadata
 
 
 class ArtifactStore(Protocol):
@@ -48,4 +48,12 @@ class ArtifactStore(Protocol):
 
     def set_state(self, run_id: str, expected: QuestionState, new: QuestionState) -> bool:
         """Store `new` only if the state is still `expected`. Return whether it did."""
+        ...
+
+    def record_approval(self, run_id: str, expected: QuestionState, metadata: RunMetadata) -> bool:
+        """Set `APROVADA` and store `metadata` as `meta.json`, together.
+
+        Same compare-and-set as `set_state`: nothing is written unless the state is
+        still `expected`. The state and the record of who approved never disagree.
+        """
         ...

@@ -150,6 +150,63 @@ def test_a_lost_race_is_a_conflict_not_an_overwrite(make_store: StoreFactory) ->
     assert second.state is QuestionState.REJEITADA
 
 
+def test_an_approval_is_read_back_by_another_store(make_store: StoreFactory) -> None:
+    first = RunWorkspace.create(make_store())
+    first.complete()
+
+    recorded = first.approve("Profa. Ana Lima")
+
+    reopened = RunWorkspace.open(make_store(), first.run_id)
+    assert reopened.state is QuestionState.APROVADA
+    assert reopened.read_metadata() == recorded
+    assert recorded.reviewed is True
+    assert recorded.approved_by == "Profa. Ana Lima"
+
+
+def test_record_approval_refuses_a_change_it_did_not_see(make_store: StoreFactory) -> None:
+    store = make_store()
+    workspace = RunWorkspace.create(store)
+    workspace.complete()
+    workspace.transition(QuestionState.REJEITADA)
+    before = workspace.read_metadata()
+    attempt = before.model_copy(update={"reviewed": True, "approved_by": "Ana"})
+
+    assert not store.record_approval(workspace.run_id, QuestionState.GERADA, attempt)
+    assert store.get_state(workspace.run_id) is QuestionState.REJEITADA
+    assert workspace.read_metadata() == before
+
+
+def test_an_approval_that_loses_the_race_to_another_approval_succeeds(
+    make_store: StoreFactory,
+) -> None:
+    """Two teachers press Aprovar at once: both see APROVADA, the first name stays."""
+    first = RunWorkspace.create(make_store())
+    first.complete()
+    second = RunWorkspace.open(make_store(), first.run_id)
+
+    class _SeesGeradaOnce:
+        """The second request read GERADA just before the first one wrote."""
+
+        def __init__(self, store: ArtifactStore) -> None:
+            self._store = store
+            self._stale = True
+
+        def __getattr__(self, name: str) -> object:
+            return getattr(self._store, name)
+
+        def get_state(self, run_id: str) -> QuestionState:
+            if self._stale:
+                self._stale = False
+                return QuestionState.GERADA
+            return self._store.get_state(run_id)
+
+    winner = first.approve("Profa. Ana Lima")
+    second._store = _SeesGeradaOnce(second._store)
+
+    assert second.approve("Prof. Outro") == winner
+    assert first.read_metadata().approved_by == "Profa. Ana Lima"
+
+
 def test_a_local_run_from_before_the_lifecycle_reads_as_gerada(tmp_path: Path) -> None:
     store = LocalFilesystemStore(tmp_path)
     run_id = new_run_id()

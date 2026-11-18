@@ -49,6 +49,10 @@ ALTER TABLE runs ADD COLUMN IF NOT EXISTS
 -- reviewed. Also repairs a run whose process died between completing and
 -- recording GERADA, so it is safe to repeat on every start.
 UPDATE runs SET state = 'GERADA' WHERE status = 'complete' AND state = 'GERANDO';
+-- Who approved and when (G3-2, docs/adr/0016). Written in the same statement that
+-- sets state = 'APROVADA'; NULL on every question nobody has approved.
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS approved_by text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS approved_at timestamptz;
 -- The G1-2 placeholder only ever held 'draft'; the state now lives on runs.
 ALTER TABLE questions DROP COLUMN IF EXISTS state;
 
