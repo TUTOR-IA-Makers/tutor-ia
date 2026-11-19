@@ -1,4 +1,4 @@
-"""The resource API the web client calls: create, follow and read a question.
+"""The resource API the web client calls: create, follow, read and list questions.
 
 The browser asks for a question and polls; the server chains the five steps.
 See docs/adr/0013 and docs/architecture/frontend-integracao.md (F2/F3, minimal).
@@ -12,15 +12,18 @@ plain functions in its thread pool instead of on the event loop.
 """
 
 import logging
+from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, status
+from fastapi import APIRouter, BackgroundTasks, Query, status
 
 from codeexpert.api.deps import LLMDep, RunnerDep, StoreDep, create_run, open_run
 from codeexpert.api.drafts import QuestionDraft, to_constraints
+from codeexpert.api.library import LISTED_ARTIFACTS, PENDING_TITLE, LibraryQuery, list_questions
 from codeexpert.api.schemas import (
     ApproveRequest,
     CreatedResponse,
     GenerationResponse,
+    QuestionPage,
     QuestionResource,
     StatementView,
     TestCaseView,
@@ -77,6 +80,18 @@ def create_question_resource(
     return CreatedResponse(id=workspace.run_id)
 
 
+@router.get("/questions", response_model=QuestionPage)
+def list_question_resources(
+    query: Annotated[LibraryQuery, Query()], store: StoreDep
+) -> QuestionPage:
+    """The library: questions in any state, newest first, filtered and paginated.
+
+    No match, no questions at all and a page past the end are all `200` with an
+    empty `items`; `total` says which of the three it is.
+    """
+    return list_questions(store.list_runs(LISTED_ARTIFACTS), query)
+
+
 @router.get("/questions/{question_id}/generation", response_model=GenerationResponse)
 def get_generation(question_id: str, store: StoreDep) -> GenerationResponse:
     workspace, _ = _open_question(question_id, store)
@@ -100,7 +115,7 @@ def _resource(question_id: str, workspace: RunWorkspace, draft: QuestionDraft) -
     return QuestionResource(
         id=question_id,
         code=question_id,
-        title=statement.name if statement else "Enunciado ainda não gerado",
+        title=statement.name if statement else PENDING_TITLE,
         description=draft.context or "",
         content_id=draft.content_id,
         difficulty_min=draft.difficulty_min,

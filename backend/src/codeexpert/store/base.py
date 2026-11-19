@@ -5,9 +5,24 @@ so which backend holds the artefacts is a setting, not a code change. The same
 idea as `CodeRunner` in docs/adr/0004. See docs/adr/0012.
 """
 
+from collections.abc import Collection
+from dataclasses import dataclass
 from typing import Protocol
 
 from codeexpert.domain import QuestionState, RunMetadata
+
+
+@dataclass(frozen=True)
+class RunListing:
+    """One run as `list_runs` returns it: its state and the artefacts asked for.
+
+    `artifacts` holds only the requested names the run has; a missing step is
+    an absent key, not an empty string.
+    """
+
+    run_id: str
+    state: QuestionState
+    artifacts: dict[str, str]
 
 
 class ArtifactStore(Protocol):
@@ -55,5 +70,14 @@ class ArtifactStore(Protocol):
 
         Same compare-and-set as `set_state`: nothing is written unless the state is
         still `expected`. The state and the record of who approved never disagree.
+        """
+        ...
+
+    def list_runs(self, names: Collection[str]) -> list[RunListing]:
+        """Every run, with the artefacts in `names` that it has. Order is unspecified.
+
+        One call for the whole library, so a backend can answer it with one
+        query instead of one round trip per run and artefact. Filtering and
+        ordering are the caller's: the store does not know what a draft is.
         """
         ...

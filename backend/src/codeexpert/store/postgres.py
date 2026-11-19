@@ -6,6 +6,7 @@ artefacts never overwrite each other. See docs/adr/0012.
 """
 
 import json
+from collections.abc import Collection
 from datetime import UTC
 from importlib import resources
 
@@ -16,6 +17,7 @@ from psycopg_pool import ConnectionPool
 
 from codeexpert.domain import QuestionState, RunMetadata, Statement, StoredQuestion, TestCase
 from codeexpert.errors import RunNotFoundError
+from codeexpert.store.base import RunListing
 
 
 def _save_question(conn: Connection, run_id: str) -> None:
@@ -230,3 +232,24 @@ class PostgresStore:
                 (run_id, metadata.model_dump_json(indent=2) + "\n"),
             )
             return True
+
+    def list_runs(self, names: Collection[str]) -> list[RunListing]:
+        # One query for the whole library: a run without any of the artefacts
+        # still comes back once, with a NULL name, from the LEFT JOIN.
+        with self._pool.connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT r.run_id, r.state, a.name, a.content
+                FROM runs r
+                LEFT JOIN run_artifacts a ON a.run_id = r.run_id AND a.name = ANY(%s)
+                """,
+                (list(names),),
+            ).fetchall()
+        states: dict[str, QuestionState] = {}
+        artifacts: dict[str, dict[str, str]] = {}
+        for run_id, state, name, content in rows:
+            states[run_id] = QuestionState(state)
+            found = artifacts.setdefault(run_id, {})
+            if name is not None:
+                found[name] = content
+        return [RunListing(run_id, state, artifacts[run_id]) for run_id, state in states.items()]

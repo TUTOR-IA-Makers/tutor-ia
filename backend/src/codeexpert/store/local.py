@@ -6,10 +6,12 @@ run against. See docs/adr/0012.
 """
 
 import shutil
+from collections.abc import Collection
 from pathlib import Path
 
 from codeexpert.domain import QuestionState, RunMetadata
 from codeexpert.lifecycle import INITIAL_STATE
+from codeexpert.store.base import RunListing
 
 # Not artefact names, so they cannot collide with one of the pipeline's files.
 COMPLETE_MARKER = ".complete"
@@ -69,3 +71,18 @@ class LocalFilesystemStore:
         # still GERADA, and approving it again overwrites the orphaned record.
         self.put(run_id, META, metadata.model_dump_json(indent=2) + "\n")
         return self.set_state(run_id, expected, QuestionState.APROVADA)
+
+    def list_runs(self, names: Collection[str]) -> list[RunListing]:
+        if not self._root.is_dir():
+            # Nothing has been generated yet on this machine.
+            return []
+        listings = []
+        for directory in self._root.iterdir():
+            if not directory.is_dir():
+                continue
+            run_id = directory.name
+            artifacts = {
+                name: content for name in names if (content := self.get(run_id, name)) is not None
+            }
+            listings.append(RunListing(run_id, self.get_state(run_id), artifacts))
+        return listings

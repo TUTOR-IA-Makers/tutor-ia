@@ -89,6 +89,26 @@ def test_deleting_a_run_removes_it(make_store: StoreFactory) -> None:
     assert store.get(run_id, "meta.json") is None
 
 
+def test_listing_returns_each_run_with_only_the_artefacts_asked_for(
+    make_store: StoreFactory,
+) -> None:
+    store = make_store()
+    full, empty = new_run_id(), new_run_id()
+    for run_id in (full, empty):
+        store.create_run(run_id)
+    store.put(full, "draft.json", "{}")
+    store.put(full, "solution.c", "int main(void) { return 0; }")
+    assert store.set_state(full, QuestionState.GERANDO, QuestionState.GERADA)
+
+    # A shared Postgres may hold other tests' runs; only these two are ours.
+    listed = {item.run_id: item for item in store.list_runs(["draft.json", "meta.json"])}
+
+    assert listed[full].artifacts == {"draft.json": "{}"}
+    assert listed[full].state is QuestionState.GERADA
+    assert listed[empty].artifacts == {}
+    assert listed[empty].state is QuestionState.GERANDO
+
+
 # ── A run does not depend on the process or the disk that started it ──────────
 
 
