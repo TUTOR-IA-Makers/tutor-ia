@@ -149,6 +149,7 @@ def test_rpc_runs_are_not_listed(client, bank, isolated_settings) -> None:
         {"axis": "loops"},
         {"page": 0},
         {"page_size": 500},
+        {"stauts": "APROVADA"},
     ],
 )
 def test_invalid_parameters_are_a_422(client, params) -> None:

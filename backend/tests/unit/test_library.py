@@ -83,6 +83,17 @@ class TestWithoutFilters:
 
         assert _ids([broken, _listing("fine")]) == ["fine"]
 
+    def test_a_damaged_run_is_reported_once_not_on_every_listing(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        broken = RunListing("broken-once", QuestionState.GERADA, {DRAFT: "{not json"})
+
+        for _ in range(3):
+            _ids([broken])
+
+        warnings = [r for r in caplog.records if "broken-once" in r.getMessage()]
+        assert len(warnings) == 1
+
     def test_the_summary_carries_what_the_card_shows(self) -> None:
         listing = _listing("q1", content_id="vetores", rating=(500, 900), context="Notas")
 

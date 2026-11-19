@@ -378,7 +378,7 @@ Todos os parâmetros são opcionais e se combinam (uma questão precisa atender 
 
 Cada item tem os campos de `questionSummaryDto` em `frontend/src/services/http/dto.ts`, os mesmos do início de [`GET /api/v1/questions/{id}`](#get-api-v1-question), que traz o resto. `title` é "Enunciado ainda não gerado" enquanto a etapa 1 não termina; `test_case_count` é o número de casos executados, ou o pedido no formulário antes da etapa 4. A ordem usa `meta.json → created_at`, desempatada pelo id, então duas páginas nunca repetem uma questão.
 
-`total` conta todas as questões que atendem aos filtros, somando as páginas. Banco vazio, filtro sem correspondência e página além do fim respondem `200` com `items` vazio; `total` diz qual dos três é (`0`, `0` ou maior que zero). Erros: `422` para um valor fora das tabelas acima (conteúdo, eixo, faixa ou estado desconhecido, `page` 0, `page_size` acima de 100).
+`total` conta todas as questões que atendem aos filtros, somando as páginas. Banco vazio, filtro sem correspondência e página além do fim respondem `200` com `items` vazio; `total` diz qual dos três é (`0`, `0` ou maior que zero). Erros: `422` para um valor fora das tabelas acima (conteúdo, eixo, faixa ou estado desconhecido, `page` 0, `page_size` acima de 100) e para um parâmetro que não está nela: um filtro com nome errado, como `stauts`, não devolve a biblioteca inteira como se tivesse filtrado.
 
 Os filtros rodam no servidor, em Python, sobre uma única consulta ao banco que traz os artefatos de todas as execuções (`api/library.py`). Basta para centenas de questões; quando não bastar, os filtros passam para o SQL com o mesmo contrato.
 

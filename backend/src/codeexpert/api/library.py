@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 from codeexpert.api.drafts import CONTENT_AXIS, DIFFICULTY_BANDS, RATING_MIN, QuestionDraft
 from codeexpert.api.schemas import QuestionPage, QuestionSummary
@@ -44,6 +44,9 @@ DEFAULT_PAGE_SIZE = 20
 MAX_PAGE_SIZE = 100
 # A run without a readable meta.json sorts last rather than breaking the list.
 _UNKNOWN_DATE = datetime.min.replace(tzinfo=UTC)
+# Damaged runs already reported by this process. A damaged run stays damaged, and
+# every listing reads every run: without this, each request repeats the warning.
+_reported_unreadable: set[str] = set()
 
 
 class DifficultyBand(StrEnum):
@@ -61,7 +64,13 @@ class DifficultyBand(StrEnum):
 
 
 class LibraryQuery(BaseModel):
-    """The query string of `GET /api/v1/questions`. Every filter is optional."""
+    """The query string of `GET /api/v1/questions`. Every filter is optional.
+
+    An unknown parameter is a 422, not ignored: a misspelt filter (`stauts=`)
+    would otherwise answer the whole, unfiltered library as if it had matched.
+    """
+
+    model_config = ConfigDict(extra="forbid")
 
     q: str | None = Field(
         default=None,
@@ -160,7 +169,9 @@ def _entry(listing: RunListing) -> _Entry | None:
         created_at = _created_at(listing)
     except (ValidationError, ValueError, KeyError, TypeError):
         # One damaged run must not take the whole library down with it.
-        logger.warning("Run %s — unreadable artefacts, left out of the library", listing.run_id)
+        if listing.run_id not in _reported_unreadable:
+            _reported_unreadable.add(listing.run_id)
+            logger.warning("Run %s — unreadable artefacts, left out of the library", listing.run_id)
         return None
 
     title = statement.name if statement else PENDING_TITLE
