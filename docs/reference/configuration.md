@@ -41,7 +41,6 @@ Lidas por `Settings` em `backend/src/codeexpert/settings.py`, com prefixo `CODEE
 | `CODEEXPERT_STORE_BACKEND` | `local` | Onde os artefatos de uma execução ficam: `local` (disco) ou `postgres` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)) |
 | `CODEEXPERT_DATABASE_URL` | *(vazia)* | Conexão do Postgres, obrigatória com `postgres`. Tem senha: trate como segredo, também aceita `/run/secrets/codeexpert_database_url` |
 | `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções, quando o backend é `local` |
-| `CODEEXPERT_QUESTIONS_DIR` | `var/questions` | Onde o XML é escrito |
 | `CODEEXPERT_COMPILE_TIMEOUT_SECONDS` | `20` | Timeout da compilação |
 | `CODEEXPERT_RUN_TIMEOUT_SECONDS` | `5` | Timeout de **cada** execução do binário |
 | `CODEEXPERT_RUN_MAX_OUTPUT_BYTES` | `65536` | Saída capturada por execução; o excedente é truncado |
@@ -92,6 +91,5 @@ A ordem de precedência é: variável de ambiente, depois `.env`, depois o arqui
 | Documentação local | `127.0.0.1:8001` (`make docs`) |
 | Build da documentação | `.dist/site/` |
 | Artefatos de execução | `var/runs/<run_id>/` |
-| XML exportado | `var/questions/Moodle_Questionnaire.xml` |
 
 `var/` e `.dist/` são ignorados pelo Git. Se `git status` ficar sujo depois de rodar a aplicação, é bug.

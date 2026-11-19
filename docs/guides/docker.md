@@ -88,10 +88,11 @@ curl -X POST http://127.0.0.1:8000/create_question \
   -H "Content-Type: application/json" -d '{}'
 ```
 
-Os arquivos ficam dentro do container. Para ler o XML exportado:
+Os artefatos da execução ficam dentro do container. O XML para o Moodle vem na resposta, no campo `export.xml`:
 
 ```bash
-docker exec ce cat /app/var/questions/Moodle_Questionnaire.xml > Moodle_Questionnaire.xml
+curl -s -X POST http://127.0.0.1:8000/create_question \
+  -H "Content-Type: application/json" -d '{"qty": 3}' | jq -r .export.xml > questao.xml
 ```
 
 !!! warning "Isto chama o provedor e gasta tokens"

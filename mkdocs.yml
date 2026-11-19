@@ -151,6 +151,7 @@ nav:
           - 0016 — Approval record on runs: adr/0016-approval-record-on-runs.md
           - 0017 — Resumable generation job: adr/0017-resumable-generation-job.md
           - 0018 — Library filters in Python: adr/0018-library-filters-in-python.md
+          - 0019 — Pure exporter, no shared file: adr/0019-pure-exporter-no-shared-file.md
           - Modelo: adr/0000-template.md
   - Design:
       - Identidade visual: design/identidade.md

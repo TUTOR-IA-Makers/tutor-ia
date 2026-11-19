@@ -55,7 +55,6 @@ ls var/runs/ | tail -3                     # execuções mais recentes
 | Enunciado com título estranho | O modelo ignorou o formato em blocos | Edite `statement.json` ou regere |
 | A dificuldade parece ignorada | `difficulty` só acrescenta uma linha ao prompt | Combine restrições (`can_has_function` + `can_has_matrix`) para exercícios mais difíceis |
 | Enunciado e solução falam de coisas diferentes | Um arquivo intermediário foi editado e as etapas seguintes não foram refeitas | Refaça as etapas a partir da editada |
-| XML com questões demais | Exportações acumulam | `rm var/questions/Moodle_Questionnaire.xml` e exporte de novo |
 
 ## Moodle
 

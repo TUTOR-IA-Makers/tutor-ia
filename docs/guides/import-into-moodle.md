@@ -2,24 +2,36 @@
 
 <p class="lead">O arquivo gerado é um XML de perguntas no formato nativo do Moodle, com questões do tipo CodeRunner <code>c_program</code>. Esta página cobre a importação, o que cada questão contém e o que conferir antes de usar com alunos.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> Exportação para `var/questions/Moodle_Questionnaire.xml`. Download pela interface e exportação só de questões aprovadas estão <span class="ce-badge ce-status--planned">Planejados</span> ([Roadmap](../product/roadmap.md#revisao-e-aprovacao)).
+<span class="ce-badge ce-status--done">Implementado</span> Exportação de uma questão por vez: a etapa 5 devolve o XML na resposta, sem gravar arquivo no servidor. Download pela interface, exportação de várias questões num XML só e exportação só de questões aprovadas estão <span class="ce-badge ce-status--planned">Planejados</span> ([Roadmap](../product/roadmap.md#revisao-e-aprovacao)).
 
 ## Pré-requisito
 
 O plugin **CodeRunner** precisa estar instalado no Moodle de destino. Sem ele, a importação falha com "tipo de questão desconhecido".
 
+## Obter o XML
+
+A etapa 5 devolve o XML da questão no campo `xml`. Ela pode ser chamada de novo a qualquer momento para uma questão já gerada — inclusive uma gerada por `POST /api/v1/questions` — e devolve o mesmo XML:
+
+```bash
+API=http://127.0.0.1:8000
+curl -s -X POST $API/export_moodle_xml_question -H "Content-Type: application/json" \
+  -d '{"run_id": "<run_id>"}' | jq -r .xml > questao.xml
+```
+
+Cada XML contém uma questão só, numerada 1. Para montar uma lista com várias, importe um arquivo por questão; um XML com uma seleção inteira é o G1-6 (<span class="ce-badge ce-status--planned">Planejado</span>).
+
 ## Importar
 
 1. No curso: **Banco de questões → Importar**.
 2. Formato: **Formato Moodle XML**.
-3. Envie `var/questions/Moodle_Questionnaire.xml`.
+3. Envie `questao.xml`.
 4. **Importar**. O Moodle lista os títulos das questões importadas.
 
 Para validar o XML antes de enviar:
 
 ```bash
-python3 -c "import xml.etree.ElementTree as ET; ET.parse('var/questions/Moodle_Questionnaire.xml'); print('XML válido')"
-grep -c '<question type="coderunner"' var/questions/Moodle_Questionnaire.xml    # quantas questões
+python3 -c "import xml.etree.ElementTree as ET; ET.parse('questao.xml'); print('XML válido')"
+grep -c '<question type="coderunner"' questao.xml    # quantas questões
 ```
 
 ## O que cada questão contém

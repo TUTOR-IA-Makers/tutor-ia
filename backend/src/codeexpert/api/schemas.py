@@ -87,7 +87,7 @@ class TestCaseResponse(BaseModel):
 
 class ExportResponse(BaseModel):
     run_id: str
-    file_path: str
+    xml: str = Field(description="Moodle CodeRunner XML with this question alone, ready to import.")
     question_count: int
 
 
