@@ -1,0 +1,7 @@
+id: "E1-M-002"
+eixo: "E1"
+nivel: "M"
+estruturas:
+  - "math.h"
+origem: "Exercício de geometria analítica — precisa de math.h"
+direitos_restritos: true

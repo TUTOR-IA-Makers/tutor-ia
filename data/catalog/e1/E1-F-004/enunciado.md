@@ -1,0 +1,1 @@
+Leia a velocidade média (km/h, real) e o tempo de viagem (horas, real). Imprima a distância percorrida com 2 casas decimais.

@@ -1,0 +1,8 @@
+id: "E2-F-003"
+eixo: "E2"
+nivel: "F"
+estruturas:
+  - "if"
+  - "else"
+origem: "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.4"
+direitos_restritos: false

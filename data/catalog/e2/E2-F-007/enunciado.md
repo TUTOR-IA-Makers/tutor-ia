@@ -1,0 +1,1 @@
+Leia um número inteiro positivo `N` e imprima os `N` primeiros números pares a partir de 2, separados por espaço.

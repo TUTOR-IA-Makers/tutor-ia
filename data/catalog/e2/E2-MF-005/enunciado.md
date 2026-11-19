@@ -1,0 +1,1 @@
+Leia um número inteiro e verifique se ele é par ou ímpar, imprimindo `par` ou `impar`.

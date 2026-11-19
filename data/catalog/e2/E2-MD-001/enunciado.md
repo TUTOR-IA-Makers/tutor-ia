@@ -1,0 +1,1 @@
+Imprima todos os números inteiros positivos no intervalo aberto `(10, 100)` de modo que não terminem em zero e, se o dígito da direita for removido, o número restante seja divisor do número original. Imprima um por linha.

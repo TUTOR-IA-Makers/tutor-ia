@@ -1,0 +1,1 @@
+Leia três inteiros representando dia, mês e ano de uma data (ano >= 1). Verifique se a data é válida no calendário gregoriano (considerando anos bissextos) e imprima `DATA VALIDA` ou `DATA INVALIDA`.

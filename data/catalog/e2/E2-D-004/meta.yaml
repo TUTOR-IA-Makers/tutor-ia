@@ -1,0 +1,8 @@
+id: "E2-D-004"
+eixo: "E2"
+nivel: "D"
+estruturas:
+  - "if"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 159"
+direitos_restritos: true

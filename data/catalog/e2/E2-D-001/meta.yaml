@@ -1,0 +1,7 @@
+id: "E2-D-001"
+eixo: "E2"
+nivel: "D"
+estruturas:
+  - "for"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 200"
+direitos_restritos: true

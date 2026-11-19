@@ -1,0 +1,1 @@
+Leia um número inteiro e informe se ele é `multiplo de 3` ou `nao e multiplo de 3`.

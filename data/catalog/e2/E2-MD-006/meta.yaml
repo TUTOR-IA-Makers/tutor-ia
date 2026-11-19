@@ -1,0 +1,8 @@
+id: "E2-MD-006"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "if"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 142"
+direitos_restritos: true

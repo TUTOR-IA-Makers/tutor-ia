@@ -1,0 +1,1 @@
+Leia uma data inteira no formato `ddmmaaaa` (8 dígitos). Extraia dia, mês e ano matematicamente (sem strings), valide a data considerando anos bissextos e imprima `DATA VALIDA` ou `DATA INVALIDA`.

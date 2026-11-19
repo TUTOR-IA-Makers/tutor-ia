@@ -1,0 +1,1 @@
+Leia dois valores numéricos inteiros e efetue a adição; caso o resultado seja maior que 10, apresente a soma.

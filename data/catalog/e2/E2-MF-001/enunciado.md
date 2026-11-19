@@ -1,0 +1,1 @@
+Leia um número real e imprima-o caso seja maior que 20. Caso contrário, não imprima nada.

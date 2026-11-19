@@ -1,0 +1,1 @@
+Calcule o valor de uma corrida de táxi em Brasília. Leia o número da bandeira (`1` ou `2`), a quilometragem rodada (real) e se possui desconto de 30% (`1` para sim, `2` para não). Bandeira 1 custa R$ 1,80/km e bandeira 2 custa R$ 2,30/km. Há uma taxa mínima de R$ 3,50 (aplicada após o eventual desconto). Imprima o valor final com 2 casas decimais.

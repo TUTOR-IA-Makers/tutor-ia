@@ -1,0 +1,7 @@
+id: "E2-M-007"
+eixo: "E2"
+nivel: "M"
+estruturas:
+  - "for"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 209"
+direitos_restritos: true

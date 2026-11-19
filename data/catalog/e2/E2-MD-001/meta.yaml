@@ -1,0 +1,8 @@
+id: "E2-MD-001"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "for"
+  - "if"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 211"
+direitos_restritos: true

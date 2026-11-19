@@ -1,0 +1,1 @@
+Leia o índice de poluição (real). O índice aceitável é até 0.25. A partir de 0.30, intima-se o grupo 1; a partir de 0.40, grupos 1 e 2; a partir de 0.50, grupos 1, 2 e 3. Imprima `aceitavel`, `grupo 1`, `grupos 1 e 2` ou `grupos 1, 2 e 3`.

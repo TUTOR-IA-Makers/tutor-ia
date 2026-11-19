@@ -1,0 +1,1 @@
+Leia dois inteiros representando a idade de Pedro e a idade de Joana (idades diferentes) e informe quem é o mais velho imprimindo `Pedro e o mais velho` ou `Joana e a mais velha`.

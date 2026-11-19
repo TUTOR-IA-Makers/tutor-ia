@@ -1,0 +1,1 @@
+Leia os coeficientes `a`, `b` e `c` de uma parábola `y = ax² + bx + c`. Encontre o vértice `(xv, yv)` e o eixo de simetria. Imprima `xv` e `yv` com 4 casas decimais, cada um em uma linha.

@@ -1,0 +1,7 @@
+id: "E1-MD-003"
+eixo: "E1"
+nivel: "MD"
+estruturas:
+  - "stdlib.h"
+origem: "Exercício de manipulação algébrica extrema e limite de eixo sem desvios lógicos"
+direitos_restritos: true

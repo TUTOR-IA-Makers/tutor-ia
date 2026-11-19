@@ -1,0 +1,1 @@
+Leia três inteiros `A`, `B` e `C`. Ordene os valores internamente usando apenas estruturas condicionais simples (`if`) e trocas de variáveis, e imprima os três números em ordem crescente em uma única linha separados por espaço.

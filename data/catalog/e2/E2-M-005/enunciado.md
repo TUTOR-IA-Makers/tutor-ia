@@ -1,0 +1,1 @@
+Leia um inteiro `N` (N >= 1) e, em seguida, `N` números reais (podendo ser negativos). Imprima o maior e o menor número digitados, cada um em uma linha com 2 casas decimais.

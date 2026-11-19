@@ -1,0 +1,1 @@
+Leia dois números inteiros e informe o maior deles e se esse maior número é par ou ímpar. Se forem iguais, imprima `iguais`. Caso contrário, imprima `<maior> par` ou `<maior> impar`.

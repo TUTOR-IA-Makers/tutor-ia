@@ -1,0 +1,1 @@
+Calcule o produto de dois números inteiros não-negativos `A` e `B` utilizando exclusivamente somas sucessivas em um laço de repetição. Imprima o resultado.

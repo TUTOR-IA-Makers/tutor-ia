@@ -1,0 +1,1 @@
+Leia a altura (real em metros) e o sexo (`M` ou `F`) de uma pessoa. Calcule o peso ideal: para homens `(72.7 * h) - 58`; para mulheres `(62.1 * h) - 44.7`. Imprima o resultado com 2 casas decimais.

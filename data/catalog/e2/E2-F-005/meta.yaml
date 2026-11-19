@@ -1,0 +1,8 @@
+id: "E2-F-005"
+eixo: "E2"
+nivel: "F"
+estruturas:
+  - "if"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 134"
+direitos_restritos: true

@@ -1,0 +1,1 @@
+Leia o salário bruto e o valor da prestação de um empréstimo (reais). O valor máximo da prestação não poderá ultrapassar 30% do salário bruto. Imprima `emprestimo concedido` ou `emprestimo negado`.

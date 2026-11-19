@@ -1,0 +1,1 @@
+Leia um inteiro `N` (N >= 2) e imprima os índices `(L, C)` (1-indexados) localizados estritamente acima da diagonal principal de uma matriz quadrada de ordem `N`, no formato `L-C` separados por espaço em cada linha.

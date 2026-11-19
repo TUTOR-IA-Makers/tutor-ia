@@ -1,0 +1,1 @@
+Leia um número inteiro de 3 casas decimais e imprima se o algarismo da casa das centenas é `par` ou `impar`.
