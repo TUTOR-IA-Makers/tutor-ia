@@ -6,6 +6,7 @@ artefacts never overwrite each other. See docs/adr/0012.
 """
 
 import json
+from collections.abc import Collection
 from datetime import UTC, datetime
 from importlib import resources
 
@@ -24,6 +25,7 @@ from codeexpert.domain import (
     TestCase,
 )
 from codeexpert.errors import RunNotFoundError
+from codeexpert.store.base import RunListing
 
 
 def _save_question(conn: Connection, run_id: str) -> None:
@@ -95,6 +97,26 @@ def _save_question(conn: Connection, run_id: str) -> None:
 
 def _job_params(job: JobRecord) -> tuple[str, str | None, str | None, str | None, str]:
     return (job.state.value, job.step, job.failure_reason, job.error, job.updated_at)
+
+
+def _job_from_row(
+    state: str | None,
+    step: str | None,
+    reason: str | None,
+    error: str | None,
+    updated_at: datetime | None,
+) -> JobRecord | None:
+    """The `runs.job_*` columns as a record; `None` when no job was ever saved."""
+    if state is None or updated_at is None:
+        return None
+    return JobRecord(
+        state=JobState(state),
+        step=step,
+        failure_reason=reason,
+        error=error,
+        # Same as approved_at: timestamptz comes back in the session's zone.
+        updated_at=updated_at.astimezone(UTC).isoformat(),
+    )
 
 
 class PostgresStore:
@@ -252,17 +274,7 @@ class PostgresStore:
                 """,
                 (run_id,),
             ).fetchone()
-        if row is None or row[0] is None:
-            return None
-        state, step, reason, error, updated_at = row
-        return JobRecord(
-            state=state,
-            step=step,
-            failure_reason=reason,
-            error=error,
-            # Same as approved_at: timestamptz comes back in the session's zone.
-            updated_at=updated_at.astimezone(UTC).isoformat(),
-        )
+        return None if row is None else _job_from_row(*row)
 
     def save_job(self, run_id: str, job: JobRecord) -> None:
         with self._pool.connection() as conn:
@@ -299,3 +311,31 @@ class PostgresStore:
                 (datetime.now(UTC),),
             ).fetchall()
         return sorted(row[0] for row in rows)
+
+    def list_runs(self, names: Collection[str]) -> list[RunListing]:
+        # One query for the whole library: a run without any of the artefacts
+        # still comes back once, with a NULL name, from the LEFT JOIN.
+        with self._pool.connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT r.run_id, r.state, a.name, a.content,
+                       r.job_state, r.job_step, r.job_failure_reason, r.job_error,
+                       r.job_updated_at
+                FROM runs r
+                LEFT JOIN run_artifacts a ON a.run_id = r.run_id AND a.name = ANY(%s)
+                """,
+                (list(names),),
+            ).fetchall()
+        states: dict[str, QuestionState] = {}
+        jobs: dict[str, JobRecord | None] = {}
+        artifacts: dict[str, dict[str, str]] = {}
+        for run_id, state, name, content, *job in rows:
+            states[run_id] = QuestionState(state)
+            jobs[run_id] = _job_from_row(*job)
+            found = artifacts.setdefault(run_id, {})
+            if name is not None:
+                found[name] = content
+        return [
+            RunListing(run_id, state, artifacts[run_id], jobs[run_id])
+            for run_id, state in states.items()
+        ]
