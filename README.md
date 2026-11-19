@@ -42,7 +42,7 @@ curl -X POST http://127.0.0.1:8000/create_question \
   -d '{"statement_request": {"difficulty": "facil", "can_has_repetition": true}, "qty": 5}'
 ```
 
-O XML fica em `var/questions/Moodle_Questionnaire.xml`; os arquivos de cada
+O XML para importar no Moodle vem na resposta, em `export.xml`; os arquivos de cada
 execução, incluindo o `meta.json` com o modelo e a versão de prompt usados, em
 `var/runs/<run_id>/`.
 

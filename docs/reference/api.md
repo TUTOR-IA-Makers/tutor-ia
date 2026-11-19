@@ -141,10 +141,13 @@ Grava `solution.c`, sem cercas de markdown. Erros: `404`, `409` (falta o enuncia
 **Etapa 5.** Corpo: `{"run_id": "..."}`. Requer as etapas 1, 2 e 4.
 
 ```json title="200"
-{ "run_id": "20260918T221305Z-1a2b3c4d", "file_path": "var/questions/Moodle_Questionnaire.xml", "question_count": 3 }
+{ "run_id": "20260918T221305Z-1a2b3c4d", "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<quiz>\n...</quiz>\n", "question_count": 1 }
 ```
 
-Acrescenta a questão ao arquivo; `question_count` é a posição dela. Chamar duas vezes duplica a questão. Erros: `404`, `409`.
+`xml` é um questionário Moodle com esta questão só, numerada 1; `question_count` é quantas questões ele tem. Não grava arquivo no servidor e não depende de exportações anteriores: chamar de novo devolve o mesmo XML, e serve para baixar de novo uma questão já gerada. Erros: `404`, `409`.
+
+!!! note "Mudança de contrato (#43)"
+    A resposta trazia `file_path`, o caminho de `var/questions/Moodle_Questionnaire.xml`, ao qual cada exportação acrescentava a questão. O arquivo não existe mais; `xml` substitui `file_path`.
 
 ---
 
@@ -173,11 +176,11 @@ As cinco etapas em sequência, numa execução nova (ou na indicada em `statemen
   "code": "#include <stdio.h>\n...",
   "inputs": ["5\n1\n2\n3\n4\n5\n"],
   "testcases": [{ "input": "5\n1\n2\n3\n4\n5\n", "output": "6\n" }],
-  "export": { "run_id": "20260918T221305Z-1a2b3c4d", "file_path": "var/questions/Moodle_Questionnaire.xml", "question_count": 1 }
+  "export": { "run_id": "20260918T221305Z-1a2b3c4d", "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<quiz>\n...</quiz>\n", "question_count": 1 }
 }
 ```
 
-Se uma etapa falha, o erro dela é devolvido com o mesmo status do endpoint individual, e o que já foi gerado fica no disco. Nesse caso a resposta de erro traz também o `run_id`, para retomar etapa por etapa — ver [Gerar uma questão](../guides/generate-a-question.md#retomar-depois-de-uma-falha). Não é idempotente: cada chamada cria uma execução e acrescenta uma questão ao XML.
+Se uma etapa falha, o erro dela é devolvido com o mesmo status do endpoint individual, e o que já foi gerado fica no disco. Nesse caso a resposta de erro traz também o `run_id`, para retomar etapa por etapa — ver [Gerar uma questão](../guides/generate-a-question.md#retomar-depois-de-uma-falha). Não é idempotente: cada chamada cria uma execução nova.
 
 ---
 

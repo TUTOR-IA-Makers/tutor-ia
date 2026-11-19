@@ -79,4 +79,4 @@ Troque o id de exemplo pelo seu. Uma questão `GERADA` tem `runs.status = 'compl
 docker stop codeexpert-db   # --rm apaga o container e os dados
 ```
 
-Volte `CODEEXPERT_STORE_BACKEND` para `local` em `backend/.env`. As questões exportadas também foram acrescentadas a `backend/var/questions/Moodle_Questionnaire.xml`, que é ignorado pelo git.
+Volte `CODEEXPERT_STORE_BACKEND` para `local` em `backend/.env`.
