@@ -6,7 +6,7 @@ artefacts never overwrite each other. See docs/adr/0012.
 """
 
 import json
-from datetime import UTC
+from datetime import UTC, datetime
 from importlib import resources
 
 from psycopg import Connection
@@ -14,7 +14,15 @@ from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 from psycopg_pool import ConnectionPool
 
-from codeexpert.domain import QuestionState, RunMetadata, Statement, StoredQuestion, TestCase
+from codeexpert.domain import (
+    JobRecord,
+    JobState,
+    QuestionState,
+    RunMetadata,
+    Statement,
+    StoredQuestion,
+    TestCase,
+)
 from codeexpert.errors import RunNotFoundError
 
 
@@ -83,6 +91,10 @@ def _save_question(conn: Connection, run_id: str) -> None:
             "INSERT INTO test_cases (run_id, position, input, output) VALUES (%s, %s, %s, %s)",
             [(run_id, index, case.input, case.output) for index, case in enumerate(cases)],
         )
+
+
+def _job_params(job: JobRecord) -> tuple[str, str | None, str | None, str | None, str]:
+    return (job.state.value, job.step, job.failure_reason, job.error, job.updated_at)
 
 
 class PostgresStore:
@@ -230,3 +242,60 @@ class PostgresStore:
                 (run_id, metadata.model_dump_json(indent=2) + "\n"),
             )
             return True
+
+    def get_job(self, run_id: str) -> JobRecord | None:
+        with self._pool.connection() as conn:
+            row = conn.execute(
+                """
+                SELECT job_state, job_step, job_failure_reason, job_error, job_updated_at
+                FROM runs WHERE run_id = %s
+                """,
+                (run_id,),
+            ).fetchone()
+        if row is None or row[0] is None:
+            return None
+        state, step, reason, error, updated_at = row
+        return JobRecord(
+            state=state,
+            step=step,
+            failure_reason=reason,
+            error=error,
+            # Same as approved_at: timestamptz comes back in the session's zone.
+            updated_at=updated_at.astimezone(UTC).isoformat(),
+        )
+
+    def save_job(self, run_id: str, job: JobRecord) -> None:
+        with self._pool.connection() as conn:
+            conn.execute(
+                """
+                UPDATE runs SET job_state = %s, job_step = %s, job_failure_reason = %s,
+                                job_error = %s, job_updated_at = %s
+                WHERE run_id = %s
+                """,
+                (*_job_params(job), run_id),
+            )
+
+    def replace_job(self, run_id: str, expected: JobState | None, job: JobRecord) -> bool:
+        # One statement, so of two resumes racing only one sees its row updated.
+        with self._pool.connection() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE runs SET job_state = %s, job_step = %s, job_failure_reason = %s,
+                                job_error = %s, job_updated_at = %s
+                WHERE run_id = %s AND job_state IS NOT DISTINCT FROM %s
+                """,
+                (*_job_params(job), run_id, expected.value if expected else None),
+            )
+            return cursor.rowcount == 1
+
+    def interrupt_running_jobs(self) -> list[str]:
+        with self._pool.connection() as conn:
+            rows = conn.execute(
+                """
+                UPDATE runs SET job_state = 'INTERROMPIDO', job_updated_at = %s
+                WHERE job_state = 'EM_ANDAMENTO'
+                RETURNING run_id
+                """,
+                (datetime.now(UTC),),
+            ).fetchall()
+        return sorted(row[0] for row in rows)

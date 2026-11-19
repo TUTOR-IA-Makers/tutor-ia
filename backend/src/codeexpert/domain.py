@@ -79,6 +79,34 @@ class QuestionState(StrEnum):
     REJEITADA = "REJEITADA"
 
 
+class JobState(StrEnum):
+    """Where the background generation of a question stands — the process, not the question.
+
+    Kept apart from `QuestionState` on purpose (docs/adr/0015, docs/adr/0017):
+    `INTERROMPIDO` says the server stopped while generating, which is a fact about
+    the job and says nothing a teacher has decided about the question.
+    """
+
+    EM_ANDAMENTO = "EM_ANDAMENTO"
+    INTERROMPIDO = "INTERROMPIDO"
+    FALHOU = "FALHOU"
+    CONCLUIDO = "CONCLUIDO"
+
+
+class JobRecord(BaseModel):
+    """The persisted state of one background generation. See docs/adr/0017."""
+
+    state: JobState
+    # The step running (EM_ANDAMENTO) or the one that was running when the job
+    # stopped. One of `codeexpert.generation.job.STEPS`; None before the first.
+    step: str | None = None
+    # Teacher-facing, Portuguese, never the exception text. Only when FALHOU.
+    failure_reason: str | None = None
+    # The exception class name, for whoever reads the server log next to it.
+    error: str | None = None
+    updated_at: str
+
+
 class Constraints(BaseModel):
     """The pedagogical restrictions an exercise must respect.
 

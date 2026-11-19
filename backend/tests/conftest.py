@@ -16,7 +16,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from codeexpert.api.app import create_app
-from codeexpert.domain import QuestionState, RunMetadata
+from codeexpert.domain import JobRecord, JobState, QuestionState, RunMetadata
 from codeexpert.execution import get_code_runner
 from codeexpert.execution.runner import RunOutcome
 from codeexpert.llm import get_llm_client
@@ -75,6 +75,7 @@ class MemoryStore:
         self._artefacts: dict[tuple[str, str], str] = {}
         self._runs: dict[str, bool] = {}
         self._states: dict[str, QuestionState] = {}
+        self._jobs: dict[str, JobRecord] = {}
 
     def create_run(self, run_id: str) -> None:
         if run_id in self._runs:
@@ -94,6 +95,7 @@ class MemoryStore:
     def delete_run(self, run_id: str) -> None:
         self._runs.pop(run_id, None)
         self._states.pop(run_id, None)
+        self._jobs.pop(run_id, None)
         for key in [key for key in self._artefacts if key[0] == run_id]:
             del self._artefacts[key]
 
@@ -119,12 +121,38 @@ class MemoryStore:
         self._states[run_id] = QuestionState.APROVADA
         return True
 
+    def get_job(self, run_id: str) -> JobRecord | None:
+        return self._jobs.get(run_id)
+
+    def save_job(self, run_id: str, job: JobRecord) -> None:
+        self._jobs[run_id] = job
+
+    def replace_job(self, run_id: str, expected: JobState | None, job: JobRecord) -> bool:
+        current = self._jobs.get(run_id)
+        if (current.state if current else None) is not expected:
+            return False
+        self._jobs[run_id] = job
+        return True
+
+    def interrupt_running_jobs(self) -> list[str]:
+        running = sorted(
+            run_id for run_id, job in self._jobs.items() if job.state is JobState.EM_ANDAMENTO
+        )
+        for run_id in running:
+            self._jobs[run_id] = self._jobs[run_id].model_copy(
+                update={"state": JobState.INTERROMPIDO}
+            )
+        return running
+
 
 @pytest.fixture(autouse=True)
 def isolated_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Point every path at tmp_path and guarantee a key is never read from disk."""
     monkeypatch.setenv("CODEEXPERT_WORKSPACE_ROOT", str(tmp_path / "runs"))
     monkeypatch.setenv("CODEEXPERT_QUESTIONS_DIR", str(tmp_path / "questions"))
+    # A developer's .env may select Postgres; the suite never follows it. Every
+    # app startup touches the store (the G0-8 sweep), so this must be pinned.
+    monkeypatch.setenv("CODEEXPERT_STORE_BACKEND", "local")
     monkeypatch.setenv("CODEEXPERT_LLM_API_KEY", "sk-test-not-a-real-key")
     monkeypatch.setenv("CODEEXPERT_LLM_MODEL", "fake-model")
     monkeypatch.setenv("CODEEXPERT_RUN_TIMEOUT_SECONDS", "3")

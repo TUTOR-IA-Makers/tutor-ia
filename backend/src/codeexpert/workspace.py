@@ -16,7 +16,7 @@ from datetime import UTC, datetime
 from typing import Any, NoReturn
 from uuid import uuid4
 
-from codeexpert.domain import QuestionState, RunMetadata
+from codeexpert.domain import JobRecord, JobState, QuestionState, RunMetadata
 from codeexpert.errors import InvalidTransitionError, MissingArtefactError, RunNotFoundError
 from codeexpert.lifecycle import check_transition
 from codeexpert.store import ArtifactStore
@@ -30,7 +30,8 @@ META = "meta.json"
 # What the teacher asked for, verbatim. The constraints derived from it lose
 # information (ten contents become four axes), so the original is kept.
 DRAFT = "draft.json"
-# Present only when a background generation stopped before completing.
+# Written by background generations before G0-8 when they stopped early. Read
+# only to report those old runs; failures now live in the job record.
 FAILURE = "failure.json"
 
 # Run ids come from clients as path segments. Anything outside this alphabet is
@@ -151,6 +152,18 @@ class RunWorkspace:
         raise InvalidTransitionError(
             f"Question '{self.run_id}' changed while it was being updated. Read it again."
         )
+
+    # ── Background job ────────────────────────────────────────────────────────
+
+    def read_job(self) -> JobRecord | None:
+        """The stored job record as written. `codeexpert.generation.job` interprets it."""
+        return self._store.get_job(self.run_id)
+
+    def save_job(self, job: JobRecord) -> None:
+        self._store.save_job(self.run_id, job)
+
+    def replace_job(self, expected: JobState | None, job: JobRecord) -> bool:
+        return self._store.replace_job(self.run_id, expected, job)
 
     # ── Artefacts ─────────────────────────────────────────────────────────────
 

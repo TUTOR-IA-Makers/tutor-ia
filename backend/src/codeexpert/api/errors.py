@@ -17,6 +17,7 @@ from codeexpert.errors import (
     ConfigurationError,
     ExecutionError,
     InvalidTransitionError,
+    JobNotResumableError,
     LLMError,
     MissingArtefactError,
     RunNotFoundError,
@@ -28,6 +29,7 @@ STATUS_BY_ERROR: list[tuple[type[CodeExpertError], int]] = [
     (RunNotFoundError, 404),
     (MissingArtefactError, 409),  # the run exists; the client called steps out of order
     (InvalidTransitionError, 409),  # the question exists; its state forbids the change
+    (JobNotResumableError, 409),  # the job exists; it is running or already ended
     (ConfigurationError, 503),  # the server is not ready, not the client's fault
     (LLMError, 502),  # an upstream dependency failed
     (CompilationError, 422),  # the generated artefact is unusable

@@ -7,7 +7,7 @@ idea as `CodeRunner` in docs/adr/0004. See docs/adr/0012.
 
 from typing import Protocol
 
-from codeexpert.domain import QuestionState, RunMetadata
+from codeexpert.domain import JobRecord, JobState, QuestionState, RunMetadata
 
 
 class ArtifactStore(Protocol):
@@ -55,5 +55,31 @@ class ArtifactStore(Protocol):
 
         Same compare-and-set as `set_state`: nothing is written unless the state is
         still `expected`. The state and the record of who approved never disagree.
+        """
+        ...
+
+    # The background generation job (G0-8, docs/adr/0017). Its state is not the
+    # question's state, and the store judges neither.
+
+    def get_job(self, run_id: str) -> JobRecord | None:
+        """The run's job record, or `None` when no background job was ever started."""
+        ...
+
+    def save_job(self, run_id: str, job: JobRecord) -> None:
+        """Overwrite the job record. Only the job that owns the run calls this."""
+        ...
+
+    def replace_job(self, run_id: str, expected: JobState | None, job: JobRecord) -> bool:
+        """Store `job` only if the stored state is still `expected` (`None`: no record).
+
+        What stops two resumes of the same interrupted job from both starting one.
+        """
+        ...
+
+    def interrupt_running_jobs(self) -> list[str]:
+        """Move every `EM_ANDAMENTO` job to `INTERROMPIDO`; return their run ids.
+
+        Called once when the process starts, when no job can be running in it.
+        Keeps the step, so the record still says where the job stopped.
         """
         ...

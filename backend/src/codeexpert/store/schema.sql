@@ -63,3 +63,15 @@ CREATE TABLE IF NOT EXISTS test_cases (
     output text NOT NULL,
     PRIMARY KEY (run_id, position)
 );
+
+-- The background generation job (G0-8, docs/adr/0017). On runs, beside the
+-- question state and independent of it: INTERROMPIDO describes the process that
+-- generates, not the question. NULL on runs no background job ever started (the
+-- RPC routes, and runs from before G0-8). The CHECK lists JobState;
+-- tests/unit/test_question_classification.py fails when the two disagree.
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS
+    job_state text CHECK (job_state IN ('EM_ANDAMENTO', 'INTERROMPIDO', 'FALHOU', 'CONCLUIDO'));
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_step text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_failure_reason text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_error text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_updated_at timestamptz;
