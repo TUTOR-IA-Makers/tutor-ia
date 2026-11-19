@@ -25,7 +25,7 @@ flowchart TD
 | 4 | `POST /gen_testcases` | `generation/testcases.py` | `gcc` | `solution`, `testcases.json` |
 | 5 | `POST /export_moodle_xml_question` | `export/moodle.py` | — | o XML |
 
-`POST /create_question` roda as cinco em ordem (`generation/pipeline.py`).
+`POST /create_question` roda as cinco em ordem (`generation/pipeline.py`). `POST /api/v1/questions` também, mas fora do pedido, como um job — ver [Geração em segundo plano](#geracao-em-segundo-plano).
 
 ## 1 · Enunciado
 
@@ -126,6 +126,35 @@ flowchart LR
     Duas exportações simultâneas leem o mesmo estado e uma sobrescreve a outra. Hoje isso não acontece porque as rotas serializam os pedidos no processo. Com mais de um worker ou instância, uma questão some sem erro. <span class="ce-badge ce-status--planned">Planejado</span> no G1-8 (exportador puro).
 
 Limitações atuais: só C (`c_program` fixo), sem categoria de banco de questões, `generalfeedback` vazio, exemplos escolhidos por posição.
+
+## Geração em segundo plano {#geracao-em-segundo-plano}
+
+`POST /api/v1/questions` responde `202` antes de qualquer etapa e enfileira `run_generation` (`generation/job.py`) numa `BackgroundTask` do FastAPI, no mesmo processo da API. O estado do job fica no store, ao lado do estado da questão e independente dele: colunas `runs.job_*` no Postgres, arquivo `.job` no backend local. A decisão e as alternativas estão no [ADR-0017](../adr/0017-resumable-generation-job.md).
+
+```mermaid
+stateDiagram-v2
+    [*] --> EM_ANDAMENTO: POST /api/v1/questions
+    EM_ANDAMENTO --> CONCLUIDO: etapa 5 conclui
+    EM_ANDAMENTO --> FALHOU: uma etapa levanta erro
+    EM_ANDAMENTO --> INTERROMPIDO: o servidor reinicia no meio
+    INTERROMPIDO --> EM_ANDAMENTO: POST /resume
+    CONCLUIDO --> [*]
+    FALHOU --> [*]
+```
+
+**Persistência.** O registro é gravado antes do `draft.json`, então uma questão nunca aparece sem job. Antes de cada etapa o job grava `EM_ANDAMENTO` com o nome dela (`statement`, `code`, `inputs`, `testcases`, `export`); ao fim, `CONCLUIDO`. É isso que `/generation` lê para a tela de progresso.
+
+**Falhas.** Qualquer exceção numa etapa vira `FALHOU`, com a etapa, um motivo em português para o professor e o nome da classe da exceção. O texto da exceção (saída do compilador, corpo do provedor) fica só no log do servidor, com o `run_id`. Um job `FALHOU` não se retoma: gera-se a questão de novo.
+
+**Interrupção.** Um processo que morre não passa por `except` nenhum: o registro fica `EM_ANDAMENTO`. Na inicialização seguinte, o *lifespan* do app chama `interrupt_running_jobs()`, que passa todo job `EM_ANDAMENTO` para `INTERROMPIDO` mantendo a etapa: naquele instante nenhum job pode estar rodando neste processo. Se o store não responder, o erro vai para o log e o servidor sobe assim mesmo.
+
+**Retomada.** `POST /api/v1/questions/{id}/resume` troca `INTERROMPIDO` por `EM_ANDAMENTO` num *compare-and-set* (dois cliques iniciam um job só) e roda o mesmo `run_generation`. Ele pula as etapas que `meta.json → steps` registra, do início até a primeira lacuna, e roda dali em diante. Nenhuma chamada ao modelo já registrada se repete; os testes conferem isso contando as chamadas ao `FakeLLM`. A retomada é sempre pedida por uma pessoa, nunca automática na inicialização.
+
+!!! warning "Limitações"
+    - A varredura na inicialização supõe **um processo só** da API, que é o que roda em produção. Um segundo processo subindo marcaria como interrompidos os jobs vivos do primeiro.
+    - Uma etapa que gravou o artefato e morreu antes de se registrar em `meta.json` roda de novo na retomada: no máximo uma chamada repetida.
+    - A exportação acrescenta ao arquivo XML compartilhado antes de concluir a execução; uma queda entre as duas coisas exporta a questão duas vezes. O G1-8 remove o arquivo.
+    - Execuções anteriores a esta mudança não têm registro de job. Uma inacabada aparece como `INTERROMPIDO` e pode ser retomada; uma que tinha `failure.json` aparece como `FALHOU`.
 
 ## Cliente do modelo
 

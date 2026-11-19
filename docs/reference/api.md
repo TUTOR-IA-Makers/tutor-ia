@@ -257,8 +257,10 @@ Erros: `404`, `409` (`GERANDO`, `APROVADA` ou já `REJEITADA`). As transições 
 
 O formulário do front-end (modo `http`) chama estas rotas. O navegador pede uma questão e consulta o andamento; quem encadeia as cinco etapas é o servidor ([ADR-0013](../adr/0013-resource-api-and-cookie-session.md)). Os nomes dos campos seguem `frontend/src/services/http/dto.ts`. O id de uma questão é o `run_id` da execução.
 
-!!! warning "Versão mínima"
-    A geração roda numa `BackgroundTask` do FastAPI, no mesmo processo da API. Se o servidor reiniciar no meio, a questão fica `GERANDO` para sempre: não há retomada nem estado `INTERROMPIDO` (G0-8). Não há sessão: as rotas são públicas como o resto da API.
+A geração roda numa `BackgroundTask` do FastAPI, no mesmo processo da API, e o estado do job fica no banco: se o servidor reiniciar no meio, o job passa a `INTERROMPIDO` na inicialização seguinte e pode ser [retomado](#post-api-v1-resume) sem repetir as etapas já concluídas. Ver [Geração em segundo plano](../architecture/pipeline.md#geracao-em-segundo-plano).
+
+!!! warning "Limitações"
+    Não há fila distribuída nem sessão: as rotas são públicas como o resto da API. A detecção de `INTERROMPIDO` supõe um processo só da API, que é o que roda em produção ([ADR-0017](../adr/0017-resumable-generation-job.md)).
 
 ### `POST /api/v1/questions` {#post-api-v1-questions}
 
@@ -300,7 +302,13 @@ Erros: `422` (corpo inválido; `detail` é uma lista). Nada é criado nesse caso
   "run_id": "20261105T142233Z-1a2b3c4d",
   "status": "GERANDO",
   "completed_steps": 2,
-  "failure_reason": null
+  "failure_reason": null,
+  "job": {
+    "state": "EM_ANDAMENTO",
+    "step": "inputs",
+    "resumable": false,
+    "updated_at": "2026-11-18T14:22:41.118204+00:00"
+  }
 }
 ```
 
@@ -308,10 +316,21 @@ Erros: `422` (corpo inválido; `detail` é uma lista). Nada é criado nesse caso
 | --- | --- |
 | `GERANDO` | O job não terminou nem falhou |
 | `GERADA` | As cinco etapas terminaram; `completed_steps` é `5` |
-| `FALHOU_VERIFICACAO` | Alguma etapa falhou. `completed_steps` conta as que terminaram; `failure_reason` explica em português, sem stack trace nem saída do compilador (o detalhe fica no log do servidor, com o `run_id`) |
+| `FALHOU_VERIFICACAO` | Alguma etapa falhou, ou o job foi interrompido por um reinício (`job.state` diz qual). `completed_steps` conta as que terminaram; `failure_reason` explica em português, sem stack trace nem saída do compilador (o detalhe fica no log do servidor, com o `run_id`) |
 | `APROVADA`, `REJEITADA` | A questão foi revisada por [`/approve`](#post-questions-run_id-approve) ou [`/reject`](#post-questions-run_id-reject) |
 
-O `status` é o estado do [ciclo de vida da questão](../architecture/question-lifecycle.md), o mesmo que as rotas de revisão leem e gravam. Uma exceção: se uma etapa **anterior** à verificação falha (o modelo, por exemplo), o ciclo de vida ainda não tem estado para isso e a questão continua `GERANDO` no banco. Como nada mais está rodando, a API responde `FALHOU_VERIFICACAO` com o motivo, para a tela não ficar consultando para sempre. Essa questão não pode ser aprovada nem rejeitada até a G0-8 dar um estado próprio a esse caso.
+O `status` é o estado do [ciclo de vida da questão](../architecture/question-lifecycle.md), o mesmo que as rotas de revisão leem e gravam. Uma exceção: se uma etapa **anterior** à verificação falha (o modelo, por exemplo) ou o job é interrompido, o ciclo de vida não tem estado para isso e a questão continua `GERANDO` no banco. Como nada mais está rodando, a API responde `FALHOU_VERIFICACAO` com o motivo, para a tela não ficar consultando para sempre. Essa questão não pode ser aprovada nem rejeitada.
+
+`job` é o estado do job de geração, que não é um estado da questão ([ADR-0017](../adr/0017-resumable-generation-job.md)). O front pode ignorá-lo; `status` continua com os cinco valores de sempre.
+
+| `job.state` | Quando |
+| --- | --- |
+| `EM_ANDAMENTO` | O job está rodando a etapa `job.step` |
+| `INTERROMPIDO` | O servidor reiniciou com o job rodando. `job.step` é a etapa em que parou e `job.resumable` é `true`: [`/resume`](#post-api-v1-resume) continua dali. `failure_reason` diz isso ao professor |
+| `FALHOU` | Uma etapa levantou erro. `job.step` diz qual; não se retoma, gera-se de novo |
+| `CONCLUIDO` | As cinco etapas terminaram |
+
+`job.step` é `statement`, `code`, `inputs`, `testcases` ou `export`, ou `null` antes da primeira etapa e depois da conclusão. `job.updated_at` é a última mudança do registro, em UTC.
 
 `completed_steps` vem de `meta.json → steps` (enunciado, solução, entradas, casos de teste), mais um quando a execução é concluída pela exportação. Erros: `404`.
 
@@ -341,7 +360,8 @@ Responde em qualquer estado, porque o front carrega a questão antes de escolher
   "failure_reason": null,
   "reviewed": false,
   "approved_by": null,
-  "approved_at": null
+  "approved_at": null,
+  "job": { "state": "CONCLUIDO", "step": null, "resumable": false, "updated_at": "2026-11-05T14:23:10.004113+00:00" }
 }
 ```
 
@@ -356,8 +376,26 @@ Responde em qualquer estado, porque o front carrega a questão antes de escolher
 | `statement.example`, `actual_output`, `passed`, `compilation` | Sempre `null`: nada os produz ainda |
 | `constraints` | Sempre `[]`: a verificação de escopo (FEAT-024) não existe |
 | `reviewed`, `approved_by`, `approved_at` | O registro da aprovação (`meta.json`). `false`, `null`, `null` até alguém aprovar |
+| `job` | O registro do job de geração, igual ao de [`/generation`](#get-api-v1-generation) |
 
 Erros: `404` para id desconhecido, malformado ou de uma execução criada pelas rotas RPC (sem `draft.json`). As rotas RPC continuam funcionando, inclusive `GET /questions/{run_id}` para uma questão criada aqui.
+
+### `POST /api/v1/questions/{id}/resume` {#post-api-v1-resume}
+
+Continua um job `INTERROMPIDO` a partir da primeira etapa que `meta.json` não registra. As etapas já concluídas não rodam de novo, então nenhuma chamada ao modelo já paga se repete. Sem corpo. Responde antes de rodar qualquer etapa, com o mesmo formato de [`/generation`](#get-api-v1-generation); acompanhe por ele.
+
+```json title="202"
+{
+  "question_id": "20261105T142233Z-1a2b3c4d",
+  "run_id": "20261105T142233Z-1a2b3c4d",
+  "status": "GERANDO",
+  "completed_steps": 2,
+  "failure_reason": null,
+  "job": { "state": "EM_ANDAMENTO", "step": "inputs", "resumable": false, "updated_at": "2026-11-18T14:30:02.551930+00:00" }
+}
+```
+
+Erros: `404` (id desconhecido ou execução sem `draft.json`), `409` (job `EM_ANDAMENTO`, `FALHOU` ou `CONCLUIDO`; dois cliques seguidos iniciam um job só, o segundo recebe `409`).
 
 ### `POST /api/v1/questions/{id}/approve` {#post-api-v1-approve}
 
@@ -399,6 +437,7 @@ Os serviços levantam exceções de domínio; `api/errors.py` traduz cada uma pe
 | `404` | `RunNotFoundError` | `run_id` inexistente ou com formato inválido (inclusive `../../etc`) |
 | `409` | `MissingArtefactError` | Etapa chamada antes da anterior. A mensagem diz qual endpoint roda antes |
 | `409` | `InvalidTransitionError` | O estado atual da questão não permite a mudança pedida. A mensagem diz os dois estados |
+| `409` | `JobNotResumableError` | Retomar um job que não está `INTERROMPIDO` |
 | `422` | `CompilationError` | A solução não compila; `detail` traz o `stderr` do `gcc` |
 | `422` | `ExecutionError` | Entrada que não terminou no tempo limite, ou `gcc` fora do `PATH` |
 | `422` | validação do Pydantic | Corpo inválido. Aqui `detail` é uma **lista** de objetos, não texto |
