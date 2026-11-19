@@ -2,7 +2,7 @@
 
 <p class="lead">Contrato HTTP do backend: dois endpoints de diagnóstico, as cinco etapas do pipeline, um orquestrador síncrono, a revisão de uma questão e a API de recursos sob <code>/api/v1</code> que o formulário usa. Todos públicos e em JSON.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> Todos os endpoints desta página. Os endpoints previstos no plano (`GET /api/v1/questions`, aprovação sob `/api/v1` com registro de quem aprovou, exportação de seleção, sessão) estão em [Roadmap](../product/roadmap.md#estado-da-geracao).
+<span class="ce-badge ce-status--done">Implementado</span> Todos os endpoints desta página. Os endpoints previstos no plano (rejeição e regeneração sob `/api/v1`, exportação de seleção, sessão) estão em [Roadmap](../product/roadmap.md#estado-da-geracao).
 
 ## Visão geral
 
@@ -28,6 +28,7 @@
 | <span class="ce-badge ce-badge--post">POST</span> | [`/questions/{run_id}/reject`](#post-questions-run_id-reject) | `GERADA` ou `FALHOU_VERIFICACAO` → `REJEITADA` |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/structures`](#catalogo-de-estruturas-para-o-formulario) | Vocabulário de estruturas do formulário |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/api/v1/questions`](#post-api-v1-questions) | Cria uma questão a partir do formulário e responde `202` na hora |
+| <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/questions`](#get-api-v1-questions) | A biblioteca: lista paginada, com filtros e busca |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/questions/{id}/generation`](#get-api-v1-generation) | Andamento da geração |
 | <span class="ce-badge ce-badge--get">GET</span> | [`/api/v1/questions/{id}`](#get-api-v1-question) | A questão, em qualquer estado |
 | <span class="ce-badge ce-badge--post">POST</span> | [`/api/v1/questions/{id}/approve`](#post-api-v1-approve) | O botão Aprovar da tela de revisão; devolve a questão inteira |
@@ -333,6 +334,53 @@ O `status` é o estado do [ciclo de vida da questão](../architecture/question-l
 `job.step` é `statement`, `code`, `inputs`, `testcases` ou `export`, ou `null` antes da primeira etapa e depois da conclusão. `job.updated_at` é a última mudança do registro, em UTC.
 
 `completed_steps` vem de `meta.json → steps` (enunciado, solução, entradas, casos de teste), mais um quando a execução é concluída pela exportação. Erros: `404`.
+
+### `GET /api/v1/questions` {#get-api-v1-questions}
+
+A biblioteca do professor. Lista as questões criadas por [`POST /api/v1/questions`](#post-api-v1-questions), em qualquer estado, da mais recente para a mais antiga. Execuções iniciadas pelas rotas RPC (sem `draft.json`) não aparecem, a mesma regra de [`GET /api/v1/questions/{id}`](#get-api-v1-question). Não há sessão ainda (G8-1): a lista traz as questões de todos.
+
+```bash
+curl "http://127.0.0.1:8000/api/v1/questions?axis=controle%20de%20fluxo&status=APROVADA&q=tarifa&page=1&page_size=20"
+```
+
+Todos os parâmetros são opcionais e se combinam (uma questão precisa atender a todos):
+
+| Parâmetro | Valores | Filtra por |
+| --- | --- | --- |
+| `q` | Texto, até 200 caracteres | Cada palavra precisa aparecer no título, no enunciado ou no contexto. Ignora maiúsculas e acentos (`funcao` acha "Função"). Vazio é o mesmo que ausente |
+| `content` | Um dos dez conteúdos do formulário (`condicionais`, `vetores`…) | O `content_id` da questão |
+| `axis` | `fundamentos`, `controle de fluxo`, `estruturas de dados e ponteiros`, `modularizacao` | O eixo do conteúdo, pela mesma tabela de [`POST /api/v1/questions`](#post-api-v1-questions) |
+| `difficulty` | `muito-facil`, `facil`, `medio`, `dificil`, `muito-dificil` (os ids de `frontend/src/domain/difficulty.ts`) | Faixas que **se sobrepõem** ao intervalo `difficulty_min`–`difficulty_max`: uma questão de 1200 a 1600 aparece em `facil` e em `medio` |
+| `status` | `GERANDO`, `GERADA`, `FALHOU_VERIFICACAO`, `APROVADA`, `REJEITADA` | O `status` que [`GET /api/v1/questions/{id}`](#get-api-v1-question) responde para a mesma questão: uma geração que falhou antes da verificação ou foi interrompida aparece como `FALHOU_VERIFICACAO`, não como `GERANDO` |
+| `page` | Inteiro ≥ 1; padrão `1` | A página |
+| `page_size` | 1 a 100; padrão `20` | Questões por página |
+
+```json title="200"
+{
+  "items": [
+    {
+      "id": "20261105T142233Z-1a2b3c4d",
+      "code": "20261105T142233Z-1a2b3c4d",
+      "title": "Tarifa de estacionamento",
+      "description": "Tarifa de estacionamento",
+      "content_id": "condicionais",
+      "difficulty_min": 1200,
+      "difficulty_max": 1600,
+      "status": "APROVADA",
+      "test_case_count": 5
+    }
+  ],
+  "total": 1,
+  "page": 1,
+  "page_size": 20
+}
+```
+
+Cada item tem os campos de `questionSummaryDto` em `frontend/src/services/http/dto.ts`, os mesmos do início de [`GET /api/v1/questions/{id}`](#get-api-v1-question), que traz o resto. `title` é "Enunciado ainda não gerado" enquanto a etapa 1 não termina; `test_case_count` é o número de casos executados, ou o pedido no formulário antes da etapa 4. A ordem usa `meta.json → created_at`, desempatada pelo id, então duas páginas nunca repetem uma questão.
+
+`total` conta todas as questões que atendem aos filtros, somando as páginas. Banco vazio, filtro sem correspondência e página além do fim respondem `200` com `items` vazio; `total` diz qual dos três é (`0`, `0` ou maior que zero). Erros: `422` para um valor fora das tabelas acima (conteúdo, eixo, faixa ou estado desconhecido, `page` 0, `page_size` acima de 100) e para um parâmetro que não está nela: um filtro com nome errado, como `stauts`, não devolve a biblioteca inteira como se tivesse filtrado.
+
+Os filtros rodam no servidor, em Python, sobre uma única consulta ao banco que traz os artefatos de todas as execuções (`api/library.py`). Basta para centenas de questões; quando não bastar, os filtros passam para o SQL com o mesmo contrato.
 
 ### `GET /api/v1/questions/{id}` {#get-api-v1-question}
 

@@ -41,8 +41,11 @@ parcial de uma escrita concorrente.
 
 `PostgresStore.get_question(run_id)` devolve `StoredQuestion` ou `None`, lendo
 apenas as tabelas estruturadas. Inclui enunciado, solução, restrições, nível,
-eixo, estado (lido de `runs.state`), casos e metadados. A API existente continua lendo artefatos;
-endpoints de listagem e filtros não fazem parte desta entrega.
+eixo, estado (lido de `runs.state`), casos e metadados. A API existente continua lendo artefatos.
+A listagem ([`GET /api/v1/questions`](../reference/api.md#get-api-v1-questions)) também lê
+artefatos, por `ArtifactStore.list_runs`, porque mostra questões em qualquer estado e
+`questions` só tem as concluídas. A mesma consulta traz as colunas `runs.job_*`, para que uma
+geração parada apareça na lista com o mesmo `status` da página da questão.
 
 Uma nova conclusão substitui o retrato anterior, sem criar versões. Alterações
 de artefatos depois da conclusão só aparecem nessa representação na próxima

@@ -158,6 +158,20 @@ def read_job(workspace: RunWorkspace) -> JobRecord:
     return JobRecord(state=JobState.INTERROMPIDO, updated_at=created_at)
 
 
+def generation_stopped(state: QuestionState, job: JobState) -> bool:
+    """Whether a question still waiting on its generation has nothing running any more.
+
+    The question is `GERANDO` (or `FALHOU_VERIFICACAO`, mid-retry) in the store,
+    but its job `FALHOU` or was `INTERROMPIDO`. Such a question is shown as
+    `FALHOU_VERIFICACAO`. One function, so `/generation`, the question resource and
+    the library listing never disagree about the same question.
+    """
+    return state in (QuestionState.GERANDO, QuestionState.FALHOU_VERIFICACAO) and job in (
+        JobState.FALHOU,
+        JobState.INTERROMPIDO,
+    )
+
+
 def read_progress(workspace: RunWorkspace) -> GenerationProgress:
     """Where a question stands: its lifecycle state, plus how far the job got.
 
@@ -177,14 +191,12 @@ def read_progress(workspace: RunWorkspace) -> GenerationProgress:
         recorded = _recorded(workspace)
         completed = sum(1 for step in RECORDED_STEPS if step in recorded)
 
-    if state not in (QuestionState.GERANDO, QuestionState.FALHOU_VERIFICACAO):
+    if not generation_stopped(state, job.state):
         return GenerationProgress(state=state, completed_steps=completed, job=job)
     if job.state is JobState.FALHOU:
         reason = job.failure_reason or _GENERIC_REASON
-    elif job.state is JobState.INTERROMPIDO:
-        reason = INTERRUPTED_REASON
     else:
-        return GenerationProgress(state=state, completed_steps=completed, job=job)
+        reason = INTERRUPTED_REASON
     return GenerationProgress(
         state=QuestionState.FALHOU_VERIFICACAO,
         completed_steps=completed,

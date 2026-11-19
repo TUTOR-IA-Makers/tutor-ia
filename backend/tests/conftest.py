@@ -10,6 +10,7 @@ when `gcc` is absent, so the suite passes on a machine without a toolchain.
 """
 
 import shutil
+from collections.abc import Collection
 from pathlib import Path
 
 import pytest
@@ -21,7 +22,7 @@ from codeexpert.execution import get_code_runner
 from codeexpert.execution.runner import RunOutcome
 from codeexpert.llm import get_llm_client
 from codeexpert.settings import get_settings, reset_settings_cache
-from codeexpert.store import LocalFilesystemStore
+from codeexpert.store import LocalFilesystemStore, RunListing
 from codeexpert.workspace import RunWorkspace
 
 GCC_AVAILABLE = shutil.which("gcc") is not None
@@ -143,6 +144,21 @@ class MemoryStore:
                 update={"state": JobState.INTERROMPIDO}
             )
         return running
+
+    def list_runs(self, names: Collection[str]) -> list[RunListing]:
+        return [
+            RunListing(
+                run_id,
+                self._states[run_id],
+                {
+                    name: self._artefacts[(run_id, name)]
+                    for name in names
+                    if (run_id, name) in self._artefacts
+                },
+                self._jobs.get(run_id),
+            )
+            for run_id in self._runs
+        ]
 
 
 @pytest.fixture(autouse=True)

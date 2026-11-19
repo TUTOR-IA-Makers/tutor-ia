@@ -3,7 +3,7 @@
 <p class="lead">Como o front-end em <code>frontend/</code> fala com a API. O formulário de geração já cria, acompanha e lê uma questão em <code>/api/v1</code>; o resto do front (biblioteca, revisão, exportação, sessão) ainda só funciona com dados simulados. Esta página descreve a lacuna que sobra, a forma combinada para fechá-la e a ordem de trabalho.</p>
 
 !!! warning "Quase tudo aqui é planejado"
-    <span class="ce-badge ce-status--done">Implementado</span> as camadas do front-end, o contrato de serviços, o modo simulado, o cliente HTTP com cabeçalho anti-CSRF e a versão mínima de `POST /api/v1/questions`, `GET /api/v1/questions/{id}/generation` e `GET /api/v1/questions/{id}` (#38).
+    <span class="ce-badge ce-status--done">Implementado</span> as camadas do front-end, o contrato de serviços, o modo simulado, o cliente HTTP com cabeçalho anti-CSRF, a versão mínima de `POST /api/v1/questions`, `GET /api/v1/questions/{id}/generation` e `GET /api/v1/questions/{id}` (#38) e a listagem `GET /api/v1/questions` (#41).
     <span class="ce-badge ce-status--planned">Planejado</span> o resto da API de recursos, a sessão por cookie, as contas e convites, e o que falta de cada fase da seção 6. A decisão está proposta no [ADR-0013](../adr/0013-resource-api-and-cookie-session.md) e ainda depende de aceite da equipe.
 
 ## 1. A lacuna, rota por rota
@@ -12,7 +12,7 @@ O front-end já chama uma API de recursos sob `/api/v1` (`frontend/src/services/
 
 | O front chama | O backend de `develop` tem | Falta |
 |---|---|---|
-| `GET /api/v1/questions` com filtros | nada | listar questões guardadas (G1-5); depende do banco (G0-4) |
+| `GET /api/v1/questions` com filtros | o mesmo, paginado, com `q`, `content`, `difficulty`, `status` e também `axis`, `page`, `page_size` ([API](../reference/api.md#get-api-v1-questions)) | a biblioteca usar o modo `http` e a paginação (G4-6) |
 | `POST /api/v1/questions` → `202 {id}` | o mesmo, com as cinco etapas numa `BackgroundTask` do FastAPI e o estado do job no banco; após um reinício o job fica `INTERROMPIDO` e `POST /api/v1/questions/{id}/resume` o retoma (G0-8) | o front oferecer **Retomar** quando `job.resumable` (G4-3) |
 | `GET /api/v1/questions/{id}` | o mesmo, lido dos artefatos, em qualquer estado | verificação de restrições, resultado de compilação, `actual_output`/`passed` (hoje `[]` ou `null`) |
 | `GET /api/v1/questions/{id}/generation` | o mesmo: estado, etapas concluídas, motivo da falha em português, e o objeto `job` (estado, etapa, `resumable`) | nada |
