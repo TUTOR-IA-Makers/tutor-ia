@@ -3,7 +3,7 @@
 <p class="lead">Como o front-end em <code>frontend/</code> fala com a API. O formulário de geração já cria, acompanha e lê uma questão em <code>/api/v1</code>; o resto do front (biblioteca, revisão, exportação, sessão) ainda só funciona com dados simulados. Esta página descreve a lacuna que sobra, a forma combinada para fechá-la e a ordem de trabalho.</p>
 
 !!! warning "Quase tudo aqui é planejado"
-    <span class="ce-badge ce-status--done">Implementado</span> as camadas do front-end, o contrato de serviços, o modo simulado, o cliente HTTP com cabeçalho anti-CSRF a versão mínima de `POST /api/v1/questions`, `GET /api/v1/questions/{id}/generation` e `GET /api/v1/questions/{id}` (#38) e a listagem `GET /api/v1/questions` (#41).
+    <span class="ce-badge ce-status--done">Implementado</span> as camadas do front-end, o contrato de serviços, o modo simulado, o cliente HTTP com cabeçalho anti-CSRF, a versão mínima de `POST /api/v1/questions`, `GET /api/v1/questions/{id}/generation` e `GET /api/v1/questions/{id}` (#38) e a listagem `GET /api/v1/questions` (#41).
     <span class="ce-badge ce-status--planned">Planejado</span> o resto da API de recursos, a sessão por cookie, as contas e convites, e o que falta de cada fase da seção 6. A decisão está proposta no [ADR-0013](../adr/0013-resource-api-and-cookie-session.md) e ainda depende de aceite da equipe.
 
 ## 1. A lacuna, rota por rota
