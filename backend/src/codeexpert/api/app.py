@@ -5,6 +5,8 @@ overridden dependencies instead of mutating a global.
 """
 
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
@@ -13,7 +15,9 @@ from codeexpert import __version__
 from codeexpert.api.errors import register_error_handlers
 from codeexpert.api.routes import catalog, health, questions, resources
 from codeexpert.api.spa import mount_spa
+from codeexpert.generation.job import recover_interrupted_jobs
 from codeexpert.settings import get_settings
+from codeexpert.store import build_store
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +30,29 @@ model. Everything else is assisted generation that a human must review.
 """
 
 
+def _recover_interrupted_jobs() -> None:
+    """A job left EM_ANDAMENTO by the previous process becomes INTERROMPIDO (G0-8).
+
+    Never stops the server from starting: like /config reporting a missing key,
+    a store that cannot be reached is logged and the rest of the site still
+    serves. The jobs stay EM_ANDAMENTO until a start that reaches the store.
+    """
+    try:
+        recover_interrupted_jobs(build_store(get_settings()))
+    except Exception:
+        logger.exception("Could not look for interrupted generations; they still read as running")
+
+
+@asynccontextmanager
+async def _lifespan(_: FastAPI) -> AsyncIterator[None]:
+    _recover_interrupted_jobs()
+    yield
+
+
 def create_app() -> FastAPI:
-    app = FastAPI(title="CodeExpert", version=__version__, description=DESCRIPTION)
+    app = FastAPI(
+        title="CodeExpert", version=__version__, description=DESCRIPTION, lifespan=_lifespan
+    )
     register_error_handlers(app)
     app.include_router(health.router)
     app.include_router(catalog.router)

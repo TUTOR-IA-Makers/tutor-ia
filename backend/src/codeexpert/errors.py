@@ -35,6 +35,10 @@ class InvalidTransitionError(CodeExpertError):
     """The question's current state does not allow the requested one."""
 
 
+class JobNotResumableError(CodeExpertError):
+    """Only an interrupted generation can be resumed; this one is running or ended."""
+
+
 class LLMError(CodeExpertError):
     """The language model provider failed or answered in an unusable shape."""
 

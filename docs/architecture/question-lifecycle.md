@@ -34,8 +34,9 @@ de novo e chegar a `GERADA`. `APROVADA` e `REJEITADA` são finais até a G3-3
 definir o que significa editar uma questão revisada.
 
 !!! info "Não confundir com o estado do job"
-    O plano prevê, na G0-8, um estado `INTERROMPIDO` para o **job** de geração. Ele
-    descreve o processo que gera, não a questão, e não faz parte desta tabela.
+    O job de geração tem estados próprios (`EM_ANDAMENTO`, `INTERROMPIDO`, `FALHOU`,
+    `CONCLUIDO`), que descrevem o processo que gera, não a questão, e não fazem parte
+    desta tabela. Ver [Geração em segundo plano](pipeline.md#geracao-em-segundo-plano).
 
 ## Onde a regra mora
 
