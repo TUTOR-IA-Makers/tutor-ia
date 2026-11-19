@@ -229,8 +229,8 @@ class CompilationView(BaseModel):
     message: str
 
 
-class QuestionResource(BaseModel):
-    """One question in any state; fields a step has not produced yet are empty."""
+class QuestionSummary(BaseModel):
+    """A question as the library card shows it. `QuestionResource` adds the rest."""
 
     id: str
     code: str
@@ -241,6 +241,20 @@ class QuestionResource(BaseModel):
     difficulty_max: int
     status: QuestionState = Field(description=_STATE_DESCRIPTION)
     test_case_count: int
+
+
+class QuestionPage(BaseModel):
+    """One page of `GET /api/v1/questions`, newest question first."""
+
+    items: list[QuestionSummary]
+    total: int = Field(description="Questions matching the filters, on every page together.")
+    page: int = Field(description="This page, counted from 1. Past the end, `items` is empty.")
+    page_size: int
+
+
+class QuestionResource(QuestionSummary):
+    """One question in any state; fields a step has not produced yet are empty."""
+
     statement: StatementView
     solution: str | None
     test_cases: list[TestCaseView]
@@ -273,9 +287,11 @@ __all__ = [
     "InputResponse",
     "JobView",
     "QuestionDetail",
+    "QuestionPage",
     "QuestionResource",
     "QuestionState",
     "QuestionStateResponse",
+    "QuestionSummary",
     "RunRequest",
     "StatementRequest",
     "StatementResponse",
