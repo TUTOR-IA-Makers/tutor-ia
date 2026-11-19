@@ -6,7 +6,8 @@ artefacts never overwrite each other. See docs/adr/0012.
 """
 
 import json
-from datetime import UTC
+from collections.abc import Collection
+from datetime import UTC, datetime
 from importlib import resources
 
 from psycopg import Connection
@@ -14,8 +15,17 @@ from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 from psycopg_pool import ConnectionPool
 
-from codeexpert.domain import QuestionState, RunMetadata, Statement, StoredQuestion, TestCase
+from codeexpert.domain import (
+    JobRecord,
+    JobState,
+    QuestionState,
+    RunMetadata,
+    Statement,
+    StoredQuestion,
+    TestCase,
+)
 from codeexpert.errors import RunNotFoundError
+from codeexpert.store.base import RunListing
 
 
 def _save_question(conn: Connection, run_id: str) -> None:
@@ -83,6 +93,30 @@ def _save_question(conn: Connection, run_id: str) -> None:
             "INSERT INTO test_cases (run_id, position, input, output) VALUES (%s, %s, %s, %s)",
             [(run_id, index, case.input, case.output) for index, case in enumerate(cases)],
         )
+
+
+def _job_params(job: JobRecord) -> tuple[str, str | None, str | None, str | None, str]:
+    return (job.state.value, job.step, job.failure_reason, job.error, job.updated_at)
+
+
+def _job_from_row(
+    state: str | None,
+    step: str | None,
+    reason: str | None,
+    error: str | None,
+    updated_at: datetime | None,
+) -> JobRecord | None:
+    """The `runs.job_*` columns as a record; `None` when no job was ever saved."""
+    if state is None or updated_at is None:
+        return None
+    return JobRecord(
+        state=JobState(state),
+        step=step,
+        failure_reason=reason,
+        error=error,
+        # Same as approved_at: timestamptz comes back in the session's zone.
+        updated_at=updated_at.astimezone(UTC).isoformat(),
+    )
 
 
 class PostgresStore:
@@ -230,3 +264,78 @@ class PostgresStore:
                 (run_id, metadata.model_dump_json(indent=2) + "\n"),
             )
             return True
+
+    def get_job(self, run_id: str) -> JobRecord | None:
+        with self._pool.connection() as conn:
+            row = conn.execute(
+                """
+                SELECT job_state, job_step, job_failure_reason, job_error, job_updated_at
+                FROM runs WHERE run_id = %s
+                """,
+                (run_id,),
+            ).fetchone()
+        return None if row is None else _job_from_row(*row)
+
+    def save_job(self, run_id: str, job: JobRecord) -> None:
+        with self._pool.connection() as conn:
+            conn.execute(
+                """
+                UPDATE runs SET job_state = %s, job_step = %s, job_failure_reason = %s,
+                                job_error = %s, job_updated_at = %s
+                WHERE run_id = %s
+                """,
+                (*_job_params(job), run_id),
+            )
+
+    def replace_job(self, run_id: str, expected: JobState | None, job: JobRecord) -> bool:
+        # One statement, so of two resumes racing only one sees its row updated.
+        with self._pool.connection() as conn:
+            cursor = conn.execute(
+                """
+                UPDATE runs SET job_state = %s, job_step = %s, job_failure_reason = %s,
+                                job_error = %s, job_updated_at = %s
+                WHERE run_id = %s AND job_state IS NOT DISTINCT FROM %s
+                """,
+                (*_job_params(job), run_id, expected.value if expected else None),
+            )
+            return cursor.rowcount == 1
+
+    def interrupt_running_jobs(self) -> list[str]:
+        with self._pool.connection() as conn:
+            rows = conn.execute(
+                """
+                UPDATE runs SET job_state = 'INTERROMPIDO', job_updated_at = %s
+                WHERE job_state = 'EM_ANDAMENTO'
+                RETURNING run_id
+                """,
+                (datetime.now(UTC),),
+            ).fetchall()
+        return sorted(row[0] for row in rows)
+
+    def list_runs(self, names: Collection[str]) -> list[RunListing]:
+        # One query for the whole library: a run without any of the artefacts
+        # still comes back once, with a NULL name, from the LEFT JOIN.
+        with self._pool.connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT r.run_id, r.state, a.name, a.content,
+                       r.job_state, r.job_step, r.job_failure_reason, r.job_error,
+                       r.job_updated_at
+                FROM runs r
+                LEFT JOIN run_artifacts a ON a.run_id = r.run_id AND a.name = ANY(%s)
+                """,
+                (list(names),),
+            ).fetchall()
+        states: dict[str, QuestionState] = {}
+        jobs: dict[str, JobRecord | None] = {}
+        artifacts: dict[str, dict[str, str]] = {}
+        for run_id, state, name, content, *job in rows:
+            states[run_id] = QuestionState(state)
+            jobs[run_id] = _job_from_row(*job)
+            found = artifacts.setdefault(run_id, {})
+            if name is not None:
+                found[name] = content
+        return [
+            RunListing(run_id, state, artifacts[run_id], jobs[run_id])
+            for run_id, state in states.items()
+        ]

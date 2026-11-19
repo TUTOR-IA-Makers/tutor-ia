@@ -1,7 +1,9 @@
-"""The resource API the web client calls: create, follow and read a question.
+"""The resource API the web client calls: create, follow, read and list questions.
 
-The browser asks for a question and polls; the server chains the five steps.
-See docs/adr/0013 and docs/architecture/frontend-integracao.md (F2/F3, minimal).
+The browser asks for a question and polls; the server chains the five steps in
+a background job whose state lives in the store, so a restart leaves it
+`INTERROMPIDO` and resumable instead of lost. See docs/adr/0013, docs/adr/0017
+and docs/architecture/frontend-integracao.md.
 
 A question is a run that was started here, so its id is the run id. Runs
 started through the RPC routes have no `draft.json` and are not questions to
@@ -12,22 +14,32 @@ plain functions in its thread pool instead of on the event loop.
 """
 
 import logging
+from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, status
+from fastapi import APIRouter, BackgroundTasks, Query, status
 
 from codeexpert.api.deps import LLMDep, RunnerDep, StoreDep, create_run, open_run
 from codeexpert.api.drafts import QuestionDraft, to_constraints
+from codeexpert.api.library import LISTED_ARTIFACTS, PENDING_TITLE, LibraryQuery, list_questions
 from codeexpert.api.schemas import (
     ApproveRequest,
     CreatedResponse,
     GenerationResponse,
+    JobView,
+    QuestionPage,
     QuestionResource,
     StatementView,
     TestCaseView,
 )
-from codeexpert.domain import Statement, TestCase
+from codeexpert.domain import JobRecord, JobState, Statement, TestCase
 from codeexpert.errors import RunNotFoundError
-from codeexpert.generation.job import GenerationProgress, read_progress, run_generation
+from codeexpert.generation.job import (
+    GenerationProgress,
+    claim_resume,
+    read_progress,
+    run_generation,
+    start_job,
+)
 from codeexpert.store import ArtifactStore
 from codeexpert.workspace import DRAFT, SOLUTION, STATEMENT, TESTCASES, RunWorkspace
 
@@ -44,6 +56,15 @@ def _open_question(question_id: str, store: ArtifactStore) -> tuple[RunWorkspace
     return workspace, QuestionDraft.model_validate(workspace.read_json(DRAFT))
 
 
+def _job(job: JobRecord) -> JobView:
+    return JobView(
+        state=job.state,
+        step=job.step,
+        resumable=job.state is JobState.INTERROMPIDO,
+        updated_at=job.updated_at,
+    )
+
+
 def _generation(question_id: str, progress: GenerationProgress) -> GenerationResponse:
     return GenerationResponse(
         question_id=question_id,
@@ -51,6 +72,7 @@ def _generation(question_id: str, progress: GenerationProgress) -> GenerationRes
         status=progress.state,
         completed_steps=progress.completed_steps,
         failure_reason=progress.failure_reason,
+        job=_job(progress.job),
     )
 
 
@@ -69,6 +91,9 @@ def create_question_resource(
     """Start a generation and answer at once; poll `/generation` to follow it."""
     constraints = to_constraints(draft)
     workspace = create_run(store)
+    # The job record first, then the draft: a question is visible from the draft
+    # on, and it must never be visible without a job saying where it stands.
+    start_job(workspace)
     # Written before the job starts, so a poll that arrives first already finds
     # a question in GERANDO instead of a 404.
     workspace.write_json(DRAFT, draft.model_dump(mode="json"))
@@ -77,9 +102,46 @@ def create_question_resource(
     return CreatedResponse(id=workspace.run_id)
 
 
+@router.get("/questions", response_model=QuestionPage)
+def list_question_resources(
+    query: Annotated[LibraryQuery, Query()], store: StoreDep
+) -> QuestionPage:
+    """The library: questions in any state, newest first, filtered and paginated.
+
+    No match, no questions at all and a page past the end are all `200` with an
+    empty `items`; `total` says which of the three it is.
+    """
+    return list_questions(store.list_runs(LISTED_ARTIFACTS), query)
+
+
 @router.get("/questions/{question_id}/generation", response_model=GenerationResponse)
 def get_generation(question_id: str, store: StoreDep) -> GenerationResponse:
     workspace, _ = _open_question(question_id, store)
+    return _generation(question_id, read_progress(workspace))
+
+
+@router.post(
+    "/questions/{question_id}/resume",
+    status_code=status.HTTP_202_ACCEPTED,
+    response_model=GenerationResponse,
+)
+def resume_generation(
+    question_id: str,
+    background: BackgroundTasks,
+    store: StoreDep,
+    llm: LLMDep,
+    runner: RunnerDep,
+) -> GenerationResponse:
+    """Continue an `INTERROMPIDO` generation from the first step not yet recorded.
+
+    Steps already finished are not run again, so no model call is paid twice.
+    Anything other than `INTERROMPIDO` is a 409. Poll `/generation` to follow it.
+    """
+    workspace, draft = _open_question(question_id, store)
+    claim_resume(workspace)
+    background.add_task(
+        run_generation, workspace, to_constraints(draft), draft.test_case_count, llm, runner
+    )
     return _generation(question_id, read_progress(workspace))
 
 
@@ -100,7 +162,7 @@ def _resource(question_id: str, workspace: RunWorkspace, draft: QuestionDraft) -
     return QuestionResource(
         id=question_id,
         code=question_id,
-        title=statement.name if statement else "Enunciado ainda não gerado",
+        title=statement.name if statement else PENDING_TITLE,
         description=draft.context or "",
         content_id=draft.content_id,
         difficulty_min=draft.difficulty_min,
@@ -118,6 +180,7 @@ def _resource(question_id: str, workspace: RunWorkspace, draft: QuestionDraft) -
         reviewed=metadata.reviewed,
         approved_by=metadata.approved_by,
         approved_at=metadata.approved_at,
+        job=_job(progress.job),
     )
 
 

@@ -10,6 +10,7 @@
 | `runs` | `state` | Estado da questão: `GERANDO`, `GERADA`, `FALHOU_VERIFICACAO`, `APROVADA` ou `REJEITADA` ([Ciclo de vida](question-lifecycle.md)) |
 | `runs` | `constraints` (JSONB), `input_quantity`, `reviewed`, `steps` (JSONB) | Conteúdo de `meta.json` na última conclusão |
 | `runs` | `approved_by` (text), `approved_at` (timestamptz) | Quem aprovou e quando; `NULL` até a aprovação. Gravados com `state = 'APROVADA'` na mesma instrução ([ADR-0016](../adr/0016-approval-record-on-runs.md)) |
+| `runs` | `job_state`, `job_step`, `job_failure_reason`, `job_error`, `job_updated_at` | O job de geração em segundo plano: `EM_ANDAMENTO`, `INTERROMPIDO`, `FALHOU` ou `CONCLUIDO`, a etapa, o motivo para o professor e a classe da exceção. `NULL` em execuções que nenhum job iniciou ([ADR-0017](../adr/0017-resumable-generation-job.md)) |
 | `runs` | `input_tokens`, `output_tokens` (bigint), `cost` (numeric) | Reservados para G2-4; permanecem `NULL`, não zero |
 | `questions` | `run_id` (PK e FK para `runs`), `name`, `statement`, `reference_solution`, `constraints` (JSONB), `difficulty`, `axis` | Uma questão por execução; o estado fica em `runs.state`, porque esta linha só existe depois da etapa 5 |
 | `test_cases` | (`run_id`, `position`) (PK), `input`, `output` | Casos ligados à questão; ordem a partir de zero, duplicatas e espaços preservados |
@@ -40,8 +41,11 @@ parcial de uma escrita concorrente.
 
 `PostgresStore.get_question(run_id)` devolve `StoredQuestion` ou `None`, lendo
 apenas as tabelas estruturadas. Inclui enunciado, solução, restrições, nível,
-eixo, estado (lido de `runs.state`), casos e metadados. A API existente continua lendo artefatos;
-endpoints de listagem e filtros não fazem parte desta entrega.
+eixo, estado (lido de `runs.state`), casos e metadados. A API existente continua lendo artefatos.
+A listagem ([`GET /api/v1/questions`](../reference/api.md#get-api-v1-questions)) também lê
+artefatos, por `ArtifactStore.list_runs`, porque mostra questões em qualquer estado e
+`questions` só tem as concluídas. A mesma consulta traz as colunas `runs.job_*`, para que uma
+geração parada apareça na lista com o mesmo `status` da página da questão.
 
 Uma nova conclusão substitui o retrato anterior, sem criar versões. Alterações
 de artefatos depois da conclusão só aparecem nessa representação na próxima

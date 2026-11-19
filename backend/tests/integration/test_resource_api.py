@@ -10,6 +10,7 @@ import pytest
 from codeexpert.domain import QuestionState
 from codeexpert.errors import LLMError
 from codeexpert.execution import get_code_runner
+from codeexpert.generation.job import start_job
 from codeexpert.llm import get_llm_client
 from codeexpert.store import LocalFilesystemStore
 from codeexpert.workspace import DRAFT, RunWorkspace
@@ -52,6 +53,7 @@ class TestSuccess:
 
     def test_generation_finishes_as_generated(self, client, question_id) -> None:
         generation = _poll(client, question_id)
+        job = generation.pop("job")
 
         assert generation == {
             "question_id": question_id,
@@ -60,6 +62,7 @@ class TestSuccess:
             "completed_steps": 5,
             "failure_reason": None,
         }
+        assert job["state"] == "CONCLUIDO"
 
     def test_question_carries_the_executed_test_cases(self, client, question_id) -> None:
         _poll(client, question_id)
@@ -224,9 +227,9 @@ class TestFailure:
         assert "Traceback" not in generation["failure_reason"]
 
     def test_a_failure_before_verification_cannot_be_approved(self, client) -> None:
-        # Stopped at step 1: the lifecycle has no state for this yet (G0-8), so
-        # the store keeps GERANDO and the API reports the failure. Either way,
-        # approving is refused.
+        # Stopped at step 1: the lifecycle has no state for this (the job's FALHOU
+        # is not a question state, ADR-0017), so the store keeps GERANDO and the
+        # API reports the failure. Either way, approving is refused.
         class BrokenLLM:
             def complete(self, **_: object) -> str:
                 raise LLMError("provider down")
@@ -263,6 +266,7 @@ class TestWhileGenerating:
         # What a poll sees between the 202 and the end of the job.
         store = LocalFilesystemStore(isolated_settings.workspace_root)
         workspace = RunWorkspace.create(store)
+        start_job(workspace)
         workspace.write_json(DRAFT, DRAFT_BODY)
 
         generation = client.get(f"/api/v1/questions/{workspace.run_id}/generation").json()
@@ -270,6 +274,7 @@ class TestWhileGenerating:
 
         assert generation["status"] == "GERANDO"
         assert generation["completed_steps"] == 0
+        assert generation["job"]["state"] == "EM_ANDAMENTO"
         assert question["status"] == "GERANDO"
         assert question["solution"] is None
         assert question["test_cases"] == []

@@ -5,7 +5,7 @@
 <span class="ce-badge ce-status--done">Implementado</span> Tudo neste roteiro, **só localmente**. Não há ambiente público com o modo `http` nem sessão: a VPS é [#25](../product/plano-30-11.md#g0-9) e a sessão é a fase F1 de [Integração com o front-end](../architecture/frontend-integracao.md#6-fases).
 
 !!! warning "Isto não é produção"
-    O Postgres sobe num container descartável, a API roda com `--reload` e as rotas não pedem login. A geração roda dentro do processo da API: se você parar o `make run` no meio, a questão fica `GERANDO` para sempre.
+    O Postgres sobe num container descartável, a API roda com `--reload` e as rotas não pedem login. A geração roda dentro do processo da API: se você parar o `make run` no meio (ou o `--reload` reiniciar), o job fica `INTERROMPIDO` quando a API voltar e pode ser retomado com `POST /api/v1/questions/{id}/resume` — ver [API](../reference/api.md#post-api-v1-resume).
 
 ## O que você precisa
 

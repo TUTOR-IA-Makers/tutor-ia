@@ -13,6 +13,7 @@ from codeexpert.api.drafts import StructureRules
 from codeexpert.domain import (
     Constraints,
     Difficulty,
+    JobState,
     QuestionState,
     RunMetadata,
     Statement,
@@ -158,6 +159,32 @@ class CreatedResponse(BaseModel):
     id: str
 
 
+class JobView(BaseModel):
+    """The background generation behind a question. See docs/adr/0017.
+
+    An addition the client may ignore: zod drops unknown keys, and `status` keeps
+    the five lifecycle values the screen already understands.
+    """
+
+    state: JobState = Field(
+        description=(
+            "EM_ANDAMENTO, INTERROMPIDO (the server restarted mid-job; resume it), "
+            "FALHOU or CONCLUIDO. Not a question state."
+        )
+    )
+    step: str | None = Field(
+        default=None,
+        description=(
+            "statement, code, inputs, testcases or export: the step running, or the one "
+            "running when the job stopped."
+        ),
+    )
+    resumable: bool = Field(
+        description="True only when INTERROMPIDO: POST /api/v1/questions/{id}/resume continues it."
+    )
+    updated_at: str = Field(description="ISO 8601, UTC: the last change to this record.")
+
+
 class GenerationResponse(BaseModel):
     question_id: str
     run_id: str
@@ -166,6 +193,7 @@ class GenerationResponse(BaseModel):
     failure_reason: str | None = Field(
         default=None, description="Why the generation stopped, for the teacher. No stack trace."
     )
+    job: JobView
 
 
 class ExampleView(BaseModel):
@@ -201,8 +229,8 @@ class CompilationView(BaseModel):
     message: str
 
 
-class QuestionResource(BaseModel):
-    """One question in any state; fields a step has not produced yet are empty."""
+class QuestionSummary(BaseModel):
+    """A question as the library card shows it. `QuestionResource` adds the rest."""
 
     id: str
     code: str
@@ -213,6 +241,20 @@ class QuestionResource(BaseModel):
     difficulty_max: int
     status: QuestionState = Field(description=_STATE_DESCRIPTION)
     test_case_count: int
+
+
+class QuestionPage(BaseModel):
+    """One page of `GET /api/v1/questions`, newest question first."""
+
+    items: list[QuestionSummary]
+    total: int = Field(description="Questions matching the filters, on every page together.")
+    page: int = Field(description="This page, counted from 1. Past the end, `items` is empty.")
+    page_size: int
+
+
+class QuestionResource(QuestionSummary):
+    """One question in any state; fields a step has not produced yet are empty."""
+
     statement: StatementView
     solution: str | None
     test_cases: list[TestCaseView]
@@ -225,6 +267,7 @@ class QuestionResource(BaseModel):
     reviewed: bool = Field(default=False, description=_REVIEWED)
     approved_by: str | None = Field(default=None, description=_APPROVED_BY)
     approved_at: str | None = Field(default=None, description=_APPROVED_AT)
+    job: JobView
 
 
 __all__ = [
@@ -242,10 +285,13 @@ __all__ = [
     "HealthResponse",
     "InputRequest",
     "InputResponse",
+    "JobView",
     "QuestionDetail",
+    "QuestionPage",
     "QuestionResource",
     "QuestionState",
     "QuestionStateResponse",
+    "QuestionSummary",
     "RunRequest",
     "StatementRequest",
     "StatementResponse",
