@@ -27,7 +27,7 @@ from codeexpert.errors import (
     LLMError,
 )
 from codeexpert.execution import CodeRunner
-from codeexpert.export.moodle import export_question
+from codeexpert.export.moodle import export_run
 from codeexpert.generation.codegen import generate_code
 from codeexpert.generation.inputs import generate_inputs
 from codeexpert.generation.statement import generate_statement
@@ -127,7 +127,7 @@ def _run_step(
         case "testcases":
             generate_testcases(workspace, runner)
         case "export":
-            export_question(workspace)
+            export_run(workspace)
         case _:
             raise ValueError(f"Unknown generation step '{step}'.")
 

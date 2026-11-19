@@ -1,5 +1,7 @@
 """The HTTP contract, including the status codes clients depend on."""
 
+from xml.etree import ElementTree
+
 import pytest
 
 from codeexpert.errors import LLMError
@@ -61,7 +63,13 @@ class TestStepByStep:
 
         export = client.post("/export_moodle_xml_question", json={"run_id": run_id})
         assert export.status_code == 200
-        assert export.json()["question_count"] == 1
+        body = export.json()
+        assert body["question_count"] == 1
+        # The XML travels in the response; there is no file path to point at any more.
+        assert "file_path" not in body
+        assert ElementTree.fromstring(body["xml"]).findtext("question/name/text") == (
+            "Soma de dois numeros"
+        )
 
     def test_two_runs_do_not_overwrite_each_other(self, client, statement_response) -> None:
         """The reason run ids exist: the old shared cache/ made this impossible."""

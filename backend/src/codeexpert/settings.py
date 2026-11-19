@@ -59,7 +59,6 @@ class Settings(BaseSettings):
 
     # ── Filesystem ────────────────────────────────────────────────────────────
     workspace_root: Path = Path("var/runs")
-    questions_dir: Path = Path("var/questions")
 
     # ── Local execution limits ────────────────────────────────────────────────
     # Resource limits, not isolation. See docs/adr/0004.
