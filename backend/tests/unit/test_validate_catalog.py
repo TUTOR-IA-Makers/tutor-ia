@@ -30,6 +30,9 @@ def _create_mock_question(
     q_dir = base_path / eixo.lower() / q_id
     q_dir.mkdir(parents=True, exist_ok=True)
 
+    # enunciado.md
+    (q_dir / "enunciado.md").write_text("Enunciado mockado.\n", encoding="utf-8")
+
     # meta.yaml
     meta_content = f'id: "{q_id}"\neixo: "{eixo}"\nnivel: "{nivel}"\ndireitos_restritos: true\n'
     (q_dir / "meta.yaml").write_text(meta_content, encoding="utf-8")
@@ -40,10 +43,10 @@ def _create_mock_question(
     )
     (q_dir / "solucao.c").write_text(c_code, encoding="utf-8")
 
-    # entradas/01.txt
+    # entradas/01.in
     entradas_dir = q_dir / "entradas"
     entradas_dir.mkdir(exist_ok=True)
-    (entradas_dir / "01.txt").write_text("1 2\n", encoding="utf-8")
+    (entradas_dir / "01.in").write_text("1 2\n", encoding="utf-8")
 
 
 def run_validator(catalog_dir: Path) -> subprocess.CompletedProcess:
