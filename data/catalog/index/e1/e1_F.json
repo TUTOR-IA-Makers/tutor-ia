@@ -1,0 +1,239 @@
+{
+  "eixo": "E1",
+  "nivel": "F",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E1-F-001",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício clássico de geometria",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-001",
+      "enunciado": "Leia o raio de uma circunferência e imprima a área e o comprimento com 4 casas decimais, cada um em uma linha. Use `pi = 3.14159265`.\n\n**Entrada:** um real `r`.\n\n**Saída:** área e comprimento, nessa ordem.",
+      "solucao_referencia": "#include <stdio.h>\n\n#define PI 3.14159265\n\nint main(void) {\n    double r;\n    scanf(\"%lf\", &r);\n    printf(\"%.4f\\n\", PI * r * r);\n    printf(\"%.4f\\n\", 2.0 * PI * r);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1.0\n",
+          "saida": "3.1416\n6.2832\n"
+        },
+        {
+          "entrada": "2.0\n",
+          "saida": "12.5664\n12.5664\n"
+        },
+        {
+          "entrada": "0.5\n",
+          "saida": "0.7854\n3.1416\n"
+        },
+        {
+          "entrada": "10.0\n",
+          "saida": "314.1593\n62.8319\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-F-002",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício de média ponderada",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-002",
+      "enunciado": "Leia quatro notas de um aluno (reais) e calcule a média ponderada com pesos 2, 3, 4 e 1, respectivamente. Imprima com 2 casas decimais.\n\n**Entrada:** quatro reais em uma linha.\n\n**Saída:** a média ponderada.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double n1, n2, n3, n4;\n    scanf(\"%lf %lf %lf %lf\", &n1, &n2, &n3, &n4);\n    printf(\"%.2f\\n\", (2*n1 + 3*n2 + 4*n3 + 1*n4) / 10.0);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "10.0 10.0 10.0 10.0\n",
+          "saida": "10.00\n"
+        },
+        {
+          "entrada": "0.0 0.0 0.0 0.0\n",
+          "saida": "0.00\n"
+        },
+        {
+          "entrada": "5.0 7.0 8.0 6.0\n",
+          "saida": "6.90\n"
+        },
+        {
+          "entrada": "6.0 6.0 6.0 6.0\n",
+          "saida": "6.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-F-003",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício clássico de geometria básica",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-003",
+      "enunciado": "Leia a base e a altura de um triângulo (reais) e imprima a área com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double base, altura;\n    scanf(\"%lf %lf\", &base, &altura);\n    printf(\"%.2f\\n\", base * altura / 2.0);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3.0 4.0\n",
+          "saida": "6.00\n"
+        },
+        {
+          "entrada": "6.0 8.0\n",
+          "saida": "24.00\n"
+        },
+        {
+          "entrada": "1.0 1.0\n",
+          "saida": "0.50\n"
+        },
+        {
+          "entrada": "5.5 2.0\n",
+          "saida": "5.50\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-F-004",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício clássico de física — cinemática",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-004",
+      "enunciado": "Leia a velocidade média (km/h, real) e o tempo de viagem (horas, real). Imprima a distância percorrida com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double v, t;\n    scanf(\"%lf %lf\", &v, &t);\n    printf(\"%.2f\\n\", v * t);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "60.0 2.0\n",
+          "saida": "120.00\n"
+        },
+        {
+          "entrada": "100.0 1.5\n",
+          "saida": "150.00\n"
+        },
+        {
+          "entrada": "0.0 5.0\n",
+          "saida": "0.00\n"
+        },
+        {
+          "entrada": "80.5 3.0\n",
+          "saida": "241.50\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-F-005",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício de aritmética básica",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-005",
+      "enunciado": "Leia um inteiro de 4 dígitos representando um ano e calcule quantos anos se passaram até 2026. Imprima o resultado.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int ano;\n    scanf(\"%d\", &ano);\n    printf(\"%d\\n\", 2026 - ano);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "2000\n",
+          "saida": "26\n"
+        },
+        {
+          "entrada": "1990\n",
+          "saida": "36\n"
+        },
+        {
+          "entrada": "2026\n",
+          "saida": "0\n"
+        },
+        {
+          "entrada": "1900\n",
+          "saida": "126\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-F-006",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício clássico de geometria",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-006",
+      "enunciado": "Leia três lados de um triângulo (reais) e calcule o perímetro. Imprima com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    printf(\"%.2f\\n\", a + b + c);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3.0 4.0 5.0\n",
+          "saida": "12.00\n"
+        },
+        {
+          "entrada": "1.0 1.0 1.0\n",
+          "saida": "3.00\n"
+        },
+        {
+          "entrada": "2.5 3.5 4.0\n",
+          "saida": "10.00\n"
+        },
+        {
+          "entrada": "6.0 8.0 10.0\n",
+          "saida": "24.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-F-007",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício de cálculo salarial — introdução à programação",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-007",
+      "enunciado": "Leia o salário bruto de um funcionário (real) e calcule o salário líquido após descontar 11% de INSS e 7,5% de IR. Imprima o resultado com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double bruto;\n    scanf(\"%lf\", &bruto);\n    double liquido = bruto * (1.0 - 0.11 - 0.075);\n    printf(\"%.2f\\n\", liquido);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1000.00\n",
+          "saida": "815.00\n"
+        },
+        {
+          "entrada": "2000.00\n",
+          "saida": "1630.00\n"
+        },
+        {
+          "entrada": "500.00\n",
+          "saida": "407.50\n"
+        },
+        {
+          "entrada": "0.00\n",
+          "saida": "0.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-F-008",
+      "eixo": "E1",
+      "nivel": "F",
+      "estruturas": [],
+      "origem": "Exercício de eficiência energética — introdução à programação",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-F-008",
+      "enunciado": "Leia a potência de um aparelho em watts (real) e o número de horas de uso por dia (real). Calcule o consumo em kWh por mês (30 dias). Imprima com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double potencia, horas;\n    scanf(\"%lf %lf\", &potencia, &horas);\n    printf(\"%.2f\\n\", potencia * horas * 30.0 / 1000.0);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "100.0 8.0\n",
+          "saida": "24.00\n"
+        },
+        {
+          "entrada": "60.0 4.0\n",
+          "saida": "7.20\n"
+        },
+        {
+          "entrada": "1000.0 1.0\n",
+          "saida": "30.00\n"
+        },
+        {
+          "entrada": "0.0 24.0\n",
+          "saida": "0.00\n"
+        }
+      ]
+    }
+  ]
+}

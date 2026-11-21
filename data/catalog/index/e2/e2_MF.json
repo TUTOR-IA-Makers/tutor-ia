@@ -1,0 +1,261 @@
+{
+  "eixo": "E2",
+  "nivel": "MF",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E2-MF-001",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 90",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MF-001",
+      "enunciado": "Leia um número real e imprima-o caso seja maior que 20. Caso contrário, não imprima nada.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double numero;\n    scanf(\"%lf\", &numero);\n    if (numero > 20.0) {\n        printf(\"%.2f\\n\", numero);\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "25.5\n",
+          "saida": "25.50\n"
+        },
+        {
+          "entrada": "20.0\n",
+          "saida": ""
+        },
+        {
+          "entrada": "10.0\n",
+          "saida": ""
+        },
+        {
+          "entrada": "100.0\n",
+          "saida": "100.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MF-002",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 91",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MF-002",
+      "enunciado": "Leia dois valores numéricos inteiros e efetue a adição; caso o resultado seja maior que 10, apresente a soma.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b, soma;\n    scanf(\"%d %d\", &a, &b);\n    soma = a + b;\n    if (soma > 10) {\n        printf(\"%d\\n\", soma);\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "6 5\n",
+          "saida": "11\n"
+        },
+        {
+          "entrada": "5 5\n",
+          "saida": ""
+        },
+        {
+          "entrada": "2 3\n",
+          "saida": ""
+        },
+        {
+          "entrada": "10 20\n",
+          "saida": "30\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MF-003",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 94",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MF-003",
+      "enunciado": "Leia um número inteiro e informe se ele é `multiplo de 3` ou `nao e multiplo de 3`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    if (n % 3 == 0) {\n        printf(\"multiplo de 3\\n\");\n    } else {\n        printf(\"nao e multiplo de 3\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "9\n",
+          "saida": "multiplo de 3\n"
+        },
+        {
+          "entrada": "10\n",
+          "saida": "nao e multiplo de 3\n"
+        },
+        {
+          "entrada": "0\n",
+          "saida": "multiplo de 3\n"
+        },
+        {
+          "entrada": "-6\n",
+          "saida": "multiplo de 3\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MF-004",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.1",
+      "direitos_restritos": false,
+      "path": "questions/e2/E2-MF-004",
+      "enunciado": "Leia dois inteiros representando a idade de Pedro e a idade de Joana (idades diferentes) e informe quem é o mais velho imprimindo `Pedro e o mais velho` ou `Joana e a mais velha`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int iddP, iddJ;\n    scanf(\"%d %d\", &iddP, &iddJ);\n    if (iddP > iddJ) {\n        printf(\"Pedro e o mais velho\\n\");\n    } else {\n        printf(\"Joana e a mais velha\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "9 16\n",
+          "saida": "Joana e a mais velha\n"
+        },
+        {
+          "entrada": "23 14\n",
+          "saida": "Pedro e o mais velho\n"
+        },
+        {
+          "entrada": "18 17\n",
+          "saida": "Pedro e o mais velho\n"
+        },
+        {
+          "entrada": "5 12\n",
+          "saida": "Joana e a mais velha\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MF-005",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.4",
+      "direitos_restritos": false,
+      "path": "questions/e2/E2-MF-005",
+      "enunciado": "Leia um número inteiro e verifique se ele é par ou ímpar, imprimindo `par` ou `impar`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int num;\n    scanf(\"%d\", &num);\n    if (num % 2 == 0) {\n        printf(\"par\\n\");\n    } else {\n        printf(\"impar\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "15\n",
+          "saida": "impar\n"
+        },
+        {
+          "entrada": "8\n",
+          "saida": "par\n"
+        },
+        {
+          "entrada": "0\n",
+          "saida": "par\n"
+        },
+        {
+          "entrada": "-7\n",
+          "saida": "impar\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MF-006",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 92",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MF-006",
+      "enunciado": "Leia dois números reais e efetue a adição. Caso o valor somado seja maior que 20, apresente o valor somando-se a ele mais 8; caso seja menor ou igual a 20, apresente-o subtraindo-se 5. Imprima com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b, soma;\n    scanf(\"%lf %lf\", &a, &b);\n    soma = a + b;\n    if (soma > 20.0) {\n        printf(\"%.2f\\n\", soma + 8.0);\n    } else {\n        printf(\"%.2f\\n\", soma - 5.0);\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "15.0 10.0\n",
+          "saida": "33.00\n"
+        },
+        {
+          "entrada": "10.0 10.0\n",
+          "saida": "15.00\n"
+        },
+        {
+          "entrada": "5.0 3.0\n",
+          "saida": "3.00\n"
+        },
+        {
+          "entrada": "12.5 8.0\n",
+          "saida": "28.50\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MF-007",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 96",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MF-007",
+      "enunciado": "Leia um número inteiro e informe se ele é divisível por 3 e por 7 simultaneamente, imprimindo `divisivel por 3 e por 7` ou `nao e divisivel por 3 e por 7`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    if (n % 3 == 0 && n % 7 == 0) {\n        printf(\"divisivel por 3 e por 7\\n\");\n    } else {\n        printf(\"nao e divisivel por 3 e por 7\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "21\n",
+          "saida": "divisivel por 3 e por 7\n"
+        },
+        {
+          "entrada": "14\n",
+          "saida": "nao e divisivel por 3 e por 7\n"
+        },
+        {
+          "entrada": "42\n",
+          "saida": "divisivel por 3 e por 7\n"
+        },
+        {
+          "entrada": "9\n",
+          "saida": "nao e divisivel por 3 e por 7\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MF-008",
+      "eixo": "E2",
+      "nivel": "MF",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 98",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MF-008",
+      "enunciado": "Leia o salário bruto e o valor da prestação de um empréstimo (reais). O valor máximo da prestação não poderá ultrapassar 30% do salário bruto. Imprima `emprestimo concedido` ou `emprestimo negado`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double sb, vp;\n    scanf(\"%lf %lf\", &sb, &vp);\n    if (vp <= 0.3 * sb) {\n        printf(\"emprestimo concedido\\n\");\n    } else {\n        printf(\"emprestimo negado\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1000.0 300.0\n",
+          "saida": "emprestimo concedido\n"
+        },
+        {
+          "entrada": "1000.0 301.0\n",
+          "saida": "emprestimo negado\n"
+        },
+        {
+          "entrada": "2500.0 500.0\n",
+          "saida": "emprestimo concedido\n"
+        },
+        {
+          "entrada": "1500.0 600.0\n",
+          "saida": "emprestimo negado\n"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "eixo": "E2",
+  "nivel": "D",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E2-D-001",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 200",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-001",
+      "enunciado": "Leia os limites inferior `L` e superior `U` de um intervalo crescente e um inteiro positivo `K`. Imprima todos os múltiplos de `K` no intervalo aberto `(L, U)` separados por espaço. Se não houver nenhum, imprima uma linha vazia.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int l, u, k, primeiro = 1;\n    scanf(\"%d %d %d\", &l, &u, &k);\n    int ini = l + (k - ((l % k + k) % k));\n    for (int i = ini; i < u; i += k) {\n        if (!primeiro) printf(\" \");\n        printf(\"%d\", i);\n        primeiro = 0;\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3 12 3\n",
+          "saida": "6 9\n"
+        },
+        {
+          "entrada": "5 13 6\n",
+          "saida": "6 12\n"
+        },
+        {
+          "entrada": "7 10 5\n",
+          "saida": "\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-D-002",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "for",
+        "if"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 118",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-002",
+      "enunciado": "Leia três inteiros `A`, `B` e `C`. Ordene os valores internamente usando apenas estruturas condicionais simples (`if`) e trocas de variáveis, e imprima os três números em ordem crescente em uma única linha separados por espaço.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b, c, aux;\n    scanf(\"%d %d %d\", &a, &b, &c);\n    if (a > b) { aux = a; a = b; b = aux; }\n    if (a > c) { aux = a; a = c; c = aux; }\n    if (b > c) { aux = b; b = c; c = aux; }\n    printf(\"%d %d %d\\n\", a, b, c);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "9 3 6\n",
+          "saida": "3 6 9\n"
+        },
+        {
+          "entrada": "-1 -5 0\n",
+          "saida": "-5 -1 0\n"
+        },
+        {
+          "entrada": "4 4 2\n",
+          "saida": "2 4 4\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-D-003",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 157",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-003",
+      "enunciado": "Leia uma data inteira no formato `ddmmaaaa` (8 dígitos). Extraia dia, mês e ano matematicamente (sem strings), valide a data considerando anos bissextos e imprima `DATA VALIDA` ou `DATA INVALIDA`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int data, dia, mes, ano, vd = 1;\n    scanf(\"%d\", &data);\n    dia = data / 1000000;\n    mes = (data % 1000000) / 10000;\n    ano = data % 10000;\n    if (ano < 1 || mes < 1 || mes > 12 || dia < 1 || dia > 31) {\n        vd = 0;\n    } else if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {\n        vd = 0;\n    } else if (mes == 2) {\n        int bissexto = (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);\n        if (dia > (bissexto ? 29 : 28)) vd = 0;\n    }\n    printf(\"%s\\n\", vd ? \"DATA VALIDA\" : \"DATA INVALIDA\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "29022020\n",
+          "saida": "DATA VALIDA\n"
+        },
+        {
+          "entrada": "29022021\n",
+          "saida": "DATA INVALIDA\n"
+        },
+        {
+          "entrada": "31112025\n",
+          "saida": "DATA INVALIDA\n"
+        },
+        {
+          "entrada": "25122026\n",
+          "saida": "DATA VALIDA\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-D-004",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 159",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-004",
+      "enunciado": "Calcule o valor da função real `f(x) = (5x + 3) / sqrt(x² - 16)`. Leia um número real `x`. Se a expressão não puder ser avaliada nos reais (divisão por zero ou raiz de negativo), imprima `NAO PODE SER FEITA`. Caso contrário, imprima `f(x)` com 4 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double x;\n    scanf(\"%lf\", &x);\n    if (x > 4.0 || x < -4.0) {\n        double fx = (5.0 * x + 3.0) / sqrt(x * x - 16.0);\n        printf(\"%.4f\\n\", fx);\n    } else {\n        printf(\"NAO PODE SER FEITA\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "5.0\n",
+          "saida": "9.3333\n"
+        },
+        {
+          "entrada": "4.0\n",
+          "saida": "NAO PODE SER FEITA\n"
+        },
+        {
+          "entrada": "-5.0\n",
+          "saida": "-7.3333\n"
+        },
+        {
+          "entrada": "0.0\n",
+          "saida": "NAO PODE SER FEITA\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-D-005",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "for",
+        "if"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 187",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-005",
+      "enunciado": "Leia dois inteiros `B` (B >= 2) e `E` (E > 1). Calcule e imprima a potência `B^E` utilizando um laço de repetição (sem `pow`). Caso os valores não satisfaçam as restrições, imprima `Nao satisfazem`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int base, expo;\n    scanf(\"%d %d\", &base, &expo);\n    if (base >= 2 && expo > 1) {\n        long long pot = 1;\n        for (int i = 1; i <= expo; i++) {\n            pot *= base;\n        }\n        printf(\"%lld\\n\", pot);\n    } else {\n        printf(\"Nao satisfazem\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "2 10\n",
+          "saida": "1024\n"
+        },
+        {
+          "entrada": "3 4\n",
+          "saida": "81\n"
+        },
+        {
+          "entrada": "1 5\n",
+          "saida": "Nao satisfazem\n"
+        },
+        {
+          "entrada": "5 1\n",
+          "saida": "Nao satisfazem\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-D-006",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 189",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-006",
+      "enunciado": "Imprima uma tabela de conversão de Fahrenheit para Celsius. Leia a temperatura superior `F1`, a inferior `F2` e o decremento `D` (inteiros, F1 >= F2, D > 0). Para cada temperatura de `F1` até `F2` com passo `-D`, imprima `F C` onde `C = 5 * (F - 32) / 9` com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int f1, f2, dec;\n    scanf(\"%d %d %d\", &f1, &f2, &dec);\n    for (int t = f1; t >= f2; t -= dec) {\n        double c = 5.0 * (t - 32) / 9.0;\n        printf(\"%d %.2f\\n\", t, c);\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "68 14 18\n",
+          "saida": "68 20.00\n50 10.00\n32 0.00\n14 -10.00\n"
+        },
+        {
+          "entrada": "212 212 10\n",
+          "saida": "212 100.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-D-007",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 153",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-007",
+      "enunciado": "Leia o índice de poluição (real). O índice aceitável é até 0.25. A partir de 0.30, intima-se o grupo 1; a partir de 0.40, grupos 1 e 2; a partir de 0.50, grupos 1, 2 e 3. Imprima `aceitavel`, `grupo 1`, `grupos 1 e 2` ou `grupos 1, 2 e 3`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double indice;\n    scanf(\"%lf\", &indice);\n    if (indice >= 0.5) printf(\"grupos 1, 2 e 3\\n\");\n    else if (indice >= 0.4) printf(\"grupos 1 e 2\\n\");\n    else if (indice >= 0.3) printf(\"grupo 1\\n\");\n    else printf(\"aceitavel\\n\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "0.25\n",
+          "saida": "aceitavel\n"
+        },
+        {
+          "entrada": "0.35\n",
+          "saida": "grupo 1\n"
+        },
+        {
+          "entrada": "0.42\n",
+          "saida": "grupos 1 e 2\n"
+        },
+        {
+          "entrada": "0.55\n",
+          "saida": "grupos 1, 2 e 3\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-D-008",
+      "eixo": "E2",
+      "nivel": "D",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 133",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-D-008",
+      "enunciado": "Leia a altura (real em metros) e o sexo (`M` ou `F`) de uma pessoa. Calcule o peso ideal: para homens `(72.7 * h) - 58`; para mulheres `(62.1 * h) - 44.7`. Imprima o resultado com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double h, peso;\n    char sexo;\n    scanf(\"%lf %c\", &h, &sexo);\n    if (sexo == 'M' || sexo == 'm') peso = 72.7 * h - 58.0;\n    else peso = 62.1 * h - 44.7;\n    printf(\"%.2f\\n\", peso);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1.80 M\n",
+          "saida": "72.86\n"
+        },
+        {
+          "entrada": "1.65 F\n",
+          "saida": "57.77\n"
+        },
+        {
+          "entrada": "1.70 m\n",
+          "saida": "65.59\n"
+        }
+      ]
+    }
+  ]
+}

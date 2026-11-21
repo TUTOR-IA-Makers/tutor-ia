@@ -1,0 +1,221 @@
+{
+  "eixo": "E2",
+  "nivel": "MD",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E2-MD-001",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "for",
+        "if"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 211",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MD-001",
+      "enunciado": "Imprima todos os números inteiros positivos no intervalo aberto `(10, 100)` de modo que não terminem em zero e, se o dígito da direita for removido, o número restante seja divisor do número original. Imprima um por linha.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    for (int i = 11; i < 100; i++) {\n        int resto = i % 10;\n        int quoc = i / 10;\n        if (resto != 0 && i % quoc == 0) {\n            printf(\"%d\\n\", i);\n        }\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "",
+          "saida": "11\n12\n13\n14\n15\n16\n17\n18\n19\n22\n24\n26\n28\n33\n36\n39\n44\n48\n55\n66\n77\n88\n99\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MD-002",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 167",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MD-002",
+      "enunciado": "Leia um inteiro `N` (N >= 2) e imprima os índices `(L, C)` (1-indexados) localizados estritamente acima da diagonal principal de uma matriz quadrada de ordem `N`, no formato `L-C` separados por espaço em cada linha.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int l = 1; l < n; l++) {\n        for (int c = l + 1; c <= n; c++) {\n            printf(\"%d-%d%s\", l, c, c == n ? \"\" : \" \");\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "4\n",
+          "saida": "1-2 1-3 1-4\n2-3 2-4\n3-4\n"
+        },
+        {
+          "entrada": "3\n",
+          "saida": "1-2 1-3\n2-3\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MD-003",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 172",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MD-003",
+      "enunciado": "Leia um inteiro `N` (N >= 2) e imprima os índices `(L, C)` (1-indexados) localizados estritamente abaixo da diagonal secundária de uma matriz quadrada de ordem `N`, no formato `L-C` separados por espaço em cada linha.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int l = 2; l <= n; l++) {\n        for (int c = n + 2 - l; c <= n; c++) {\n            printf(\"%d-%d%s\", l, c, c == n ? \"\" : \" \");\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "4\n",
+          "saida": "2-4\n3-3 3-4\n4-2 4-3 4-4\n"
+        },
+        {
+          "entrada": "3\n",
+          "saida": "2-3\n3-2 3-3\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MD-004",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 137",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MD-004",
+      "enunciado": "Leia três coeficientes reais `a`, `b` e `c` de uma equação do segundo grau (`ax² + bx + c = 0`). Se `a == 0`, imprima `Nao e equacao do 2 grau`. Se o discriminante for negativo, imprima `Nao ha raizes reais`. Caso contrário, imprima as raízes `x1` e `x2` com 4 casas decimais, cada uma em uma linha.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    if (a == 0.0) {\n        printf(\"Nao e equacao do 2 grau\\n\");\n    } else {\n        double d = b * b - 4.0 * a * c;\n        if (d >= 0.0) {\n            double x1 = (-b + sqrt(d)) / (2.0 * a);\n            double x2 = (-b - sqrt(d)) / (2.0 * a);\n            printf(\"%.4f\\n%.4f\\n\", x1, x2);\n        } else {\n            printf(\"Nao ha raizes reais\\n\");\n        }\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1.0 -5.0 6.0\n",
+          "saida": "3.0000\n2.0000\n"
+        },
+        {
+          "entrada": "0.0 2.0 4.0\n",
+          "saida": "Nao e equacao do 2 grau\n"
+        },
+        {
+          "entrada": "1.0 2.0 5.0\n",
+          "saida": "Nao ha raizes reais\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MD-005",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 121",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MD-005",
+      "enunciado": "Leia cinco números inteiros. Verifique se todos são distintos entre si; caso haja repetidos, imprima `Os valores devem ser diferentes`. Caso todos sejam diferentes, imprima o maior e o menor valor, cada um em uma linha.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n1, n2, n3, n4, n5;\n    scanf(\"%d %d %d %d %d\", &n1, &n2, &n3, &n4, &n5);\n    if (n1!=n2 && n1!=n3 && n1!=n4 && n1!=n5 && n2!=n3 && n2!=n4 && n2!=n5 && n3!=n4 && n3!=n5 && n4!=n5) {\n        int maior = n1 > n2 ? n1 : n2;\n        int menor = n1 < n2 ? n1 : n2;\n        if (n3 > maior) maior = n3; else if (n3 < menor) menor = n3;\n        if (n4 > maior) maior = n4; else if (n4 < menor) menor = n4;\n        if (n5 > maior) maior = n5; else if (n5 < menor) menor = n5;\n        printf(\"%d\\n%d\\n\", maior, menor);\n    } else {\n        printf(\"Os valores devem ser diferentes\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "10 4 25 -2 8\n",
+          "saida": "25\n-2\n"
+        },
+        {
+          "entrada": "1 2 3 2 5\n",
+          "saida": "Os valores devem ser diferentes\n"
+        },
+        {
+          "entrada": "5 4 3 2 1\n",
+          "saida": "5\n1\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MD-006",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 142",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MD-006",
+      "enunciado": "Em um campeonato nacional de arco-e-flecha, cada equipe possui três arqueiros com pontuações distintas. Leia os pontos inteiros dos três jogadores. Imprima os pontos em ordem decrescente (uma linha com os 3 valores separados por espaço). Em seguida, se a soma dos pontos for estritamente maior que 100, imprima a média aritmética com 2 casas decimais; senão, imprima `Equipe desclassificada`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int p1, p2, p3, aux;\n    scanf(\"%d %d %d\", &p1, &p2, &p3);\n    if (p1 < p2) { aux = p1; p1 = p2; p2 = aux; }\n    if (p1 < p3) { aux = p1; p1 = p3; p3 = aux; }\n    if (p2 < p3) { aux = p2; p2 = p3; p3 = aux; }\n    printf(\"%d %d %d\\n\", p1, p2, p3);\n    int soma = p1 + p2 + p3;\n    if (soma > 100) printf(\"%.2f\\n\", soma / 3.0);\n    else printf(\"Equipe desclassificada\\n\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "30 50 40\n",
+          "saida": "50 40 30\n40.00\n"
+        },
+        {
+          "entrada": "20 35 45\n",
+          "saida": "45 35 20\nEquipe desclassificada\n"
+        },
+        {
+          "entrada": "10 60 31\n",
+          "saida": "60 31 10\n33.67\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MD-007",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 144",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-MD-007",
+      "enunciado": "Calcule o crédito especial concedido por um banco conforme o saldo médio (real): 0 a 500 (nenhum crédito), acima de 500 até 1000 (30%), acima de 1000 até 3000 (40%), acima de 3000 (50%). Imprima o saldo médio e o valor do crédito com 2 casas decimais, cada um em uma linha.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double saldo, credito;\n    scanf(\"%lf\", &saldo);\n    if (saldo <= 500.0) credito = 0.0;\n    else if (saldo <= 1000.0) credito = saldo * 0.3;\n    else if (saldo <= 3000.0) credito = saldo * 0.4;\n    else credito = saldo * 0.5;\n    printf(\"%.2f\\n%.2f\\n\", saldo, credito);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "400.0\n",
+          "saida": "400.00\n0.00\n"
+        },
+        {
+          "entrada": "800.0\n",
+          "saida": "800.00\n240.00\n"
+        },
+        {
+          "entrada": "2000.0\n",
+          "saida": "2000.00\n800.00\n"
+        },
+        {
+          "entrada": "4000.0\n",
+          "saida": "4000.00\n2000.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-MD-008",
+      "eixo": "E2",
+      "nivel": "MD",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.8",
+      "direitos_restritos": false,
+      "path": "questions/e2/E2-MD-008",
+      "enunciado": "Leia um número inteiro `N`. Verifique se ele é par ou ímpar. O programa deve imprimir `par maior que 15` apenas se for par e estritamente maior que 15; deve imprimir `impar menor que 50` apenas se for ímpar e estritamente menor que 50; caso contrário, imprima `nenhuma condicao`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    if (n % 2 == 0 && n > 15) {\n        printf(\"par maior que 15\\n\");\n    } else if (n % 2 != 0 && n < 50) {\n        printf(\"impar menor que 50\\n\");\n    } else {\n        printf(\"nenhuma condicao\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "18\n",
+          "saida": "par maior que 15\n"
+        },
+        {
+          "entrada": "45\n",
+          "saida": "impar menor que 50\n"
+        },
+        {
+          "entrada": "10\n",
+          "saida": "nenhuma condicao\n"
+        },
+        {
+          "entrada": "55\n",
+          "saida": "nenhuma condicao\n"
+        }
+      ]
+    }
+  ]
+}

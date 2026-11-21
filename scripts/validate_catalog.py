@@ -1,11 +1,14 @@
 import os
 import sys
+import json
 import subprocess
 import glob
 
 CATALOG_DIR = os.environ.get("CATALOG_DIR_OVERRIDE", "../data/catalog")
-REQUIRED_COVERAGE = 8
+QUESTIONS_DIR = os.path.join(CATALOG_DIR, "questions")
+INDEX_DIR = os.path.join(CATALOG_DIR, "index")
 
+REQUIRED_COVERAGE = 8
 EXPECTED_LEVELS = ["MF", "F", "M", "D", "MD"]
 EXPECTED_AXES = ["E1", "E2"]
 
@@ -15,24 +18,76 @@ def parse_meta(meta_path):
     with open(meta_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
-            if line.startswith("eixo:"):
+            if line.startswith("id:"):
+                meta["id"] = line.split(":", 1)[1].strip().replace('"', "").replace("'", "")
+            elif line.startswith("eixo:"):
                 meta["eixo"] = line.split(":", 1)[1].strip().replace('"', "").replace("'", "")
             elif line.startswith("nivel:"):
                 meta["nivel"] = line.split(":", 1)[1].strip().replace('"', "").replace("'", "")
     return meta
 
 
+def validate_indexes(ids_por_grupo):
+    """Valida se data/catalog/index/{eixo}/{eixo}_{nivel}.json existe e bate 1:1 com questions/."""
+    has_index_errors = False
+
+    print("\n--- Validação dos Índices (index/) ---")
+    for eixo in EXPECTED_AXES:
+        eixo_lower = eixo.lower()
+        for nivel in EXPECTED_LEVELS:
+            index_file = os.path.join(INDEX_DIR, eixo_lower, f"{eixo_lower}_{nivel}.json")
+            expected_ids = sorted(ids_por_grupo[eixo][nivel])
+
+            if not os.path.exists(index_file):
+                print(f"[ERRO] Índice ausente: {index_file}")
+                has_index_errors = True
+                continue
+
+            try:
+                with open(index_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except json.JSONDecodeError as exc:
+                print(f"[ERRO] JSON inválido em {index_file}: {exc}")
+                has_index_errors = True
+                continue
+
+            questoes = data.get("questoes", data if isinstance(data, list) else [])
+            indexed_ids = sorted(q.get("id", "") for q in questoes if isinstance(q, dict))
+
+            if indexed_ids != expected_ids:
+                missing_in_json = set(expected_ids) - set(indexed_ids)
+                orphan_in_json = set(indexed_ids) - set(expected_ids)
+                print(
+                    f"[ERRO] Dessincronia em {eixo_lower}_{nivel}.json | "
+                    f"Faltando no JSON: {sorted(missing_in_json)} | "
+                    f"Órfãos no JSON: {sorted(orphan_in_json)}"
+                )
+                has_index_errors = True
+            elif len(indexed_ids) < REQUIRED_COVERAGE:
+                print(
+                    f"[ERRO] {eixo_lower}_{nivel}.json possui {len(indexed_ids)}/{REQUIRED_COVERAGE} questões."
+                )
+                has_index_errors = True
+            else:
+                print(f"[OK] {eixo_lower}/{eixo_lower}_{nivel}.json ({len(indexed_ids)}/{REQUIRED_COVERAGE} sincronizadas)")
+
+    return has_index_errors
+
+
 def main():
-    if not os.path.exists(CATALOG_DIR):
-        print(f"[ERRO] Diretório raiz {CATALOG_DIR} não encontrado.")
+    if not os.path.exists(QUESTIONS_DIR):
+        print(f"[ERRO] Diretório de questões {QUESTIONS_DIR} não encontrado.")
         sys.exit(1)
 
-    coverage = {eixo: {nivel: 0 for nivel in EXPECTED_LEVELS} for eixo in EXPECTED_AXES}
+    ids_por_grupo = {
+        eixo: {nivel: [] for nivel in EXPECTED_LEVELS}
+        for eixo in EXPECTED_AXES
+    }
     has_errors = False
     encontrou_alguma_questao = False
 
     for eixo_dir in EXPECTED_AXES:
-        eixo_path = os.path.join(CATALOG_DIR, eixo_dir.lower())
+        eixo_path = os.path.join(QUESTIONS_DIR, eixo_dir.lower())
 
         if not os.path.exists(eixo_path):
             print(f"[AVISO] Pasta do eixo não encontrada: {eixo_path}")
@@ -63,8 +118,8 @@ def main():
             eixo = meta.get("eixo", "").upper()
             nivel = meta.get("nivel", "").upper()
 
-            if eixo in coverage and nivel in coverage[eixo]:
-                coverage[eixo][nivel] += 1
+            if eixo in ids_por_grupo and nivel in ids_por_grupo[eixo]:
+                ids_por_grupo[eixo][nivel].append(meta.get("id") or q_id)
             else:
                 print(f"[AVISO] {q_id}: Nível ({nivel}) ou Eixo ({eixo}) fora do padrão esperado.")
 
@@ -123,24 +178,26 @@ def main():
                     os.remove(bin_file)
 
     if not encontrou_alguma_questao:
-        print("\n[ERRO CRÍTICO] Nenhuma questão foi lida. Verifique se as pastas estão dentro de data/catalog/e1/ e data/catalog/e2/")
+        print(f"\n[ERRO CRÍTICO] Nenhuma questão foi lida. Verifique se as pastas estão dentro de {QUESTIONS_DIR}/e1/ e e2/")
         sys.exit(1)
 
-    print("\n--- Relatório de Cobertura ---")
+    print("\n--- Relatório de Cobertura (questions/) ---")
     coverage_failed = False
     for eixo in EXPECTED_AXES:
         for nivel in EXPECTED_LEVELS:
-            count = coverage[eixo][nivel]
+            count = len(ids_por_grupo[eixo][nivel])
             status = "OK" if count >= REQUIRED_COVERAGE else "FALHOU"
             print(f"{eixo} Nível {nivel}: {count}/{REQUIRED_COVERAGE} [{status}]")
             if count < REQUIRED_COVERAGE:
                 coverage_failed = True
 
-    if has_errors or coverage_failed:
-        print("\n[FALHA] Validação finalizada com erros ou cobertura insuficiente.")
+    index_errors = validate_indexes(ids_por_grupo)
+
+    if has_errors or coverage_failed or index_errors:
+        print("\n[FALHA] Validação finalizada com erros, cobertura insuficiente ou índices dessincronizados.")
         sys.exit(1)
     else:
-        print("\n[SUCESSO] Catálogo validado. Saídas geradas e cobertura atingida.")
+        print("\n[SUCESSO] Catálogo validado. Saídas geradas, cobertura atingida e índices sincronizados.")
         sys.exit(0)
 
 

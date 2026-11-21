@@ -1,0 +1,245 @@
+{
+  "eixo": "E1",
+  "nivel": "M",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E1-M-001",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Exercício de matemática financeira — precisa de math.h",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-001",
+      "enunciado": "Leia o valor principal `P`, a taxa de juros mensal `i` (em %) e o número de meses `n`. Calcule e imprima o montante final usando juros compostos (`M = P * (1 + i/100)^n`) com 2 casas decimais.\n\n**Entrada:** três reais em uma linha.\n\n**Saída:** o montante M.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double P, i, n;\n    scanf(\"%lf %lf %lf\", &P, &i, &n);\n    printf(\"%.2f\\n\", P * pow(1.0 + i / 100.0, n));\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1000.0 1.0 12.0\n",
+          "saida": "1126.83\n"
+        },
+        {
+          "entrada": "500.0 2.0 6.0\n",
+          "saida": "563.08\n"
+        },
+        {
+          "entrada": "100.0 0.5 24.0\n",
+          "saida": "112.72\n"
+        },
+        {
+          "entrada": "200.0 1.5 3.0\n",
+          "saida": "209.14\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-M-002",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Exercício de geometria analítica — precisa de math.h",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-002",
+      "enunciado": "Leia as coordenadas `(x1, y1)` e `(x2, y2)` de dois pontos no plano cartesiano e imprima a distância euclidiana entre eles com 4 casas decimais.\n\n**Entrada:** quatro reais.\n\n**Saída:** a distância.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double x1, y1, x2, y2;\n    scanf(\"%lf %lf %lf %lf\", &x1, &y1, &x2, &y2);\n    double dist = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));\n    printf(\"%.4f\\n\", dist);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "0.0 0.0 3.0 4.0\n",
+          "saida": "5.0000\n"
+        },
+        {
+          "entrada": "1.0 1.0 1.0 1.0\n",
+          "saida": "0.0000\n"
+        },
+        {
+          "entrada": "0.0 0.0 1.0 1.0\n",
+          "saida": "1.4142\n"
+        },
+        {
+          "entrada": "-3.0 0.0 0.0 4.0\n",
+          "saida": "5.0000\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-M-003",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [],
+      "origem": "Exercício clássico de formatação de saída",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-003",
+      "enunciado": "Leia uma quantidade de segundos inteira e imprima o tempo no formato `HH:MM:SS`.\n\n**Entrada:** um inteiro `s` (0 ≤ s < 86400).\n\n**Saída:** o tempo formatado.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int s;\n    scanf(\"%d\", &s);\n    int hh = s / 3600;\n    int mm = (s % 3600) / 60;\n    int ss = s % 60;\n    printf(\"%02d:%02d:%02d\\n\", hh, mm, ss);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3661\n",
+          "saida": "01:01:01\n"
+        },
+        {
+          "entrada": "86399\n",
+          "saida": "23:59:59\n"
+        },
+        {
+          "entrada": "0\n",
+          "saida": "00:00:00\n"
+        },
+        {
+          "entrada": "3600\n",
+          "saida": "01:00:00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-M-004",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [],
+      "origem": "Exercício de conversão de unidades — termodinâmica",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-004",
+      "enunciado": "Leia a temperatura em Kelvin e converta para Celsius (`C = K - 273.15`) e Fahrenheit (`F = C * 9/5 + 32`). Imprima as duas conversões com 2 casas decimais, cada uma em uma linha.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double k;\n    scanf(\"%lf\", &k);\n    double c = k - 273.15;\n    double f = c * 9.0 / 5.0 + 32.0;\n    printf(\"%.2f\\n%.2f\\n\", c, f);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "373.15\n",
+          "saida": "100.00\n212.00\n"
+        },
+        {
+          "entrada": "273.15\n",
+          "saida": "0.00\n32.00\n"
+        },
+        {
+          "entrada": "0.0\n",
+          "saida": "-273.15\n-459.67\n"
+        },
+        {
+          "entrada": "300.0\n",
+          "saida": "26.85\n80.33\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-M-005",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [],
+      "origem": "Exercício de geometria espacial — introdução à programação",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-005",
+      "enunciado": "Leia três medidas de um retângulo e de um cilindro reto de base retangular: comprimento, largura e altura. Calcule e imprima o volume e a área da superfície total do sólido com 2 casas decimais, cada um em uma linha.\n\nFórmulas: `V = l × w × h`, `A = 2(lw + lh + wh)`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double l, w, h;\n    scanf(\"%lf %lf %lf\", &l, &w, &h);\n    printf(\"%.2f\\n\", l * w * h);\n    printf(\"%.2f\\n\", 2.0 * (l*w + l*h + w*h));\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "2.0 3.0 4.0\n",
+          "saida": "24.00\n52.00\n"
+        },
+        {
+          "entrada": "1.0 1.0 1.0\n",
+          "saida": "1.00\n6.00\n"
+        },
+        {
+          "entrada": "5.0 2.0 3.0\n",
+          "saida": "30.00\n62.00\n"
+        },
+        {
+          "entrada": "4.0 4.0 4.0\n",
+          "saida": "64.00\n96.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-M-006",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [],
+      "origem": "Exercício de representação monetária — introdução à programação",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-006",
+      "enunciado": "Leia dois inteiros representando um número de notas de R$50 e de moedas de R$0,25. Calcule e imprima o valor total com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int notas, moedas;\n    scanf(\"%d %d\", &notas, &moedas);\n    printf(\"%.2f\\n\", notas * 50.0 + moedas * 0.25);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "2 4\n",
+          "saida": "101.00\n"
+        },
+        {
+          "entrada": "0 0\n",
+          "saida": "0.00\n"
+        },
+        {
+          "entrada": "1 0\n",
+          "saida": "50.00\n"
+        },
+        {
+          "entrada": "3 8\n",
+          "saida": "152.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-M-007",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Exercício de equação quadrática — precisa de math.h",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-007",
+      "enunciado": "Leia os coeficientes `a`, `b` e `c` de uma equação do segundo grau. Calcule o discriminante `Δ = b² - 4ac` e as duas raízes reais (assuma que `Δ ≥ 0`). Imprima `Δ`, `x1` e `x2` com 4 casas decimais, cada um em uma linha.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    double delta = b*b - 4.0*a*c;\n    double x1 = (-b + sqrt(delta)) / (2.0*a);\n    double x2 = (-b - sqrt(delta)) / (2.0*a);\n    printf(\"%.4f\\n%.4f\\n%.4f\\n\", delta, x1, x2);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1.0 -5.0 6.0\n",
+          "saida": "1.0000\n3.0000\n2.0000\n"
+        },
+        {
+          "entrada": "1.0 0.0 -4.0\n",
+          "saida": "16.0000\n2.0000\n-2.0000\n"
+        },
+        {
+          "entrada": "1.0 -2.0 1.0\n",
+          "saida": "0.0000\n1.0000\n1.0000\n"
+        },
+        {
+          "entrada": "2.0 -7.0 3.0\n",
+          "saida": "25.0000\n3.0000\n0.5000\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-M-008",
+      "eixo": "E1",
+      "nivel": "M",
+      "estruturas": [],
+      "origem": "Exercício clássico de aritmética modular",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-M-008",
+      "enunciado": "Leia um número inteiro positivo de exatamente três dígitos (ex: 123) e calcule a soma dos seus dígitos matematicamente, sem usar laços ou strings.\n\n**Entrada:** um inteiro `N` (100 ≤ N ≤ 999).\n\n**Saída:** a soma dos dígitos.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    printf(\"%d\\n\", (n / 100) + ((n / 10) % 10) + (n % 10));\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "123\n",
+          "saida": "6\n"
+        },
+        {
+          "entrada": "999\n",
+          "saida": "27\n"
+        },
+        {
+          "entrada": "100\n",
+          "saida": "1\n"
+        },
+        {
+          "entrada": "405\n",
+          "saida": "9\n"
+        }
+      ]
+    }
+  ]
+}

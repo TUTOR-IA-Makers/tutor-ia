@@ -1,0 +1,211 @@
+{
+  "eixo": "E1",
+  "nivel": "MD",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E1-MD-001",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [],
+      "origem": "Exercício de combinatória — inclusão-exclusão",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-001",
+      "enunciado": "Leia dois inteiros `A` e `B` (ambos positivos, até 10^9). Imprima quantos inteiros entre `A` e `B` (inclusive) são divisíveis por 3 ou por 7, usando aritmética de inclusão-exclusão (sem laço).",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long a, b;\n    scanf(\"%lld %lld\", &a, &b);\n    long long div3  = b/3  - (a-1)/3;\n    long long div7  = b/7  - (a-1)/7;\n    long long div21 = b/21 - (a-1)/21;\n    printf(\"%lld\\n\", div3 + div7 - div21);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1 21\n",
+          "saida": "9\n"
+        },
+        {
+          "entrada": "1 7\n",
+          "saida": "3\n"
+        },
+        {
+          "entrada": "7 7\n",
+          "saida": "1\n"
+        },
+        {
+          "entrada": "1 100\n",
+          "saida": "43\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MD-002",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Exercício avançado de trigonometria espacial — Fórmula de Haversine",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-002",
+      "enunciado": "Leia a latitude e longitude (em graus) de dois pontos na Terra. Calcule a distância do círculo máximo entre eles usando a fórmula de Haversine: `d = 2 * R * arcsin(sqrt(sin²(Δlat/2) + cos(lat1)*cos(lat2)*sin²(Δlon/2)))`. Considere o raio da Terra `R = 6371.0` km. Você deve converter as entradas de graus para radianos multiplicando por `PI/180.0` (utilize `PI = 3.14159265`). Imprima a distância em km com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define PI 3.14159265\n#define R 6371.0\n\nint main(void) {\n    double lat1, lon1, lat2, lon2;\n    scanf(\"%lf %lf %lf %lf\", &lat1, &lon1, &lat2, &lon2);\n    \n    lat1 = lat1 * PI / 180.0;\n    lon1 = lon1 * PI / 180.0;\n    lat2 = lat2 * PI / 180.0;\n    lon2 = lon2 * PI / 180.0;\n    \n    double dlat = lat2 - lat1;\n    double dlon = lon2 - lon1;\n    \n    double a = sin(dlat/2.0)*sin(dlat/2.0) + cos(lat1)*cos(lat2)*sin(dlon/2.0)*sin(dlon/2.0);\n    double c = 2.0 * asin(sqrt(a));\n    \n    printf(\"%.2f\\n\", R * c);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "-23.55 -46.63 -22.90 -43.20\n",
+          "saida": "357.86\n"
+        },
+        {
+          "entrada": "0.0 0.0 0.0 0.0\n",
+          "saida": "0.00\n"
+        },
+        {
+          "entrada": "51.50 -0.12 48.85 2.35\n",
+          "saida": "343.13\n"
+        },
+        {
+          "entrada": "90.0 0.0 -90.0 0.0\n",
+          "saida": "20015.09\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MD-003",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [
+        "stdlib.h"
+      ],
+      "origem": "Exercício de manipulação algébrica extrema e limite de eixo sem desvios lógicos",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-003",
+      "enunciado": "Utilizando apenas operadores matemáticos (sem usar `if`, `else`, `while`, operador ternário ou qualquer outra estrutura de fluxo), leia três números inteiros `A`, `B` e `C` e imprima o maior deles. Utilize a fórmula matemática `Maior(a,b) = (a + b + abs(a - b)) / 2` incluída na biblioteca padrão `stdlib.h`.",
+      "solucao_referencia": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n    int a, b, c;\n    scanf(\"%d %d %d\", &a, &b, &c);\n    int maiorAB = (a + b + abs(a - b)) / 2;\n    int maiorABC = (maiorAB + c + abs(maiorAB - c)) / 2;\n    printf(\"%d\\n\", maiorABC);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "5 2 9\n",
+          "saida": "9\n"
+        },
+        {
+          "entrada": "10 10 10\n",
+          "saida": "10\n"
+        },
+        {
+          "entrada": "-5 -2 -10\n",
+          "saida": "-2\n"
+        },
+        {
+          "entrada": "1 100 50\n",
+          "saida": "100\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MD-004",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Exercício algébrico avançado — Fórmula de Herão",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-004",
+      "enunciado": "Calcule a área de um triângulo cujos três lados a, b e c são fornecidos, utilizando exclusivamente a Fórmula de Herão (`Area = sqrt(s*(s-a)*(s-b)*(s-c))` onde `s = (a+b+c)/2`), sem utilizar condicionais ou laços. Imprima a área com 4 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    double s = (a + b + c) / 2.0;\n    double area = sqrt(s * (s - a) * (s - b) * (s - c));\n    printf(\"%.4f\\n\", area);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3.0 4.0 5.0\n",
+          "saida": "6.0000\n"
+        },
+        {
+          "entrada": "7.0 8.0 9.0\n",
+          "saida": "26.8328\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MD-005",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [],
+      "origem": "Geometria analítica avançada sem desvios condicionais explícitos",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-005",
+      "enunciado": "Leia as coordenadas de quatro vértices que formam um retângulo cujos lados são paralelos aos eixos cartesianos, representados por dois pontos opostos `(x1, y1)` e `(x2, y2)`. Determine o perímetro e a área da figura geometricamente utilizando apenas operações aritméticas diretas, imprimindo os resultados em duas linhas com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double x1, y1, x2, y2;\n    scanf(\"%lf %lf %lf %lf\", &x1, &y1, &x2, &y2);\n    double largura = x2 > x1 ? x2 - x1 : x1 - x2;\n    double altura = y2 > y1 ? y2 - y1 : y1 - y2;\n    double perimetro = 2.0 * (largura + altura);\n    double area = largura * altura;\n    printf(\"%.2f\\n%.2f\\n\", perimetro, area);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1.0 1.0 4.0 5.0\n",
+          "saida": "14.00\n12.00\n"
+        },
+        {
+          "entrada": "0.0 0.0 2.0 2.0\n",
+          "saida": "8.00\n4.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MD-006",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Física computacional de alta precisão",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-006",
+      "enunciado": "Leia a massa de dois corpos e a distância entre eles. Calcule a força de atração gravitacional utilizando a Lei da Gravitação Universal de Newton (`F = G * (m1 * m2) / d²`), adotando a constante gravitacional `G = 6.67430e-11`. Imprima o resultado em notação científica com 4 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define G 6.67430e-11\n\nint main(void) {\n    double m1, m2, d;\n    scanf(\"%lf %lf %lf\", &m1, &m2, &d);\n    double f = G * (m1 * m2) / (d * d);\n    printf(\"%.4e\\n\", f);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "5.972e24 73.48e22 384400000.0\n",
+          "saida": "1.9821e+21\n"
+        },
+        {
+          "entrada": "1000.0 1000.0 2.0\n",
+          "saida": "1.6686e-05\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MD-007",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Identidades trigonométricas fundamentais em ponto flutuante",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-007",
+      "enunciado": "Leia um número real correspondente a um ângulo em graus. Converta-o para radianos e calcule o valor da expressão trigonométrica `sin²(x) + cos²(x)` utilizando as funções da biblioteca `math.h`. Imprima o resultado com 6 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define PI 3.14159265\n\nint main(void) {\n    double graus;\n    scanf(\"%lf\", &graus);\n    double rad = graus * PI / 180.0;\n    double val = sin(rad) * sin(rad) + cos(rad) * cos(rad);\n    printf(\"%.6f\\n\", val);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "45.0\n",
+          "saida": "1.000000\n"
+        },
+        {
+          "entrada": "30.0\n",
+          "saida": "1.000000\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MD-008",
+      "eixo": "E1",
+      "nivel": "MD",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Matemática financeira inversa e capitalização composta",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MD-008",
+      "enunciado": "Leia o valor de um montante futuro desejado, a taxa de juros anual e o número de anos. Calcule o valor principal (capital inicial) necessário aplicando a fórmula de juros compostos invertida (`P = M / (1 + i)^n`) com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double montante, taxa;\n    double anos;\n    scanf(\"%lf %lf %lf\", &montante, &taxa, &anos);\n    double p = montante / pow(1.0 + taxa / 100.0, anos);\n    printf(\"%.2f\\n\", p);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1126.83 1.0 12.0\n",
+          "saida": "1000.00\n"
+        },
+        {
+          "entrada": "2000.0 5.0 3.0\n",
+          "saida": "1727.68\n"
+        }
+      ]
+    }
+  ]
+}

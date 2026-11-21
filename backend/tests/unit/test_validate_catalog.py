@@ -1,11 +1,13 @@
 """Unit tests for scripts/validate_catalog.py (G6-2).
 
 Tests cover: directory parsing, missing required files, C compilation errors,
-and strict coverage enforcement (fails if < 8).
+index synchronization, and strict coverage enforcement (fails if < 8).
 """
 
 from __future__ import annotations
 
+import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -26,8 +28,8 @@ VALIDATOR_SCRIPT = SCRIPTS_DIR / "validate_catalog.py"
 def _create_mock_question(
     base_path: Path, q_id: str, eixo: str, nivel: str, valid_c: bool = True
 ) -> None:
-    """Cria a estrutura de pastas e arquivos de uma questão mockada."""
-    q_dir = base_path / eixo.lower() / q_id
+    """Cria a estrutura de pastas e arquivos de uma questão mockada em questions/."""
+    q_dir = base_path / "questions" / eixo.lower() / q_id
     q_dir.mkdir(parents=True, exist_ok=True)
 
     # enunciado.md
@@ -49,10 +51,25 @@ def _create_mock_question(
     (entradas_dir / "01.in").write_text("1 2\n", encoding="utf-8")
 
 
+def _write_mock_index(base_path: Path, eixo: str, nivel: str, q_ids: list[str]) -> None:
+    """Cria o arquivo de índice correspondente em index/{eixo}/{eixo}_{nivel}.json."""
+    index_dir = base_path / "index" / eixo.lower()
+    index_dir.mkdir(parents=True, exist_ok=True)
+    index_file = index_dir / f"{eixo.lower()}_{nivel.upper()}.json"
+
+    payload = {
+        "eixo": eixo.upper(),
+        "nivel": nivel.upper(),
+        "total": len(q_ids),
+        "questoes": [{"id": qid, "eixo": eixo.upper(), "nivel": nivel.upper()} for qid in q_ids],
+    }
+    index_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def run_validator(catalog_dir: Path) -> subprocess.CompletedProcess:
     """Roda o validador injetando um diretório customizado."""
-    env = {"CATALOG_DIR_OVERRIDE": str(catalog_dir)}
-    # O subprocesso é seguro pois não há input de usário externo
+    env = {**os.environ, "CATALOG_DIR_OVERRIDE": str(catalog_dir)}
+    # O subprocesso é seguro pois não há input de usuário externo
     return subprocess.run(  # noqa: S603
         [sys.executable, str(VALIDATOR_SCRIPT)], capture_output=True, text=True, env=env
     )
@@ -76,16 +93,29 @@ def test_coverage_fails_if_below_8(tmp_path: Path) -> None:
 
 
 def test_coverage_passes_if_exactly_8(tmp_path: Path) -> None:
-    """Garante que a execução PASSA se tivermos exatamente 8 questões (e apenas 1 nível exigido no mock)."""
-    # Cria 8 questões para o E1-MF
-    for i in range(1, 9):
-        _create_mock_question(tmp_path, f"E1-MF-00{i}", "E1", "MF")
+    """Garante que a contagem de E1-MF chega a 8 e o índice sincroniza."""
+    q_ids = [f"E1-MF-00{i}" for i in range(1, 9)]
+    for qid in q_ids:
+        _create_mock_question(tmp_path, qid, "E1", "MF")
+    _write_mock_index(tmp_path, "E1", "MF", q_ids)
 
-    # Como o validador exige E1 e E2 completos, precisamos mockar todos os níveis
-    # para ele retornar 0, ou adaptar o script para aceitar testes parciais.
-    # O ideal aqui é focar que a contagem de E1-MF chegou a 8.
     result = run_validator(tmp_path)
     assert "E1 Nível MF: 8/8 [OK]" in result.stdout
+    assert "[OK] e1/e1_MF.json (8/8 sincronizadas)" in result.stdout
+
+
+def test_index_desync_fails_validation(tmp_path: Path) -> None:
+    """Garante que uma dessincronia entre questions/ e index/ quebra a validação."""
+    q_ids = [f"E1-MF-00{i}" for i in range(1, 9)]
+    for qid in q_ids:
+        _create_mock_question(tmp_path, qid, "E1", "MF")
+
+    # Índice omite a oitava questão
+    _write_mock_index(tmp_path, "E1", "MF", q_ids[:7])
+
+    result = run_validator(tmp_path)
+    assert result.returncode != 0
+    assert "Dessincronia em e1_MF.json" in result.stdout
 
 
 def test_invalid_c_code_fails_validation(tmp_path: Path) -> None:
@@ -99,7 +129,7 @@ def test_invalid_c_code_fails_validation(tmp_path: Path) -> None:
 def test_missing_essential_files_fails(tmp_path: Path) -> None:
     """Garante que a falta de meta.yaml ou solucao.c quebra a validação."""
     _create_mock_question(tmp_path, "E1-MF-001", "E1", "MF")
-    (tmp_path / "e1" / "E1-MF-001" / "meta.yaml").unlink()  # Deleta o meta
+    (tmp_path / "questions" / "e1" / "E1-MF-001" / "meta.yaml").unlink()  # Deleta o meta
 
     result = run_validator(tmp_path)
     assert result.returncode != 0
@@ -112,12 +142,14 @@ def test_missing_essential_files_fails(tmp_path: Path) -> None:
 
 
 def test_real_e1_catalog_exists() -> None:
-    """Garante que a pasta data/catalog/e1 existe. (Sem skip!)"""
-    catalog_dir = Path(__file__).parent.parent.parent.parent / "data" / "catalog" / "e1"
-    assert catalog_dir.exists(), "A pasta do catálogo E1 não foi encontrada!"
+    """Garante que as pastas de questões e índices do E1 existem. (Sem skip!)"""
+    catalog_root = Path(__file__).parent.parent.parent.parent / "data" / "catalog"
+    assert (catalog_root / "questions" / "e1").exists(), "A pasta questions/e1 não foi encontrada!"
+    assert (catalog_root / "index" / "e1").exists(), "A pasta index/e1 não foi encontrada!"
 
 
 def test_real_e2_catalog_exists() -> None:
-    """Garante que a pasta data/catalog/e2 existe. (Sem skip!)"""
-    catalog_dir = Path(__file__).parent.parent.parent.parent / "data" / "catalog" / "e2"
-    assert catalog_dir.exists(), "A pasta do catálogo E2 não foi encontrada!"
+    """Garante que as pastas de questões e índices do E2 existem. (Sem skip!)"""
+    catalog_root = Path(__file__).parent.parent.parent.parent / "data" / "catalog"
+    assert (catalog_root / "questions" / "e2").exists(), "A pasta questions/e2 não foi encontrada!"
+    assert (catalog_root / "index" / "e2").exists(), "A pasta index/e2 não foi encontrada!"
