@@ -34,3 +34,7 @@ Acervo de questões de referência para geração ancorada (G6-2).
 | `estruturas` | `if`, `else`, `ternario`, `switch`, `for`, `while`, `do-while`, `break`, `continue`, `goto`, `vetor`, `matriz`, `string`, `struct`, `typedef`, `enum`, `ponteiro`, `alocacao dinamica`, `funcao`, `passagem por referencia`, `recursao`, `arquivos`, `math.h`, `string.h`, `stdlib.h` |
 Consulte `src/codeexpert/domain.py` para a lista autoritativa.
 
+## Bibliografia
+
+- LOPES, Anita; GARCIA, Guto. **Introdução à programação**: 500 algoritmos resolvidos. Rio de Janeiro: Elsevier; Campus, 2002.
+- SALES, André Barros de; DEL ESPOSTE, Arthur de Moura. **Linguagem C**: aprendendo com exercícios resolvidos. Organização: Márcia Barros de Sales. Florianópolis: Departamento de Ciências da Administração / UFSC, 2017. v. 2. (Coleção Introdução à Linguagem C). Disponível em: http://repositorio.unb.br/handle/10482/25306. Acesso em: 21 nov. 2026.
