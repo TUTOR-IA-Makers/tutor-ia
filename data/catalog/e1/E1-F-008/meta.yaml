@@ -1,7 +1,6 @@
 id: "E1-F-008"
 eixo: "E1"
 nivel: "F"
-estruturas:
-  []
+estruturas: []
 origem: "Exercício de eficiência energética — introdução à programação"
 direitos_restritos: true

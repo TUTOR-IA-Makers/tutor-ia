@@ -1,7 +1,6 @@
 id: "E1-MF-004"
 eixo: "E1"
 nivel: "MF"
-estruturas:
-  []
+estruturas: []
 origem: "Exercício clássico de conversão de unidades"
 direitos_restritos: true

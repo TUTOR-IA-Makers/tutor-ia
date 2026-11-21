@@ -1,7 +1,6 @@
 id: "E1-M-005"
 eixo: "E1"
 nivel: "M"
-estruturas:
-  []
+estruturas: []
 origem: "Exercício de geometria espacial — introdução à programação"
 direitos_restritos: true

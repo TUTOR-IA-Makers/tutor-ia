@@ -1,7 +1,6 @@
 id: "E1-MF-005"
 eixo: "E1"
 nivel: "MF"
-estruturas:
-  []
+estruturas: []
 origem: "Exercício clássico de aritmética inteira"
 direitos_restritos: true
