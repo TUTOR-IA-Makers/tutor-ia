@@ -1,139 +1,126 @@
 import json
 import os
-import glob
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
 CATALOG_DIR = os.environ.get("CATALOG_DIR_OVERRIDE", os.path.join(REPO_ROOT, "data", "catalog"))
 
-QUESTIONS_DIR = os.path.join(CATALOG_DIR, "questions")
 INDEX_DIR = os.path.join(CATALOG_DIR, "index")
+QUESTIONS_DIR = os.path.join(CATALOG_DIR, "questions")
+
+MAPA_NIVEIS = {
+    "MUITO FACIL": "MF", "MUITO FÁCIL": "MF",
+    "FACIL": "F", "FÁCIL": "F",
+    "MEDIO": "M", "MÉDIO": "M",
+    "DIFICIL": "D", "DIFÍCIL": "D",
+    "MUITO DIFICIL": "MD", "MUITO DIFÍCIL": "MD",
+}
 
 
-def parse_yaml_full(meta_path):
-    meta = {
-        "id": "",
-        "eixo": "",
-        "nivel": "",
-        "estruturas": [],
-        "origem": "",
-        "direitos_restritos": False,
-    }
-    in_estruturas = False
+def write_yaml(filepath, meta):
+    yaml_lines = [
+        f'id: "{meta["id"]}"',
+        f'eixo: "{meta["eixo"]}"',
+        f'nivel: "{meta["nivel"]}"',
+    ]
 
-    with open(meta_path, "r", encoding="utf-8") as f:
-        for raw_line in f:
-            line = raw_line.strip()
-            if not line:
-                continue
+    if meta["estruturas"]:
+        yaml_lines.append("estruturas:")
+        for est in meta["estruturas"]:
+            yaml_lines.append(f'  - "{est}"')
+    else:
+        yaml_lines.append("estruturas: []")
 
-            if in_estruturas and line.startswith("- "):
-                val = line[2:].strip().strip('"').strip("'")
-                meta["estruturas"].append(val)
-                continue
-            else:
-                in_estruturas = False
+    yaml_lines.append(f'origem: "{meta["origem"]}"')
+    yaml_lines.append(f'direitos_restritos: {str(meta["direitos_restritos"]).lower()}')
 
-            if line.startswith("id:"):
-                meta["id"] = line.split(":", 1)[1].strip().strip('"').strip("'")
-            elif line.startswith("eixo:"):
-                meta["eixo"] = line.split(":", 1)[1].strip().strip('"').strip("'")
-            elif line.startswith("nivel:"):
-                meta["nivel"] = line.split(":", 1)[1].strip().strip('"').strip("'")
-            elif line.startswith("origem:"):
-                meta["origem"] = line.split(":", 1)[1].strip().strip('"').strip("'")
-            elif line.startswith("direitos_restritos:"):
-                val = line.split(":", 1)[1].strip().lower()
-                meta["direitos_restritos"] = val == "true"
-            elif line.startswith("estruturas:"):
-                rest = line.split(":", 1)[1].strip()
-                if rest != "[]":
-                    in_estruturas = True
-
-    return meta
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write("\n".join(yaml_lines) + "\n")
 
 
-def build_split_indexes():
-    """Gera data/catalog/index/{eixo}/{eixo}_{nivel}.json a partir de questions/."""
-    if not os.path.exists(QUESTIONS_DIR):
-        print(f"[ERRO] Diretório {QUESTIONS_DIR} não encontrado.")
+def build_questions_from_index():
+    """Materializa data/catalog/questions/{eixo}/{id} a partir de data/catalog/index/."""
+    if not os.path.exists(INDEX_DIR):
+        print(f"[ERRO] Diretório {INDEX_DIR} não encontrado.")
         return
 
-    grouped = {}  # chave: (eixo_lower, nivel_upper) -> lista de questões
+    total_geradas = 0
 
-    for eixo_folder in sorted(os.listdir(QUESTIONS_DIR)):
-        eixo_path = os.path.join(QUESTIONS_DIR, eixo_folder)
-        if not os.path.isdir(eixo_path):
+    for eixo_folder in sorted(os.listdir(INDEX_DIR)):
+        eixo_index_path = os.path.join(INDEX_DIR, eixo_folder)
+        if not os.path.isdir(eixo_index_path):
             continue
 
-        for q_id in sorted(os.listdir(eixo_path)):
-            q_dir = os.path.join(eixo_path, q_id)
-            meta_path = os.path.join(q_dir, "meta.yaml")
-            enunciado_path = os.path.join(q_dir, "enunciado.md")
-            solucao_path = os.path.join(q_dir, "solucao.c")
-
-            if not (os.path.isdir(q_dir) and os.path.exists(meta_path)):
+        for filename in sorted(os.listdir(eixo_index_path)):
+            if not filename.endswith(".json"):
                 continue
 
-            meta = parse_yaml_full(meta_path)
-            eixo_lower = meta["eixo"].lower() or eixo_folder.lower()
-            nivel_upper = meta["nivel"].upper()
+            json_path = os.path.join(eixo_index_path, filename)
+            with open(json_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
 
-            enunciado = ""
-            if os.path.exists(enunciado_path):
-                with open(enunciado_path, "r", encoding="utf-8") as f:
-                    enunciado = f.read()
+            questoes = data.get("questoes", data if isinstance(data, list) else [])
 
-            solucao = ""
-            if os.path.exists(solucao_path):
-                with open(solucao_path, "r", encoding="utf-8") as f:
-                    solucao = f.read()
+            for q in questoes:
+                qid = q.get("id")
+                if not qid:
+                    continue
 
-            casos_teste = []
-            for in_file in sorted(glob.glob(os.path.join(q_dir, "entradas", "*.in"))):
-                base = os.path.splitext(os.path.basename(in_file))[0]
-                out_file = os.path.join(q_dir, "saidas", f"{base}.out")
-                with open(in_file, "r", encoding="utf-8") as f_in:
-                    inp = f_in.read()
-                out = ""
-                if os.path.exists(out_file):
-                    with open(out_file, "r", encoding="utf-8") as f_out:
-                        out = f_out.read()
-                casos_teste.append({"entrada": inp, "saida": out})
+                pasta_eixo = q.get("eixo", qid.split("-")[0]).lower()
+                q_dir = os.path.join(QUESTIONS_DIR, pasta_eixo, qid)
+                entradas_dir = os.path.join(q_dir, "entradas")
+                saidas_dir = os.path.join(q_dir, "saidas")
+                os.makedirs(entradas_dir, exist_ok=True)
+                os.makedirs(saidas_dir, exist_ok=True)
 
-            entry = {
-                "id": meta["id"] or q_id,
-                "eixo": meta["eixo"],
-                "nivel": nivel_upper,
-                "estruturas": meta["estruturas"],
-                "origem": meta["origem"],
-                "direitos_restritos": meta["direitos_restritos"],
-                "path": f"questions/{eixo_lower}/{q_id}",
-                "enunciado": enunciado,
-                "solucao_referencia": solucao,
-                "casos_teste": casos_teste,
-            }
+                with open(os.path.join(q_dir, "enunciado.md"), "w", encoding="utf-8") as f:
+                    f.write(q.get("enunciado", ""))
 
-            grouped.setdefault((eixo_lower, nivel_upper), []).append(entry)
+                codigo_c = q.get("solucao_referencia", q.get("solucao", ""))
+                with open(os.path.join(q_dir, "solucao.c"), "w", encoding="utf-8") as f:
+                    f.write(codigo_c)
 
-    for (eixo_lower, nivel_upper), itens in sorted(grouped.items()):
-        out_dir = os.path.join(INDEX_DIR, eixo_lower)
-        os.makedirs(out_dir, exist_ok=True)
-        out_file = os.path.join(out_dir, f"{eixo_lower}_{nivel_upper}.json")
+                casos = q.get("casos_teste", q.get("casos_de_teste", []))
+                for idx, caso in enumerate(casos, start=1):
+                    prefixo = f"{idx:02d}"
+                    with open(
+                        os.path.join(entradas_dir, f"{prefixo}.in"),
+                        "w",
+                        encoding="utf-8",
+                        newline="\n",
+                    ) as f_in:
+                        f_in.write(caso.get("input", caso.get("entrada", "")))
 
-        payload = {
-            "eixo": eixo_lower.upper(),
-            "nivel": nivel_upper,
-            "total": len(itens),
-            "questoes": itens,
-        }
+                    with open(
+                        os.path.join(saidas_dir, f"{prefixo}.out"),
+                        "w",
+                        encoding="utf-8",
+                        newline="\n",
+                    ) as f_out:
+                        f_out.write(caso.get("output", caso.get("saida", "")))
 
-        with open(out_file, "w", encoding="utf-8") as f:
-            json.dump(payload, f, ensure_ascii=False, indent=2)
+                origem = q.get("origem", "")
+                estruturas = q.get("estruturas") or []
+                is_restricted = q.get("direitos_restritos", False)
+                if "genéric" in origem.lower() or "clássic" in origem.lower():
+                    is_restricted = True
 
-        print(f"[GERADO] {out_file} ({len(itens)} questões)")
+                nivel_raw = q.get("nivel", qid.split("-")[1]).upper().strip()
+                nivel_formatado = MAPA_NIVEIS.get(nivel_raw, nivel_raw)
+
+                meta = {
+                    "id": qid,
+                    "eixo": pasta_eixo.upper(),
+                    "nivel": nivel_formatado,
+                    "estruturas": estruturas,
+                    "origem": origem,
+                    "direitos_restritos": is_restricted,
+                }
+                write_yaml(os.path.join(q_dir, "meta.yaml"), meta)
+                total_geradas += 1
+
+    print(f"Materialização concluída: {total_geradas} questão(ões) gerada(s) em questions/.")
 
 
 if __name__ == "__main__":
-    build_split_indexes()
-    print("Sincronização do catálogo concluída.")
+    build_questions_from_index()
