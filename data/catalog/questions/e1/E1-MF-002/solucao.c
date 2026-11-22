@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main(void) {
-    double x;
-    scanf("%lf", &x);
-    printf("%.2f\n", 2.0 * x);
+    int dia, mes, ano;
+    scanf("%d %d %d", &dia, &mes, &ano);
+    printf("%02d/%02d/%04d\n", dia, mes, ano);
     return 0;
 }

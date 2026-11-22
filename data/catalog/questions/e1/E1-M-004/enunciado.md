@@ -1,1 +1,1 @@
-Leia a temperatura em Kelvin e converta para Celsius (`C = K - 273.15`) e Fahrenheit (`F = C * 9/5 + 32`). Imprima as duas conversões com 2 casas decimais, cada uma em uma linha.
+Escreva um programa em C que leia três números reais `xnum1`, `xnum2` e `xnum3` (com `xnum3 + xnum1 ≠ 0`), calcule o valor da expressão `X = xnum1 + xnum2 / (xnum3 + xnum1) + 2 * (xnum1 - xnum2) + log2(64)` e imprima o resultado com 2 casas decimais.

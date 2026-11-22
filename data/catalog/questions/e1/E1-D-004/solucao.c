@@ -1,13 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    double capital, inflacao;
-    int anos;
-    scanf("%lf %lf %d", &capital, &inflacao, &anos);
-    double poder = capital;
-    for(int i=0; i<anos; i++) {
-        poder = poder / (1.0 + inflacao / 100.0);
-    }
-    printf("%.2f\n", poder);
+    int total_dias, anos, meses, dias;
+    scanf("%d", &total_dias);
+    anos = total_dias / 365;
+    meses = (total_dias % 365) / 30;
+    dias = (total_dias % 365) % 30;
+    printf("%d\n%d\n%d\n", anos, meses, dias);
     return 0;
 }

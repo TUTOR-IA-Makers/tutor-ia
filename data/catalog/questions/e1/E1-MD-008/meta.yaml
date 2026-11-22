@@ -1,7 +1,6 @@
-id: "E1-MD-008"
-eixo: "E1"
-nivel: "MD"
-estruturas:
-  - "math.h"
-origem: "Matemática financeira inversa e capitalização composta"
-direitos_restritos: true
+id: E1-MD-008
+eixo: E1
+nivel: MD
+estruturas: []
+origem: "Beecrowd (URI Online Judge) — Problema 2006 (Identificando o Chá)"
+direitos_restritos: false

@@ -1,1 +1,5 @@
-Leia a latitude e longitude (em graus) de dois pontos na Terra. Calcule a distância do círculo máximo entre eles usando a fórmula de Haversine: `d = 2 * R * arcsin(sqrt(sin²(Δlat/2) + cos(lat1)*cos(lat2)*sin²(Δlon/2)))`. Considere o raio da Terra `R = 6371.0` km. Você deve converter as entradas de graus para radianos multiplicando por `PI/180.0` (utilize `PI = 3.14159265`). Imprima a distância em km com 2 casas decimais.
+Faça um programa que leia três valores e apresente o maior dos três valores lidos seguido da mensagem "eh o maior". Utilize a fórmula:
+
+`MaiorAB = (a + b + abs(a - b)) / 2`
+
+Obs.: a fórmula apenas calcula o maior entre os dois primeiros (a e b). Um segundo passo, portanto é necessário para chegar no resultado esperado.

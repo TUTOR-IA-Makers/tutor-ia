@@ -1,9 +1,10 @@
 #include <stdio.h>
-#include <math.h>
 
 int main(void) {
-    double P, i, n;
-    scanf("%lf %lf %lf", &P, &i, &n);
-    printf("%.2f\n", P * pow(1.0 + i / 100.0, n));
+    long int n_segundos;
+    scanf("%ld", &n_segundos);
+    printf("%d\n", (int) (n_segundos / 3600));
+    printf("%d\n", (int) ((n_segundos % 3600) / 60));
+    printf("%d\n", (int) (n_segundos % 60));
     return 0;
 }

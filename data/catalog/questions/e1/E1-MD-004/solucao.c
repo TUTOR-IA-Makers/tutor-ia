@@ -2,10 +2,11 @@
 #include <math.h>
 
 int main(void) {
-    double a, b, c;
-    scanf("%lf %lf %lf", &a, &b, &c);
-    double s = (a + b + c) / 2.0;
-    double area = sqrt(s * (s - a) * (s - b) * (s - c));
-    printf("%.4f\n", area);
+    int n;
+    double r5, fib;
+    scanf("%d", &n);
+    r5 = sqrt(5.0);
+    fib = (pow((1.0 + r5) / 2.0, n) - pow((1.0 - r5) / 2.0, n)) / r5;
+    printf("%.1f\n", fib);
     return 0;
 }

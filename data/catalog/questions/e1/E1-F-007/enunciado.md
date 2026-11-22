@@ -1,1 +1,1 @@
-Leia o salário bruto de um funcionário (real) e calcule o salário líquido após descontar 11% de INSS e 7,5% de IR. Imprima o resultado com 2 casas decimais.
+Escreva um programa em C que leia a base e a altura de um retângulo (números reais) e imprima, cada um em uma linha com 2 casas decimais: o perímetro, a área e a diagonal do retângulo.

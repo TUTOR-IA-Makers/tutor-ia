@@ -1,6 +1,6 @@
-id: "E1-D-007"
-eixo: "E1"
-nivel: "D"
+id: E1-D-007
+eixo: E1
+nivel: D
 estruturas: []
-origem: "Exercício de matemática financeira aplicada"
-direitos_restritos: true
+origem: "Beecrowd (URI Online Judge) — Problema 1010 (Cálculo Simples)"
+direitos_restritos: false

@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <math.h>
 
 int main(void) {
-    double potencia, horas;
-    scanf("%lf %lf", &potencia, &horas);
-    printf("%.2f\n", potencia * horas * 30.0 / 1000.0);
+    double a, b, c, diagonal;
+    scanf("%lf %lf %lf", &a, &b, &c);
+    diagonal = sqrt(a * a + b * b + c * c);
+    printf("%.2f\n", diagonal);
     return 0;
 }

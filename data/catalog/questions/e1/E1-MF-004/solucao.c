@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main(void) {
-    double c;
-    scanf("%lf", &c);
-    printf("%.2f\n", 9.0 / 5.0 * c + 32.0);
+    double a, b;
+    scanf("%lf %lf", &a, &b);
+    printf("%.2f\n", a + b);
     return 0;
 }

@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include <math.h>
 
 int main(void) {
-    double a, b, c;
-    scanf("%lf %lf %lf", &a, &b, &c);
-    double delta = b*b - 4.0*a*c;
-    double x1 = (-b + sqrt(delta)) / (2.0*a);
-    double x2 = (-b - sqrt(delta)) / (2.0*a);
-    printf("%.4f\n%.4f\n%.4f\n", delta, x1, x2);
+    double valor, taxa, prest;
+    int tempo;
+    scanf("%lf %lf %d", &valor, &taxa, &tempo);
+    prest = valor + (valor * (taxa / 100.0) * tempo);
+    printf("%.2f\n", prest);
     return 0;
 }

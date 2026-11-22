@@ -1,1 +1,1 @@
-Leia a potência de um aparelho em watts (real) e o número de horas de uso por dia (real). Calcule o consumo em kWh por mês (30 dias). Imprima com 2 casas decimais.
+Escreva um programa em C que leia os lados `a`, `b` e `c` de um paralelepípedo (números reais), calcule e imprima o valor da sua diagonal (`sqrt(a² + b² + c²)`) com 2 casas decimais.

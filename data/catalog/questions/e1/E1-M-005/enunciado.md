@@ -1,3 +1,1 @@
-Leia três medidas de um retângulo e de um cilindro reto de base retangular: comprimento, largura e altura. Calcule e imprima o volume e a área da superfície total do sólido com 2 casas decimais, cada um em uma linha.
-
-Fórmulas: `V = l × w × h`, `A = 2(lw + lh + wh)`.
+Escreva um programa em C que leia o 1º termo e a razão de uma Progressão Geométrica (ambos números inteiros), calcule e imprima o 5º termo da série (`a5 = a1 * razao^4`).

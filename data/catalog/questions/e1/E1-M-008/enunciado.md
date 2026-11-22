@@ -1,5 +1,1 @@
-Leia um número inteiro positivo de exatamente três dígitos (ex: 123) e calcule a soma dos seus dígitos matematicamente, sem usar laços ou strings.
-
-**Entrada:** um inteiro `N` (100 ≤ N ≤ 999).
-
-**Saída:** a soma dos dígitos.
+Escreva um programa em C que leia um número inteiro `num` no intervalo de 0 a 60 e imprima o seu sucessor circular, sabendo que o sucessor de 60 é 0. O programa deve ser implementado utilizando apenas operações aritméticas sequenciais, sem comandos de seleção (`if`, `switch`, operador ternário) ou de repetição.

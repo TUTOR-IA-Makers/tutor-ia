@@ -1,5 +1,1 @@
-Leia dois inteiros e imprima o resultado da divisão inteira e o resto da divisão, separados por espaço.
-
-**Entrada:** dois inteiros `a` e `b` (b ≠ 0).
-
-**Saída:** quociente e resto.
+Escreva um programa em C que receba dois números reais `a` e `b` (b ≠ 0) e mostre a soma, a subtração, a multiplicação e a divisão dos números, nessa ordem, cada resultado em uma linha com 2 casas decimais.

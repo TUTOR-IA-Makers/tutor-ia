@@ -1,1 +1,1 @@
-Leia os coeficientes `a`, `b` e `c` de uma parábola `y = ax² + bx + c`. Encontre o vértice `(xv, yv)` e o eixo de simetria. Imprima `xv` e `yv` com 4 casas decimais, cada um em uma linha.
+Escreva um programa em C que leia um valor inteiro `N` (0 < N < 1000000) representando um montante em reais e calcule o menor número de notas possíveis no qual o valor pode ser decomposto. As notas consideradas são de `100`, `50`, `20`, `10`, `5`, `2` e `1`. Imprima a quantidade de cada nota, uma por linha, na ordem decrescente de valor, utilizando apenas operações aritméticas sequenciais.

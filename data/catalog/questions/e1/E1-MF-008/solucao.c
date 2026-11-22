@@ -1,9 +1,8 @@
 #include <stdio.h>
 
 int main(void) {
-    double preco;
-    int qtd;
-    scanf("%lf %d", &preco, &qtd);
-    printf("%.2f\n", preco * qtd);
+    double cotacao, dolares;
+    scanf("%lf %lf", &cotacao, &dolares);
+    printf("%.2f\n", cotacao * dolares);
     return 0;
 }

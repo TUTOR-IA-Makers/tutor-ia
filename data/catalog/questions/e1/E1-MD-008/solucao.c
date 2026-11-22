@@ -1,11 +1,9 @@
 #include <stdio.h>
-#include <math.h>
 
 int main(void) {
-    double montante, taxa;
-    double anos;
-    scanf("%lf %lf %lf", &montante, &taxa, &anos);
-    double p = montante / pow(1.0 + taxa / 100.0, anos);
-    printf("%.2f\n", p);
+    int t, a, b, c, d, e;
+    scanf("%d", &t);
+    scanf("%d %d %d %d %d", &a, &b, &c, &d, &e);
+    printf("%d\n", (a == t) + (b == t) + (c == t) + (d == t) + (e == t));
     return 0;
 }

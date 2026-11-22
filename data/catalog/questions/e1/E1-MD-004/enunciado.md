@@ -1,1 +1,5 @@
-Calcule a área de um triângulo cujos três lados a, b e c são fornecidos, utilizando exclusivamente a Fórmula de Herão (`Area = sqrt(s*(s-a)*(s-b)*(s-c))` onde `s = (a+b+c)/2`), sem utilizar condicionais ou laços. Imprima a área com 4 casas decimais.
+A fórmula de Binet é uma forma de se calcular números de Fibonacci sem a necessidade de laços ou recursão:
+
+`Fibonacci(n) = (((1 + sqrt(5)) / 2)^n - ((1 - sqrt(5)) / 2)^n) / sqrt(5)`
+
+Sua tarefa é, dado um natural `n`, calcular o valor de `Fibonacci(n)` usando a fórmula acima.

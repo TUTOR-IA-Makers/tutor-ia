@@ -1,1 +1,1 @@
-Converta uma temperatura em Celsius para Fahrenheit usando a fórmula `F = (9/5)*C + 32`. Leia um real e imprima o resultado com 2 casas decimais.
+Escreva um programa em C que receba dois números reais e exiba o resultado da sua soma com 2 casas decimais.

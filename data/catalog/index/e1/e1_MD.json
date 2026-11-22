@@ -8,27 +8,27 @@
       "eixo": "E1",
       "nivel": "MD",
       "estruturas": [],
-      "origem": "Exercício de combinatória — inclusão-exclusão",
-      "direitos_restritos": true,
+      "origem": "Beecrowd (URI Online Judge) — Problema 1021 (Notas e Moedas)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-001",
-      "enunciado": "Leia dois inteiros `A` e `B` (ambos positivos, até 10^9). Imprima quantos inteiros entre `A` e `B` (inclusive) são divisíveis por 3 ou por 7, usando aritmética de inclusão-exclusão (sem laço).",
-      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long a, b;\n    scanf(\"%lld %lld\", &a, &b);\n    long long div3  = b/3  - (a-1)/3;\n    long long div7  = b/7  - (a-1)/7;\n    long long div21 = b/21 - (a-1)/21;\n    printf(\"%lld\\n\", div3 + div7 - div21);\n    return 0;\n}\n",
+      "enunciado": "Leia um valor de ponto flutuante com duas casas decimais. Este valor representa um valor monetário. A seguir, calcule o menor número de notas e moedas possíveis no qual o valor pode ser decomposto. As notas consideradas são de 100, 50, 20, 10, 5, 2. As moedas possíveis são de 1, 0.50, 0.25, 0.10, 0.05 e 0.01. A seguir mostre a relação de notas necessárias.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double valor;\n    int centavos, n100, n50, n20, n10, n5, n2, m100, m50, m25, m10, m5, m1;\n    scanf(\"%lf\", &valor);\n    centavos = (int)(valor * 100.0 + 0.5);\n    n100 = centavos / 10000; centavos %= 10000;\n    n50 = centavos / 5000; centavos %= 5000;\n    n20 = centavos / 2000; centavos %= 2000;\n    n10 = centavos / 1000; centavos %= 1000;\n    n5 = centavos / 500; centavos %= 500;\n    n2 = centavos / 200; centavos %= 200;\n    m100 = centavos / 100; centavos %= 100;\n    m50 = centavos / 50; centavos %= 50;\n    m25 = centavos / 25; centavos %= 25;\n    m10 = centavos / 10; centavos %= 10;\n    m5 = centavos / 5; centavos %= 5;\n    m1 = centavos;\n    printf(\"NOTAS:\\n\");\n    printf(\"%d nota(s) de R$ 100.00\\n\", n100);\n    printf(\"%d nota(s) de R$ 50.00\\n\", n50);\n    printf(\"%d nota(s) de R$ 20.00\\n\", n20);\n    printf(\"%d nota(s) de R$ 10.00\\n\", n10);\n    printf(\"%d nota(s) de R$ 5.00\\n\", n5);\n    printf(\"%d nota(s) de R$ 2.00\\n\", n2);\n    printf(\"MOEDAS:\\n\");\n    printf(\"%d moeda(s) de R$ 1.00\\n\", m100);\n    printf(\"%d moeda(s) de R$ 0.50\\n\", m50);\n    printf(\"%d moeda(s) de R$ 0.25\\n\", m25);\n    printf(\"%d moeda(s) de R$ 0.10\\n\", m10);\n    printf(\"%d moeda(s) de R$ 0.05\\n\", m5);\n    printf(\"%d moeda(s) de R$ 0.01\\n\", m1);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "1 21\n",
-          "saida": "9\n"
+          "entrada": "576.73\n",
+          "saida": "NOTAS:\n5 nota(s) de R$ 100.00\n1 nota(s) de R$ 50.00\n1 nota(s) de R$ 20.00\n0 nota(s) de R$ 10.00\n1 nota(s) de R$ 5.00\n0 nota(s) de R$ 2.00\nMOEDAS:\n1 moeda(s) de R$ 1.00\n1 moeda(s) de R$ 0.50\n0 moeda(s) de R$ 0.25\n2 moeda(s) de R$ 0.10\n0 moeda(s) de R$ 0.05\n3 moeda(s) de R$ 0.01\n"
         },
         {
-          "entrada": "1 7\n",
-          "saida": "3\n"
+          "entrada": "4.00\n",
+          "saida": "NOTAS:\n0 nota(s) de R$ 100.00\n0 nota(s) de R$ 50.00\n0 nota(s) de R$ 20.00\n0 nota(s) de R$ 10.00\n0 nota(s) de R$ 5.00\n2 nota(s) de R$ 2.00\nMOEDAS:\n0 moeda(s) de R$ 1.00\n0 moeda(s) de R$ 0.50\n0 moeda(s) de R$ 0.25\n0 moeda(s) de R$ 0.10\n0 moeda(s) de R$ 0.05\n0 moeda(s) de R$ 0.01\n"
         },
         {
-          "entrada": "7 7\n",
-          "saida": "1\n"
+          "entrada": "91.01\n",
+          "saida": "NOTAS:\n0 nota(s) de R$ 100.00\n1 nota(s) de R$ 50.00\n2 nota(s) de R$ 20.00\n0 nota(s) de R$ 10.00\n0 nota(s) de R$ 5.00\n0 nota(s) de R$ 2.00\nMOEDAS:\n1 moeda(s) de R$ 1.00\n0 moeda(s) de R$ 0.50\n0 moeda(s) de R$ 0.25\n0 moeda(s) de R$ 0.10\n0 moeda(s) de R$ 0.05\n1 moeda(s) de R$ 0.01\n"
         },
         {
-          "entrada": "1 100\n",
-          "saida": "43\n"
+          "entrada": "0.01\n",
+          "saida": "NOTAS:\n0 nota(s) de R$ 100.00\n0 nota(s) de R$ 50.00\n0 nota(s) de R$ 20.00\n0 nota(s) de R$ 10.00\n0 nota(s) de R$ 5.00\n0 nota(s) de R$ 2.00\nMOEDAS:\n0 moeda(s) de R$ 1.00\n0 moeda(s) de R$ 0.50\n0 moeda(s) de R$ 0.25\n0 moeda(s) de R$ 0.10\n0 moeda(s) de R$ 0.05\n1 moeda(s) de R$ 0.01\n"
         }
       ]
     },
@@ -37,29 +37,29 @@
       "eixo": "E1",
       "nivel": "MD",
       "estruturas": [
-        "math.h"
+        "stdlib.h"
       ],
-      "origem": "Exercício avançado de trigonometria espacial — Fórmula de Haversine",
-      "direitos_restritos": true,
+      "origem": "Beecrowd (URI Online Judge) — Problema 1013 (O Maior)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-002",
-      "enunciado": "Leia a latitude e longitude (em graus) de dois pontos na Terra. Calcule a distância do círculo máximo entre eles usando a fórmula de Haversine: `d = 2 * R * arcsin(sqrt(sin²(Δlat/2) + cos(lat1)*cos(lat2)*sin²(Δlon/2)))`. Considere o raio da Terra `R = 6371.0` km. Você deve converter as entradas de graus para radianos multiplicando por `PI/180.0` (utilize `PI = 3.14159265`). Imprima a distância em km com 2 casas decimais.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define PI 3.14159265\n#define R 6371.0\n\nint main(void) {\n    double lat1, lon1, lat2, lon2;\n    scanf(\"%lf %lf %lf %lf\", &lat1, &lon1, &lat2, &lon2);\n    \n    lat1 = lat1 * PI / 180.0;\n    lon1 = lon1 * PI / 180.0;\n    lat2 = lat2 * PI / 180.0;\n    lon2 = lon2 * PI / 180.0;\n    \n    double dlat = lat2 - lat1;\n    double dlon = lon2 - lon1;\n    \n    double a = sin(dlat/2.0)*sin(dlat/2.0) + cos(lat1)*cos(lat2)*sin(dlon/2.0)*sin(dlon/2.0);\n    double c = 2.0 * asin(sqrt(a));\n    \n    printf(\"%.2f\\n\", R * c);\n    return 0;\n}\n",
+      "enunciado": "Faça um programa que leia três valores e apresente o maior dos três valores lidos seguido da mensagem \"eh o maior\". Utilize a fórmula:\n\n`MaiorAB = (a + b + abs(a - b)) / 2`\n\nObs.: a fórmula apenas calcula o maior entre os dois primeiros (a e b). Um segundo passo, portanto é necessário para chegar no resultado esperado.\n",
+      "solucao_referencia": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n    int a, b, c, maior_ab, maior;\n    scanf(\"%d %d %d\", &a, &b, &c);\n    maior_ab = (a + b + abs(a - b)) / 2;\n    maior = (maior_ab + c + abs(maior_ab - c)) / 2;\n    printf(\"%d eh o maior\\n\", maior);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "-23.55 -46.63 -22.90 -43.20\n",
-          "saida": "357.86\n"
+          "entrada": "7 14 106\n",
+          "saida": "106 eh o maior\n"
         },
         {
-          "entrada": "0.0 0.0 0.0 0.0\n",
-          "saida": "0.00\n"
+          "entrada": "217 14 6\n",
+          "saida": "217 eh o maior\n"
         },
         {
-          "entrada": "51.50 -0.12 48.85 2.35\n",
-          "saida": "343.13\n"
+          "entrada": "-10 -5 -20\n",
+          "saida": "-5 eh o maior\n"
         },
         {
-          "entrada": "90.0 0.0 -90.0 0.0\n",
-          "saida": "20015.09\n"
+          "entrada": "42 42 42\n",
+          "saida": "42 eh o maior\n"
         }
       ]
     },
@@ -67,30 +67,28 @@
       "id": "E1-MD-003",
       "eixo": "E1",
       "nivel": "MD",
-      "estruturas": [
-        "stdlib.h"
-      ],
-      "origem": "Exercício de manipulação algébrica extrema e limite de eixo sem desvios lógicos",
-      "direitos_restritos": true,
+      "estruturas": [],
+      "origem": "Beecrowd (URI Online Judge) — Problema 1061 (Tempo de um Evento)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-003",
-      "enunciado": "Utilizando apenas operadores matemáticos (sem usar `if`, `else`, `while`, operador ternário ou qualquer outra estrutura de fluxo), leia três números inteiros `A`, `B` e `C` e imprima o maior deles. Utilize a fórmula matemática `Maior(a,b) = (a + b + abs(a - b)) / 2` incluída na biblioteca padrão `stdlib.h`.",
-      "solucao_referencia": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void) {\n    int a, b, c;\n    scanf(\"%d %d %d\", &a, &b, &c);\n    int maiorAB = (a + b + abs(a - b)) / 2;\n    int maiorABC = (maiorAB + c + abs(maiorAB - c)) / 2;\n    printf(\"%d\\n\", maiorABC);\n    return 0;\n}\n",
+      "enunciado": "Pedrinho está organizando um evento em sua Universidade. O evento deverá ser no mês de Abril, iniciando e terminando dentro do mês. O problema é que Pedrinho quer calcular o tempo que o evento vai durar, uma vez que ele sabe quando inicia e quando termina o evento. Sabendo que o evento pode durar de poucos segundos a vários dias, você deverá ajudar Pedrinho a calcular a duração deste evento.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int d1, h1, m1, s1, d2, h2, m2, s2;\n    int inicio, fim, duracao, dias, horas, minutos, segundos;\n    scanf(\"Dia %d\", &d1);\n    scanf(\"%d : %d : %d\", &h1, &m1, &s1);\n    scanf(\" Dia %d\", &d2);\n    scanf(\"%d : %d : %d\", &h2, &m2, &s2);\n    inicio = d1 * 86400 + h1 * 3600 + m1 * 60 + s1;\n    fim = d2 * 86400 + h2 * 3600 + m2 * 60 + s2;\n    duracao = fim - inicio;\n    dias = duracao / 86400;\n    duracao %= 86400;\n    horas = duracao / 3600;\n    duracao %= 3600;\n    minutos = duracao / 60;\n    segundos = duracao % 60;\n    printf(\"%d dia(s)\\n%d hora(s)\\n%d minuto(s)\\n%d segundo(s)\\n\", dias, horas, minutos, segundos);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "5 2 9\n",
-          "saida": "9\n"
+          "entrada": "Dia 5\n08 : 12 : 23\nDia 9\n06 : 13 : 23\n",
+          "saida": "3 dia(s)\n22 hora(s)\n1 minuto(s)\n0 segundo(s)\n"
         },
         {
-          "entrada": "10 10 10\n",
-          "saida": "10\n"
+          "entrada": "Dia 1\n00 : 00 : 00\nDia 2\n00 : 00 : 00\n",
+          "saida": "1 dia(s)\n0 hora(s)\n0 minuto(s)\n0 segundo(s)\n"
         },
         {
-          "entrada": "-5 -2 -10\n",
-          "saida": "-2\n"
+          "entrada": "Dia 10\n12 : 30 : 15\nDia 10\n12 : 31 : 14\n",
+          "saida": "0 dia(s)\n0 hora(s)\n0 minuto(s)\n59 segundo(s)\n"
         },
         {
-          "entrada": "1 100 50\n",
-          "saida": "100\n"
+          "entrada": "Dia 1\n23 : 59 : 59\nDia 30\n23 : 59 : 59\n",
+          "saida": "29 dia(s)\n0 hora(s)\n0 minuto(s)\n0 segundo(s)\n"
         }
       ]
     },
@@ -101,19 +99,27 @@
       "estruturas": [
         "math.h"
       ],
-      "origem": "Exercício algébrico avançado — Fórmula de Herão",
-      "direitos_restritos": true,
+      "origem": "Beecrowd (URI Online Judge) — Problema 2164 (Fibonacci Rápido)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-004",
-      "enunciado": "Calcule a área de um triângulo cujos três lados a, b e c são fornecidos, utilizando exclusivamente a Fórmula de Herão (`Area = sqrt(s*(s-a)*(s-b)*(s-c))` onde `s = (a+b+c)/2`), sem utilizar condicionais ou laços. Imprima a área com 4 casas decimais.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    double s = (a + b + c) / 2.0;\n    double area = sqrt(s * (s - a) * (s - b) * (s - c));\n    printf(\"%.4f\\n\", area);\n    return 0;\n}\n",
+      "enunciado": "A fórmula de Binet é uma forma de se calcular números de Fibonacci sem a necessidade de laços ou recursão:\n\n`Fibonacci(n) = (((1 + sqrt(5)) / 2)^n - ((1 - sqrt(5)) / 2)^n) / sqrt(5)`\n\nSua tarefa é, dado um natural `n`, calcular o valor de `Fibonacci(n)` usando a fórmula acima.\n",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    int n;\n    double r5, fib;\n    scanf(\"%d\", &n);\n    r5 = sqrt(5.0);\n    fib = (pow((1.0 + r5) / 2.0, n) - pow((1.0 - r5) / 2.0, n)) / r5;\n    printf(\"%.1f\\n\", fib);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "3.0 4.0 5.0\n",
-          "saida": "6.0000\n"
+          "entrada": "1\n",
+          "saida": "1.0\n"
         },
         {
-          "entrada": "7.0 8.0 9.0\n",
-          "saida": "26.8328\n"
+          "entrada": "2\n",
+          "saida": "1.0\n"
+        },
+        {
+          "entrada": "3\n",
+          "saida": "2.0\n"
+        },
+        {
+          "entrada": "10\n",
+          "saida": "55.0\n"
         }
       ]
     },
@@ -122,19 +128,27 @@
       "eixo": "E1",
       "nivel": "MD",
       "estruturas": [],
-      "origem": "Geometria analítica avançada sem desvios condicionais explícitos",
-      "direitos_restritos": true,
+      "origem": "Beecrowd (URI Online Judge) — Problema 1805 (Soma de Naturais Consecutivos)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-005",
-      "enunciado": "Leia as coordenadas de quatro vértices que formam um retângulo cujos lados são paralelos aos eixos cartesianos, representados por dois pontos opostos `(x1, y1)` e `(x2, y2)`. Determine o perímetro e a área da figura geometricamente utilizando apenas operações aritméticas diretas, imprimindo os resultados em duas linhas com 2 casas decimais.",
-      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double x1, y1, x2, y2;\n    scanf(\"%lf %lf %lf %lf\", &x1, &y1, &x2, &y2);\n    double largura = x2 > x1 ? x2 - x1 : x1 - x2;\n    double altura = y2 > y1 ? y2 - y1 : y1 - y2;\n    double perimetro = 2.0 * (largura + altura);\n    double area = largura * altura;\n    printf(\"%.2f\\n%.2f\\n\", perimetro, area);\n    return 0;\n}\n",
+      "enunciado": "Um número natural é um inteiro não-negativo (0, 1, 2, 3, 4, 5,...). A sua tarefa neste problema é calcular a soma dos números naturais que estão presentes em um determinado intervalo [A, B] inclusive. Por exemplo, a soma dos números naturais no intervalo [2, 5] é 14 = (2+3+4+5).\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long int a, b, soma;\n    scanf(\"%lld %lld\", &a, &b);\n    soma = (a + b) * (b - a + 1) / 2;\n    printf(\"%lld\\n\", soma);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "1.0 1.0 4.0 5.0\n",
-          "saida": "14.00\n12.00\n"
+          "entrada": "2 5\n",
+          "saida": "14\n"
         },
         {
-          "entrada": "0.0 0.0 2.0 2.0\n",
-          "saida": "8.00\n4.00\n"
+          "entrada": "1 1000000000\n",
+          "saida": "500000000500000000\n"
+        },
+        {
+          "entrada": "10 10\n",
+          "saida": "10\n"
+        },
+        {
+          "entrada": "1 100\n",
+          "saida": "5050\n"
         }
       ]
     },
@@ -142,22 +156,28 @@
       "id": "E1-MD-006",
       "eixo": "E1",
       "nivel": "MD",
-      "estruturas": [
-        "math.h"
-      ],
-      "origem": "Física computacional de alta precisão",
-      "direitos_restritos": true,
+      "estruturas": [],
+      "origem": "Beecrowd (URI Online Judge) — Problema 1957 (Converter para Hexadecimal)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-006",
-      "enunciado": "Leia a massa de dois corpos e a distância entre eles. Calcule a força de atração gravitacional utilizando a Lei da Gravitação Universal de Newton (`F = G * (m1 * m2) / d²`), adotando a constante gravitacional `G = 6.67430e-11`. Imprima o resultado em notação científica com 4 casas decimais.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define G 6.67430e-11\n\nint main(void) {\n    double m1, m2, d;\n    scanf(\"%lf %lf %lf\", &m1, &m2, &d);\n    double f = G * (m1 * m2) / (d * d);\n    printf(\"%.4e\\n\", f);\n    return 0;\n}\n",
+      "enunciado": "Os dados armazenados no computador estão em binário. Uma forma econômica de ver estes números é usar a base 16 (hexadecimal). Sua tarefa consiste em escrever um programa que, dado um número natural na base 10, mostre sua representação em hexadecimal.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    unsigned int v;\n    scanf(\"%u\", &v);\n    printf(\"%X\\n\", v);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "5.972e24 73.48e22 384400000.0\n",
-          "saida": "1.9821e+21\n"
+          "entrada": "10\n",
+          "saida": "A\n"
         },
         {
-          "entrada": "1000.0 1000.0 2.0\n",
-          "saida": "1.6686e-05\n"
+          "entrada": "15\n",
+          "saida": "F\n"
+        },
+        {
+          "entrada": "16\n",
+          "saida": "10\n"
+        },
+        {
+          "entrada": "2000000000\n",
+          "saida": "77359400\n"
         }
       ]
     },
@@ -165,22 +185,28 @@
       "id": "E1-MD-007",
       "eixo": "E1",
       "nivel": "MD",
-      "estruturas": [
-        "math.h"
-      ],
-      "origem": "Identidades trigonométricas fundamentais em ponto flutuante",
-      "direitos_restritos": true,
+      "estruturas": [],
+      "origem": "Beecrowd (URI Online Judge) — Problema 1958 (Notação Científica)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-007",
-      "enunciado": "Leia um número real correspondente a um ângulo em graus. Converta-o para radianos e calcule o valor da expressão trigonométrica `sin²(x) + cos²(x)` utilizando as funções da biblioteca `math.h`. Imprima o resultado com 6 casas decimais.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\n#define PI 3.14159265\n\nint main(void) {\n    double graus;\n    scanf(\"%lf\", &graus);\n    double rad = graus * PI / 180.0;\n    double val = sin(rad) * sin(rad) + cos(rad) * cos(rad);\n    printf(\"%.6f\\n\", val);\n    return 0;\n}\n",
+      "enunciado": "Números em ponto flutuante podem ser bastante extensos para mostrar. Nesses casos, é conveniente usar a notação científica. Você deve escrever um programa que, dado um número em ponto flutuante, mostre este número na notação científica: sempre mostre o sinal da mantissa; sempre mostre 4 casas decimais na mantissa; use o caractere 'E' para separar a mantissa do expoente; sempre mostre o sinal do expoente; e mostre o expoente com pelo menos 2 dígitos.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double x;\n    scanf(\"%lf\", &x);\n    printf(\"%+.4E\\n\", x);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "45.0\n",
-          "saida": "1.000000\n"
+          "entrada": "3.141592\n",
+          "saida": "+3.1416E+00\n"
         },
         {
-          "entrada": "30.0\n",
-          "saida": "1.000000\n"
+          "entrada": "1.618033\n",
+          "saida": "+1.6180E+00\n"
+        },
+        {
+          "entrada": "602214085774747474747474\n",
+          "saida": "+6.0221E+23\n"
+        },
+        {
+          "entrada": "-0.000027\n",
+          "saida": "-2.7000E-05\n"
         }
       ]
     },
@@ -188,22 +214,28 @@
       "id": "E1-MD-008",
       "eixo": "E1",
       "nivel": "MD",
-      "estruturas": [
-        "math.h"
-      ],
-      "origem": "Matemática financeira inversa e capitalização composta",
-      "direitos_restritos": true,
+      "estruturas": [],
+      "origem": "Beecrowd (URI Online Judge) — Problema 2006 (Identificando o Chá)",
+      "direitos_restritos": false,
       "path": "questions/e1/E1-MD-008",
-      "enunciado": "Leia o valor de um montante futuro desejado, a taxa de juros anual e o número de anos. Calcule o valor principal (capital inicial) necessário aplicando a fórmula de juros compostos invertida (`P = M / (1 + i)^n`) com 2 casas decimais.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double montante, taxa;\n    double anos;\n    scanf(\"%lf %lf %lf\", &montante, &taxa, &anos);\n    double p = montante / pow(1.0 + taxa / 100.0, anos);\n    printf(\"%.2f\\n\", p);\n    return 0;\n}\n",
+      "enunciado": "Degustação de chá às escuras é a habilidade de identificar um chá usando apenas seus sentidos do olfato e paladar. Isto faz parte da Competição Ideal de Consumidores de Chá Puro (ICPC), que um programa de TV local está organizando. Durante o show, um bule de chá completo é preparado e são entregues uma xícara de chá para cada um dos cinco competidores. Os participantes devem cheirar, saborear e avaliar a amostra, de modo a identificar o tipo de chá, que pode ser: (1) o chá branco; (2) chá verde; (3) chá preto; ou (4) chá de ervas. No final, as respostas são verificadas para determinar o número de suposições corretas.\n\nDado o tipo de chá real e as respostas fornecidas, determinar o número de participantes que receberam a resposta correta (sem utilizar comandos de seleção ou repetição).\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int t, a, b, c, d, e;\n    scanf(\"%d\", &t);\n    scanf(\"%d %d %d %d %d\", &a, &b, &c, &d, &e);\n    printf(\"%d\\n\", (a == t) + (b == t) + (c == t) + (d == t) + (e == t));\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "1126.83 1.0 12.0\n",
-          "saida": "1000.00\n"
+          "entrada": "1\n1 2 3 2 1\n",
+          "saida": "2\n"
         },
         {
-          "entrada": "2000.0 5.0 3.0\n",
-          "saida": "1727.68\n"
+          "entrada": "3\n4 1 1 2 1\n",
+          "saida": "0\n"
+        },
+        {
+          "entrada": "2\n2 2 2 2 2\n",
+          "saida": "5\n"
+        },
+        {
+          "entrada": "4\n1 2 3 4 4\n",
+          "saida": "2\n"
         }
       ]
     }

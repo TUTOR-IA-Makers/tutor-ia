@@ -1,5 +1,1 @@
-Leia o preço de um produto e a quantidade comprada (inteiro). Imprima o valor total com duas casas decimais.
-
-**Entrada:** um real e um inteiro.
-
-**Saída:** o total.
+Escreva um programa em C que efetue a apresentação do valor da conversão em real (R$) de um valor lido em dólar (US$). O programa deverá ler o valor da cotação do dólar e a quantidade de dólares disponíveis, imprimindo o valor em reais com 2 casas decimais.

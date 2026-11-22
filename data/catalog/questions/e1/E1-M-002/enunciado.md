@@ -1,5 +1,1 @@
-Leia as coordenadas `(x1, y1)` e `(x2, y2)` de dois pontos no plano cartesiano e imprima a distância euclidiana entre eles com 4 casas decimais.
-
-**Entrada:** quatro reais.
-
-**Saída:** a distância.
+Escreva um programa em C que leia um número inteiro positivo de 3 dígitos no formato `CDU` (centena, dezena e unidade), armazene em outra variável o número invertido no formato `UDC` e imprima o número original na primeira linha e o número invertido na segunda linha.

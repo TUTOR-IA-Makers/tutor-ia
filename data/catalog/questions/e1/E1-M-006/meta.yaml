@@ -1,6 +1,6 @@
-id: "E1-M-006"
-eixo: "E1"
-nivel: "M"
+id: E1-M-006
+eixo: E1
+nivel: M
 estruturas: []
-origem: "Exercício de representação monetária — introdução à programação"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 66"
 direitos_restritos: true

@@ -1,8 +1,10 @@
 #include <stdio.h>
 
+#define PI 3.14159
+
 int main(void) {
-    int a, b, c;
-    scanf("%d %d %d", &a, &b, &c);
-    printf("%.2f\n", (a + b + c) / 3.0);
+    double r;
+    scanf("%lf", &r);
+    printf("%.2f\n", 2.0 * PI * r);
     return 0;
 }

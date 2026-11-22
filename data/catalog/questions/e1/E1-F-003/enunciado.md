@@ -1,1 +1,1 @@
-Leia a base e a altura de um triângulo (reais) e imprima a área com 2 casas decimais.
+Escreva um programa em C que leia o valor de um depósito (real) e calcule o valor final com rendimento após um mês de aplicação, considerando uma taxa fixa de juros de 0,50% ao mês. Imprima o resultado com 2 casas decimais.

@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main(void) {
-    double n1, n2, n3, n4;
-    scanf("%lf %lf %lf %lf", &n1, &n2, &n3, &n4);
-    printf("%.2f\n", (2*n1 + 3*n2 + 4*n3 + 1*n4) / 10.0);
+    int ano, mes, dia;
+    scanf("%d-%d-%d", &ano, &mes, &dia);
+    printf("%02d/%02d/%04d\n", dia, mes, ano);
     return 0;
 }

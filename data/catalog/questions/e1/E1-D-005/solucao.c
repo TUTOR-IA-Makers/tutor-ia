@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <math.h>
 
 int main(void) {
-    double a1, r;
-    scanf("%lf %lf", &a1, &r);
-    double a60 = a1 + (60 - 1) * r;
-    printf("%.2f\n", a60);
+    double x1, y1, x2, y2, dist;
+    scanf("%lf %lf %lf %lf", &x1, &y1, &x2, &y2);
+    dist = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+    printf("%.4f\n", dist);
     return 0;
 }

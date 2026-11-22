@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <math.h>
 
 int main(void) {
-    double l, w, h;
-    scanf("%lf %lf %lf", &l, &w, &h);
-    printf("%.2f\n", l * w * h);
-    printf("%.2f\n", 2.0 * (l*w + l*h + w*h));
+    int termo, razao, quinto;
+    scanf("%d %d", &termo, &razao);
+    quinto = termo * (int)round(pow(razao, 4));
+    printf("%d\n", quinto);
     return 0;
 }

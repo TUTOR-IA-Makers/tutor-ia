@@ -1,6 +1,6 @@
-id: "E1-MF-008"
-eixo: "E1"
-nivel: "MF"
+id: E1-MF-008
+eixo: E1
+nivel: MF
 estruturas: []
-origem: "Exercício clássico de operações comerciais"
+origem: "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 8"
 direitos_restritos: true

@@ -1,1 +1,1 @@
-Leia as coordenadas de 3 pontos no plano cartesiano: `(x1, y1)`, `(x2, y2)` e `(x3, y3)`. Calcule a área do triângulo formado por eles usando a fórmula de determinantes (Shoelace): `Area = |x1(y2 - y3) + x2(y3 - y1) + x3(y1 - y2)| / 2`. Imprima a área com 3 casas decimais. Utilize `fabs()` para o valor absoluto.
+Escreva um programa em C que leia um valor inteiro `N` representando o tempo de duração em segundos de um determinado evento e o imprima no formato `horas:minutos:segundos`.

@@ -1,1 +1,1 @@
-Leia dois inteiros representando um número de notas de R$50 e de moedas de R$0,25. Calcule e imprima o valor total com 2 casas decimais.
+Sabendo que um automóvel faz 12 km com um litro de combustível, escreva um programa em C que leia o tempo gasto em uma viagem (em horas) e a velocidade média (em km/h), ambos números reais, e imprima, cada um em uma linha com 2 casas decimais: a velocidade média, o tempo gasto, a distância percorrida e a quantidade de litros de combustível utilizada.

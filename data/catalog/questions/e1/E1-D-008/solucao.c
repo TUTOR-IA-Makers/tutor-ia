@@ -1,11 +1,10 @@
 #include <stdio.h>
 
 int main(void) {
-    double largura, comprimento, custo_m2;
-    scanf("%lf %lf %lf", &largura, &comprimento, &custo_m2);
-    double area = largura * comprimento;
-    double area_com_perda = area * 1.10;
-    double custo_total = area_com_perda * custo_m2;
-    printf("%.2f\n%.2f\n", area_com_perda, custo_total);
+    int tempo, velocidade;
+    double litros;
+    scanf("%d %d", &tempo, &velocidade);
+    litros = (tempo * velocidade) / 12.0;
+    printf("%.3f\n", litros);
     return 0;
 }

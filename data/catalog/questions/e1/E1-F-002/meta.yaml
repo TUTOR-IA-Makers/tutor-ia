@@ -1,6 +1,6 @@
-id: "E1-F-002"
-eixo: "E1"
-nivel: "F"
+id: E1-F-002
+eixo: E1
+nivel: F
 estruturas: []
-origem: "Exercício de média ponderada"
+origem: "Linguagem C (Luís Damas) — Capítulo 2, Exercício 10"
 direitos_restritos: true

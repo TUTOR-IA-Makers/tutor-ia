@@ -1,6 +1,6 @@
-id: "E1-F-003"
-eixo: "E1"
-nivel: "F"
+id: E1-F-003
+eixo: E1
+nivel: F
 estruturas: []
-origem: "Exercício clássico de geometria básica"
+origem: "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 9"
 direitos_restritos: true

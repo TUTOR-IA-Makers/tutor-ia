@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main(void) {
-    int n;
-    scanf("%d", &n);
-    printf("%d\n", (n / 100) + ((n / 10) % 10) + (n % 10));
+    int num;
+    scanf("%d", &num);
+    printf("%d\n", (num + 1) % 61);
     return 0;
 }

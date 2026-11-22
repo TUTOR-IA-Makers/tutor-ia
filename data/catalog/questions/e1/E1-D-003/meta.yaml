@@ -1,7 +1,6 @@
-id: "E1-D-003"
-eixo: "E1"
-nivel: "D"
-estruturas:
-  - "math.h"
-origem: "Exercício de geometria analítica — Fórmula de Shoelace"
-direitos_restritos: true
+id: E1-D-003
+eixo: E1
+nivel: D
+estruturas: []
+origem: "Beecrowd (URI Online Judge) — Problema 1019 (Conversão de Tempo)"
+direitos_restritos: false

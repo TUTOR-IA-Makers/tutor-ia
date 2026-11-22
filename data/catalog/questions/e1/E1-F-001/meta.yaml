@@ -1,6 +1,6 @@
-id: "E1-F-001"
-eixo: "E1"
-nivel: "F"
+id: E1-F-001
+eixo: E1
+nivel: F
 estruturas: []
-origem: "Exercício clássico de geometria"
+origem: "Linguagem C (Luís Damas) — Capítulo 2, Exercícios Resolvidos"
 direitos_restritos: true

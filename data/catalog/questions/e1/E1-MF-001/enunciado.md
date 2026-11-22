@@ -1,5 +1,1 @@
-Leia dois números inteiros e imprima a soma deles.
-
-**Entrada:** dois inteiros `a` e `b` (uma linha).
-
-**Saída:** um inteiro, a soma.
+Escreva um programa em C que leia dois números inteiros `a` e `b` (b ≠ 0) e apresente o resultado das cinco operações aritméticas tradicionais (`+`, `-`, `*`, `/` e `%`), uma por linha, no formato `<a> <op> <b> = <resultado>`.

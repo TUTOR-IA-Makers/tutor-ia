@@ -1,1 +1,1 @@
-Leia a velocidade média (km/h, real) e o tempo de viagem (horas, real). Imprima a distância percorrida com 2 casas decimais.
+Escreva um programa em C que leia um número inteiro na base decimal e em seguida imprima esse mesmo número nas bases octal e hexadecimal (minúsculo), cada um em uma linha.

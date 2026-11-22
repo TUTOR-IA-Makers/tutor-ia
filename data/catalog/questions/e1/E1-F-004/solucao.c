@@ -1,8 +1,9 @@
 #include <stdio.h>
 
 int main(void) {
-    double v, t;
-    scanf("%lf %lf", &v, &t);
-    printf("%.2f\n", v * t);
+    int num;
+    scanf("%d", &num);
+    printf("%o\n", num);
+    printf("%x\n", num);
     return 0;
 }

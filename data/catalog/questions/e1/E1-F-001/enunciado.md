@@ -1,5 +1,1 @@
-Leia o raio de uma circunferência e imprima a área e o comprimento com 4 casas decimais, cada um em uma linha. Use `pi = 3.14159265`.
-
-**Entrada:** um real `r`.
-
-**Saída:** área e comprimento, nessa ordem.
+Escreva um programa em C que leia um número real `x` e mostre qual a sua parte inteira e a sua parte fracionária (com 6 casas decimais), uma em cada linha.

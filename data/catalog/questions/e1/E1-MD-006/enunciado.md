@@ -1,1 +1,1 @@
-Leia a massa de dois corpos e a distância entre eles. Calcule a força de atração gravitacional utilizando a Lei da Gravitação Universal de Newton (`F = G * (m1 * m2) / d²`), adotando a constante gravitacional `G = 6.67430e-11`. Imprima o resultado em notação científica com 4 casas decimais.
+Os dados armazenados no computador estão em binário. Uma forma econômica de ver estes números é usar a base 16 (hexadecimal). Sua tarefa consiste em escrever um programa que, dado um número natural na base 10, mostre sua representação em hexadecimal.

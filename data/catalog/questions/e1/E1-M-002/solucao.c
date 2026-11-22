@@ -1,10 +1,13 @@
 #include <stdio.h>
-#include <math.h>
 
 int main(void) {
-    double x1, y1, x2, y2;
-    scanf("%lf %lf %lf %lf", &x1, &y1, &x2, &y2);
-    double dist = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-    printf("%.4f\n", dist);
+    int num, c, d, u, num_inv;
+    scanf("%d", &num);
+    c = num / 100;
+    d = (num % 100) / 10;
+    u = num % 10;
+    num_inv = u * 100 + d * 10 + c;
+    printf("%d\n", num);
+    printf("%d\n", num_inv);
     return 0;
 }

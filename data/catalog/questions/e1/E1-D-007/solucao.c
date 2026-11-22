@@ -1,10 +1,11 @@
 #include <stdio.h>
 
 int main(void) {
-    double valor, taxa;
-    int dias;
-    scanf("%lf %lf %d", &valor, &taxa, &dias);
-    double atual = valor * (1.0 - (taxa / 100.0) * dias);
-    printf("%.2f\n", atual);
+    int cod1, qtd1, cod2, qtd2;
+    double val1, val2, total;
+    scanf("%d %d %lf", &cod1, &qtd1, &val1);
+    scanf("%d %d %lf", &cod2, &qtd2, &val2);
+    total = qtd1 * val1 + qtd2 * val2;
+    printf("VALOR A PAGAR: R$ %.2f\n", total);
     return 0;
 }

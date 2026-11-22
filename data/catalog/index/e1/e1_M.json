@@ -7,30 +7,28 @@
       "id": "E1-M-001",
       "eixo": "E1",
       "nivel": "M",
-      "estruturas": [
-        "math.h"
-      ],
-      "origem": "Exercício de matemática financeira — precisa de math.h",
+      "estruturas": [],
+      "origem": "Linguagem C (Luís Damas) — Capítulo 2, Exercícios Resolvidos",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-001",
-      "enunciado": "Leia o valor principal `P`, a taxa de juros mensal `i` (em %) e o número de meses `n`. Calcule e imprima o montante final usando juros compostos (`M = P * (1 + i/100)^n`) com 2 casas decimais.\n\n**Entrada:** três reais em uma linha.\n\n**Saída:** o montante M.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double P, i, n;\n    scanf(\"%lf %lf %lf\", &P, &i, &n);\n    printf(\"%.2f\\n\", P * pow(1.0 + i / 100.0, n));\n    return 0;\n}\n",
+      "enunciado": "Escreva um programa em C que leia um determinado número inteiro de segundos e, em seguida, indique quantas horas, minutos e segundos esse valor representa, imprimindo cada valor em uma linha.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long int n_segundos;\n    scanf(\"%ld\", &n_segundos);\n    printf(\"%d\\n\", (int) (n_segundos / 3600));\n    printf(\"%d\\n\", (int) ((n_segundos % 3600) / 60));\n    printf(\"%d\\n\", (int) (n_segundos % 60));\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "1000.0 1.0 12.0\n",
-          "saida": "1126.83\n"
+          "entrada": "3665\n",
+          "saida": "1\n1\n5\n"
         },
         {
-          "entrada": "500.0 2.0 6.0\n",
-          "saida": "563.08\n"
+          "entrada": "7200\n",
+          "saida": "2\n0\n0\n"
         },
         {
-          "entrada": "100.0 0.5 24.0\n",
-          "saida": "112.72\n"
+          "entrada": "45\n",
+          "saida": "0\n0\n45\n"
         },
         {
-          "entrada": "200.0 1.5 3.0\n",
-          "saida": "209.14\n"
+          "entrada": "86399\n",
+          "saida": "23\n59\n59\n"
         }
       ]
     },
@@ -38,30 +36,28 @@
       "id": "E1-M-002",
       "eixo": "E1",
       "nivel": "M",
-      "estruturas": [
-        "math.h"
-      ],
-      "origem": "Exercício de geometria analítica — precisa de math.h",
+      "estruturas": [],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 47",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-002",
-      "enunciado": "Leia as coordenadas `(x1, y1)` e `(x2, y2)` de dois pontos no plano cartesiano e imprima a distância euclidiana entre eles com 4 casas decimais.\n\n**Entrada:** quatro reais.\n\n**Saída:** a distância.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double x1, y1, x2, y2;\n    scanf(\"%lf %lf %lf %lf\", &x1, &y1, &x2, &y2);\n    double dist = sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));\n    printf(\"%.4f\\n\", dist);\n    return 0;\n}\n",
+      "enunciado": "Escreva um programa em C que leia um número inteiro positivo de 3 dígitos no formato `CDU` (centena, dezena e unidade), armazene em outra variável o número invertido no formato `UDC` e imprima o número original na primeira linha e o número invertido na segunda linha.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int num, c, d, u, num_inv;\n    scanf(\"%d\", &num);\n    c = num / 100;\n    d = (num % 100) / 10;\n    u = num % 10;\n    num_inv = u * 100 + d * 10 + c;\n    printf(\"%d\\n\", num);\n    printf(\"%d\\n\", num_inv);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "0.0 0.0 3.0 4.0\n",
-          "saida": "5.0000\n"
+          "entrada": "123\n",
+          "saida": "123\n321\n"
         },
         {
-          "entrada": "1.0 1.0 1.0 1.0\n",
-          "saida": "0.0000\n"
+          "entrada": "450\n",
+          "saida": "450\n54\n"
         },
         {
-          "entrada": "0.0 0.0 1.0 1.0\n",
-          "saida": "1.4142\n"
+          "entrada": "907\n",
+          "saida": "907\n709\n"
         },
         {
-          "entrada": "-3.0 0.0 0.0 4.0\n",
-          "saida": "5.0000\n"
+          "entrada": "888\n",
+          "saida": "888\n888\n"
         }
       ]
     },
@@ -69,28 +65,30 @@
       "id": "E1-M-003",
       "eixo": "E1",
       "nivel": "M",
-      "estruturas": [],
-      "origem": "Exercício clássico de formatação de saída",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 57",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-003",
-      "enunciado": "Leia uma quantidade de segundos inteira e imprima o tempo no formato `HH:MM:SS`.\n\n**Entrada:** um inteiro `s` (0 ≤ s < 86400).\n\n**Saída:** o tempo formatado.",
-      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int s;\n    scanf(\"%d\", &s);\n    int hh = s / 3600;\n    int mm = (s % 3600) / 60;\n    int ss = s % 60;\n    printf(\"%02d:%02d:%02d\\n\", hh, mm, ss);\n    return 0;\n}\n",
+      "enunciado": "Escreva um programa em C que leia as notas reais `PR1` e `PR2` de um aluno (valores não negativos), calcule a média aritmética e imprima, em linhas separadas, a média truncada (parte inteira) e a média arredondada para o inteiro mais próximo (arredondando metades para cima, como 7.5 para 8).\n",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double pr1, pr2, mf;\n    scanf(\"%lf %lf\", &pr1, &pr2);\n    mf = (pr1 + pr2) / 2.0;\n    printf(\"%d\\n\", (int)(mf + 1e-9));\n    printf(\"%d\\n\", (int)round(mf + 1e-9));\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "3661\n",
-          "saida": "01:01:01\n"
+          "entrada": "2.3 3.7\n",
+          "saida": "3\n3\n"
         },
         {
-          "entrada": "86399\n",
-          "saida": "23:59:59\n"
+          "entrada": "2.8 2.7\n",
+          "saida": "2\n3\n"
         },
         {
-          "entrada": "0\n",
-          "saida": "00:00:00\n"
+          "entrada": "6.9 8.1\n",
+          "saida": "7\n8\n"
         },
         {
-          "entrada": "3600\n",
-          "saida": "01:00:00\n"
+          "entrada": "7.9 8.1\n",
+          "saida": "8\n8\n"
         }
       ]
     },
@@ -98,28 +96,30 @@
       "id": "E1-M-004",
       "eixo": "E1",
       "nivel": "M",
-      "estruturas": [],
-      "origem": "Exercício de conversão de unidades — termodinâmica",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 58",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-004",
-      "enunciado": "Leia a temperatura em Kelvin e converta para Celsius (`C = K - 273.15`) e Fahrenheit (`F = C * 9/5 + 32`). Imprima as duas conversões com 2 casas decimais, cada uma em uma linha.",
-      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double k;\n    scanf(\"%lf\", &k);\n    double c = k - 273.15;\n    double f = c * 9.0 / 5.0 + 32.0;\n    printf(\"%.2f\\n%.2f\\n\", c, f);\n    return 0;\n}\n",
+      "enunciado": "Escreva um programa em C que leia três números reais `xnum1`, `xnum2` e `xnum3` (com `xnum3 + xnum1 ≠ 0`), calcule o valor da expressão `X = xnum1 + xnum2 / (xnum3 + xnum1) + 2 * (xnum1 - xnum2) + log2(64)` e imprima o resultado com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double xnum1, xnum2, xnum3, x;\n    scanf(\"%lf %lf %lf\", &xnum1, &xnum2, &xnum3);\n    x = xnum1 + xnum2 / (xnum3 + xnum1) + 2.0 * (xnum1 - xnum2) + log(64.0) / log(2.0);\n    printf(\"%.2f\\n\", x);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "373.15\n",
-          "saida": "100.00\n212.00\n"
+          "entrada": "2.0 4.0 2.0\n",
+          "saida": "5.00\n"
         },
         {
-          "entrada": "273.15\n",
-          "saida": "0.00\n32.00\n"
+          "entrada": "5.0 3.0 1.0\n",
+          "saida": "15.50\n"
         },
         {
-          "entrada": "0.0\n",
-          "saida": "-273.15\n-459.67\n"
+          "entrada": "1.0 1.0 1.0\n",
+          "saida": "7.50\n"
         },
         {
-          "entrada": "300.0\n",
-          "saida": "26.85\n80.33\n"
+          "entrada": "10.0 5.0 15.0\n",
+          "saida": "26.20\n"
         }
       ]
     },
@@ -127,28 +127,30 @@
       "id": "E1-M-005",
       "eixo": "E1",
       "nivel": "M",
-      "estruturas": [],
-      "origem": "Exercício de geometria espacial — introdução à programação",
+      "estruturas": [
+        "math.h"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 61",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-005",
-      "enunciado": "Leia três medidas de um retângulo e de um cilindro reto de base retangular: comprimento, largura e altura. Calcule e imprima o volume e a área da superfície total do sólido com 2 casas decimais, cada um em uma linha.\n\nFórmulas: `V = l × w × h`, `A = 2(lw + lh + wh)`.",
-      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double l, w, h;\n    scanf(\"%lf %lf %lf\", &l, &w, &h);\n    printf(\"%.2f\\n\", l * w * h);\n    printf(\"%.2f\\n\", 2.0 * (l*w + l*h + w*h));\n    return 0;\n}\n",
+      "enunciado": "Escreva um programa em C que leia o 1º termo e a razão de uma Progressão Geométrica (ambos números inteiros), calcule e imprima o 5º termo da série (`a5 = a1 * razao^4`).\n",
+      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    int termo, razao, quinto;\n    scanf(\"%d %d\", &termo, &razao);\n    quinto = termo * (int)round(pow(razao, 4));\n    printf(\"%d\\n\", quinto);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "2.0 3.0 4.0\n",
-          "saida": "24.00\n52.00\n"
+          "entrada": "2 3\n",
+          "saida": "162\n"
         },
         {
-          "entrada": "1.0 1.0 1.0\n",
-          "saida": "1.00\n6.00\n"
+          "entrada": "5 2\n",
+          "saida": "80\n"
         },
         {
-          "entrada": "5.0 2.0 3.0\n",
-          "saida": "30.00\n62.00\n"
+          "entrada": "3 -2\n",
+          "saida": "48\n"
         },
         {
-          "entrada": "4.0 4.0 4.0\n",
-          "saida": "64.00\n96.00\n"
+          "entrada": "10 1\n",
+          "saida": "10\n"
         }
       ]
     },
@@ -157,27 +159,27 @@
       "eixo": "E1",
       "nivel": "M",
       "estruturas": [],
-      "origem": "Exercício de representação monetária — introdução à programação",
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 66",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-006",
-      "enunciado": "Leia dois inteiros representando um número de notas de R$50 e de moedas de R$0,25. Calcule e imprima o valor total com 2 casas decimais.",
-      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int notas, moedas;\n    scanf(\"%d %d\", &notas, &moedas);\n    printf(\"%.2f\\n\", notas * 50.0 + moedas * 0.25);\n    return 0;\n}\n",
+      "enunciado": "Sabendo que um automóvel faz 12 km com um litro de combustível, escreva um programa em C que leia o tempo gasto em uma viagem (em horas) e a velocidade média (em km/h), ambos números reais, e imprima, cada um em uma linha com 2 casas decimais: a velocidade média, o tempo gasto, a distância percorrida e a quantidade de litros de combustível utilizada.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double tempo, vel, dist, litros;\n    scanf(\"%lf %lf\", &tempo, &vel);\n    dist = tempo * vel;\n    litros = dist / 12.0;\n    printf(\"%.2f\\n\", vel);\n    printf(\"%.2f\\n\", tempo);\n    printf(\"%.2f\\n\", dist);\n    printf(\"%.2f\\n\", litros);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "2 4\n",
-          "saida": "101.00\n"
+          "entrada": "2.0 60.0\n",
+          "saida": "60.00\n2.00\n120.00\n10.00\n"
         },
         {
-          "entrada": "0 0\n",
-          "saida": "0.00\n"
+          "entrada": "3.5 80.0\n",
+          "saida": "80.00\n3.50\n280.00\n23.33\n"
         },
         {
-          "entrada": "1 0\n",
-          "saida": "50.00\n"
+          "entrada": "1.5 100.0\n",
+          "saida": "100.00\n1.50\n150.00\n12.50\n"
         },
         {
-          "entrada": "3 8\n",
-          "saida": "152.00\n"
+          "entrada": "0.5 48.0\n",
+          "saida": "48.00\n0.50\n24.00\n2.00\n"
         }
       ]
     },
@@ -185,30 +187,28 @@
       "id": "E1-M-007",
       "eixo": "E1",
       "nivel": "M",
-      "estruturas": [
-        "math.h"
-      ],
-      "origem": "Exercício de equação quadrática — precisa de math.h",
+      "estruturas": [],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 67",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-007",
-      "enunciado": "Leia os coeficientes `a`, `b` e `c` de uma equação do segundo grau. Calcule o discriminante `Δ = b² - 4ac` e as duas raízes reais (assuma que `Δ ≥ 0`). Imprima `Δ`, `x1` e `x2` com 4 casas decimais, cada um em uma linha.",
-      "solucao_referencia": "#include <stdio.h>\n#include <math.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    double delta = b*b - 4.0*a*c;\n    double x1 = (-b + sqrt(delta)) / (2.0*a);\n    double x2 = (-b - sqrt(delta)) / (2.0*a);\n    printf(\"%.4f\\n%.4f\\n%.4f\\n\", delta, x1, x2);\n    return 0;\n}\n",
+      "enunciado": "Escreva um programa em C que efetue o cálculo do valor de uma prestação em atraso utilizando a fórmula `prestacao = valor + (valor * (taxa / 100) * tempo)`. O programa deverá ler o valor original da prestação (real), a taxa de juros percentual por período (real) e o tempo de atraso em meses (inteiro), imprimindo o valor final da prestação com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double valor, taxa, prest;\n    int tempo;\n    scanf(\"%lf %lf %d\", &valor, &taxa, &tempo);\n    prest = valor + (valor * (taxa / 100.0) * tempo);\n    printf(\"%.2f\\n\", prest);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "1.0 -5.0 6.0\n",
-          "saida": "1.0000\n3.0000\n2.0000\n"
+          "entrada": "1000.0 2.0 3\n",
+          "saida": "1060.00\n"
         },
         {
-          "entrada": "1.0 0.0 -4.0\n",
-          "saida": "16.0000\n2.0000\n-2.0000\n"
+          "entrada": "500.0 1.5 4\n",
+          "saida": "530.00\n"
         },
         {
-          "entrada": "1.0 -2.0 1.0\n",
-          "saida": "0.0000\n1.0000\n1.0000\n"
+          "entrada": "250.0 5.0 0\n",
+          "saida": "250.00\n"
         },
         {
-          "entrada": "2.0 -7.0 3.0\n",
-          "saida": "25.0000\n3.0000\n0.5000\n"
+          "entrada": "1200.50 3.25 2\n",
+          "saida": "1278.53\n"
         }
       ]
     },
@@ -217,27 +217,27 @@
       "eixo": "E1",
       "nivel": "M",
       "estruturas": [],
-      "origem": "Exercício clássico de aritmética modular",
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 76",
       "direitos_restritos": true,
       "path": "questions/e1/E1-M-008",
-      "enunciado": "Leia um número inteiro positivo de exatamente três dígitos (ex: 123) e calcule a soma dos seus dígitos matematicamente, sem usar laços ou strings.\n\n**Entrada:** um inteiro `N` (100 ≤ N ≤ 999).\n\n**Saída:** a soma dos dígitos.",
-      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    printf(\"%d\\n\", (n / 100) + ((n / 10) % 10) + (n % 10));\n    return 0;\n}\n",
+      "enunciado": "Escreva um programa em C que leia um número inteiro `num` no intervalo de 0 a 60 e imprima o seu sucessor circular, sabendo que o sucessor de 60 é 0. O programa deve ser implementado utilizando apenas operações aritméticas sequenciais, sem comandos de seleção (`if`, `switch`, operador ternário) ou de repetição.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int num;\n    scanf(\"%d\", &num);\n    printf(\"%d\\n\", (num + 1) % 61);\n    return 0;\n}\n",
       "casos_teste": [
         {
-          "entrada": "123\n",
-          "saida": "6\n"
+          "entrada": "60\n",
+          "saida": "0\n"
         },
         {
-          "entrada": "999\n",
-          "saida": "27\n"
-        },
-        {
-          "entrada": "100\n",
+          "entrada": "0\n",
           "saida": "1\n"
         },
         {
-          "entrada": "405\n",
-          "saida": "9\n"
+          "entrada": "59\n",
+          "saida": "60\n"
+        },
+        {
+          "entrada": "25\n",
+          "saida": "26\n"
         }
       ]
     }

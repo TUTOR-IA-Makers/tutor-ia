@@ -1,5 +1,1 @@
-Leia uma quantidade de segundos inteira e imprima o tempo no formato `HH:MM:SS`.
-
-**Entrada:** um inteiro `s` (0 ≤ s < 86400).
-
-**Saída:** o tempo formatado.
+Escreva um programa em C que leia as notas reais `PR1` e `PR2` de um aluno (valores não negativos), calcule a média aritmética e imprima, em linhas separadas, a média truncada (parte inteira) e a média arredondada para o inteiro mais próximo (arredondando metades para cima, como 7.5 para 8).
