@@ -4,8 +4,6 @@ Acervo de questões de referência para geração ancorada (G6-2).
 
 ## Estrutura de Diretórios
 
-## Estrutura de Diretórios
-
 O catálogo é dividido entre os **arquivos-fonte fatiados em JSON** (`index/`) e as **pastas individuais de execução e validação** (`questions/`):
 
 ```text
