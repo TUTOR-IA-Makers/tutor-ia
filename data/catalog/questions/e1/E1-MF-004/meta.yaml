@@ -1,6 +1,6 @@
-id: E1-MF-004
-eixo: E1
-nivel: MF
+id: "E1-MF-004"
+eixo: "E1"
+nivel: "MF"
 estruturas: []
 origem: "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 2"
 direitos_restritos: true

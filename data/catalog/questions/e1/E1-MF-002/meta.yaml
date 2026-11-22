@@ -1,6 +1,6 @@
-id: E1-MF-002
-eixo: E1
-nivel: MF
+id: "E1-MF-002"
+eixo: "E1"
+nivel: "MF"
 estruturas: []
 origem: "Linguagem C (Luís Damas) — Capítulo 2, Exercício 9"
 direitos_restritos: true

@@ -1,6 +1,6 @@
-id: E1-MD-001
-eixo: E1
-nivel: MD
+id: "E1-MD-001"
+eixo: "E1"
+nivel: "MD"
 estruturas: []
 origem: "Beecrowd (URI Online Judge) — Problema 1021 (Notas e Moedas)"
 direitos_restritos: false

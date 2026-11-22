@@ -1,6 +1,6 @@
-id: E1-D-008
-eixo: E1
-nivel: D
+id: "E1-D-008"
+eixo: "E1"
+nivel: "D"
 estruturas: []
 origem: "Beecrowd (URI Online Judge) — Problema 1017 (Gasto de Combustível)"
 direitos_restritos: false

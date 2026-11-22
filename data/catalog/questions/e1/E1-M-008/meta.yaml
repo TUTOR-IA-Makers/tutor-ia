@@ -1,6 +1,6 @@
-id: E1-M-008
-eixo: E1
-nivel: M
+id: "E1-M-008"
+eixo: "E1"
+nivel: "M"
 estruturas: []
 origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 76"
 direitos_restritos: true

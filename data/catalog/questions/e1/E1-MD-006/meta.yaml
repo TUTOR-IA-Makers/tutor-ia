@@ -1,6 +1,6 @@
-id: E1-MD-006
-eixo: E1
-nivel: MD
+id: "E1-MD-006"
+eixo: "E1"
+nivel: "MD"
 estruturas: []
 origem: "Beecrowd (URI Online Judge) — Problema 1957 (Converter para Hexadecimal)"
 direitos_restritos: false
