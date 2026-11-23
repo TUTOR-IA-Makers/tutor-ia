@@ -83,7 +83,7 @@ O [Plano de entrega](plano-30-11.md) **reescopa isso de propósito**: até 30/11
 
 | O EPIC-017 exige | Hoje | Até 30/11 |
 | --- | --- | --- |
-| Parametrização (conteúdo, nível, estruturas) | <span class="ce-badge ce-status--done">Implementado</span> parcial: nível e cinco booleanos | <span class="ce-badge ce-status--planned">Planejado</span> eixo e listas de estruturas (G2-1, G6-1) |
+| Parametrização (conteúdo, nível, estruturas) | <span class="ce-badge ce-status--done">Implementado</span>: nível, eixo e listas de estruturas (G2-1, G6-1); o prompt ainda resume as listas em cinco grupos | <span class="ce-badge ce-status--planned">Planejado</span> verificação das listas por AST (G2-2) |
 | Gerar enunciado, solução e casos de teste | <span class="ce-badge ce-status--done">Implementado</span> | — |
 | Validação automática antes de mostrar ao professor | <span class="ce-badge ce-status--done">Implementado</span> parcial: compila e executa | <span class="ce-badge ce-status--planned">Planejado</span> verificação de escopo (G2) |
 | Rastreabilidade (modelo, prompt, custo) | <span class="ce-badge ce-status--done">Implementado</span> parcial: modelo e versão de prompt | <span class="ce-badge ce-status--planned">Planejado</span> custo (G2-4) |

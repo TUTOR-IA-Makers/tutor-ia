@@ -21,11 +21,9 @@ curl -X POST http://127.0.0.1:8000/create_question \
   -d '{
         "statement_request": {
           "difficulty": "facil",
-          "can_has_if": true,
-          "can_has_else": true,
-          "can_has_repetition": true,
-          "can_has_function": false,
-          "can_has_matrix": false
+          "required": ["for"],
+          "allowed": ["if", "else"],
+          "forbidden": ["funcao", "vetor", "matriz"]
         },
         "qty": 5
       }'
@@ -68,7 +66,7 @@ H="Content-Type: application/json"
 
 # 1. Enunciado — cria a execução e devolve o run_id
 RUN=$(curl -sX POST $API/gen_statement -H "$H" \
-  -d '{"difficulty": "facil", "can_has_repetition": true}' | jq -r .run_id)
+  -d '{"difficulty": "facil", "allowed": ["for", "while"]}' | jq -r .run_id)
 $EDITOR var/runs/$RUN/statement.json        # opcional: ajustar título ou texto
 
 # 2. Solução em C

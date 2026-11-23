@@ -30,6 +30,7 @@
 | [0017](0017-resumable-generation-job.md) | Keep the generation job's state on runs, interrupt it on startup, and resume from the last recorded step | Proposed |
 | [0018](0018-library-filters-in-python.md) | List the library with one store call and filter it in Python | Proposed |
 | [0019](0019-pure-exporter-no-shared-file.md) | Export renders XML in memory and returns it; no shared questionnaire file | Proposed |
+| [0020](0020-named-structure-constraints.md) | Constraints are three named lists of structures; the five booleans become a translation | Proposed |
 
 Para escrever uma nova, ver [`.agents/workflows/add-adr.md`](https://github.com/HugoRosa29/coderunner_v2/blob/main/.agents/workflows/add-adr.md) e o [modelo](0000-template.md).
 
