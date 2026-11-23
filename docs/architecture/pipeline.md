@@ -2,7 +2,7 @@
 
 <p class="lead">Cinco etapas: três chamam o modelo, uma compila e executa, uma monta o XML. Esta página descreve o que cada etapa pede, como interpreta a resposta e onde pode falhar em silêncio.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> Tudo nesta página. Mudanças previstas — verificação de escopo entre as etapas 2 e 3, entradas categorizadas, exportador sem arquivo compartilhado — estão no [Roadmap](../product/roadmap.md#verificacao-de-escopo).
+<span class="ce-badge ce-status--done">Implementado</span> Tudo nesta página. Mudanças previstas — verificação de escopo entre as etapas 2 e 3, entradas categorizadas — estão no [Roadmap](../product/roadmap.md#verificacao-de-escopo).
 
 ```mermaid
 flowchart TD
@@ -12,7 +12,7 @@ flowchart TD
     S2 -->|solution.c| S3["3 · inputs<br/><small>LLM</small>"]
     S3 -->|inputs.json| S4["4 · testcases<br/><small>gcc + execução</small>"]
     S4 -->|testcases.json| S5["5 · export<br/><small>templates</small>"]
-    S5 --> X[("var/questions/<br/>Moodle_Questionnaire.xml")]
+    S5 --> X["XML na resposta<br/><small>nenhum arquivo</small>"]
 
     style S4 stroke-width:3px
 ```
@@ -102,7 +102,7 @@ Três templates em `backend/src/codeexpert/export/templates/`, lidos via `import
 
 | Marcador | Substituído por |
 | --- | --- |
-| `Macro_QuestionNumber` | Número de questões já no arquivo + 1 |
+| `Macro_QuestionNumber` | Posição da questão na lista exportada, a partir de 1 |
 | `Macro_QuestionName` | Título, escapado |
 | `Macro_QuestionTextinHTML` | Enunciado escapado, `\n` → `<br>`, dentro de CDATA |
 | `Macro_Answer` | Código C dentro de CDATA; um `]]>` literal é neutralizado |
@@ -114,16 +114,36 @@ Três templates em `backend/src/codeexpert/export/templates/`, lidos via `import
 | `Macro_UseAsExample` | `"1"` nos três primeiros casos, `"0"` nos demais |
 | `Macro_Display` | vazio |
 
-**Acumulação.** A primeira exportação cria o arquivo; as seguintes inserem a questão antes de `</quiz>`. A resposta traz `question_count`, a posição da questão no arquivo.
+**Função pura, sem arquivo compartilhado.** O XML é montado em memória e devolvido; nada é lido nem gravado fora da execução. A interface, em `codeexpert.export`, é pensada para ser reutilizada pela exportação de uma seleção (G1-6):
+
+```python
+@dataclass(frozen=True)
+class ExportQuestion:          # o que o XML de uma questão precisa, e só isso
+    statement: Statement
+    code: str
+    testcases: tuple[TestCase, ...]
+    metadata: RunMetadata      # dificuldade e `reviewed`, para as tags
+
+def read_question(workspace: RunWorkspace) -> ExportQuestion: ...
+def export_questions(questions: Sequence[ExportQuestion]) -> str: ...
+def export_run(workspace: RunWorkspace) -> ExportResult: ...  # a etapa 5
+```
+
+| Função | Faz | Não faz |
+| --- | --- | --- |
+| `export_questions` | Devolve um `<quiz>` com as questões na ordem recebida, numeradas 1, 2, 3… pela posição na lista. A mesma lista dá sempre o mesmo XML. Lista vazia é `ValueError` | Ler ou gravar arquivo, consultar o store, recusar questão não aprovada (isso é do chamador, G3-4) |
+| `read_question` | Lê `statement.json`, `solution.c`, `testcases.json` e `meta.json` da execução. Artefato ausente é `MissingArtefactError` (`409`) | Validar o estado da questão |
+| `export_run` | A etapa 5: `export_questions([read_question(ws)])`, marca a execução como concluída e devolve `ExportResult(xml, question_count=1)` | Gravar o XML. Chamar de novo devolve o mesmo XML |
+
+Uma seleção é `export_questions([read_question(ws) for ws in selecionadas])`: a numeração sai da ordem da lista, não de um arquivo pré-existente.
 
 ```mermaid
 flowchart LR
-    A["Execução 1"] -->|cria| F1["&lt;quiz&gt;<br/>questão 1<br/>&lt;/quiz&gt;"]
-    B["Execução 2"] -->|insere| F2["&lt;quiz&gt;<br/>questão 1<br/>questão 2<br/>&lt;/quiz&gt;"]
+    A["Execução 1"] -->|etapa 5| F1["&lt;quiz&gt;<br/>questão 1<br/>&lt;/quiz&gt;"]
+    B["Execução 2"] -->|etapa 5| F2["&lt;quiz&gt;<br/>questão 1<br/>&lt;/quiz&gt;"]
 ```
 
-!!! warning "Leitura-modificação-escrita num arquivo único"
-    Duas exportações simultâneas leem o mesmo estado e uma sobrescreve a outra. Hoje isso não acontece porque as rotas serializam os pedidos no processo. Com mais de um worker ou instância, uma questão some sem erro. <span class="ce-badge ce-status--planned">Planejado</span> no G1-8 (exportador puro).
+Duas exportações ao mesmo tempo não interferem: não há estado compartilhado. Até o G1-8 (#43), a etapa 5 lia `var/questions/Moodle_Questionnaire.xml` inteiro, contava as questões para se numerar e reescrevia o arquivo — com mais de um worker, uma questão sumia sem erro.
 
 Limitações atuais: só C (`c_program` fixo), sem categoria de banco de questões, `generalfeedback` vazio, exemplos escolhidos por posição.
 

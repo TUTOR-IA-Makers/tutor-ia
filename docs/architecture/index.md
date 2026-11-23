@@ -24,7 +24,6 @@ flowchart TD
     LLM["llm/<br/><small>chat completions</small>"]
     EXE["execution/<br/><small>gcc, com limites</small>"]
     WS[("store/<br/><small>estado da execução: disco ou Postgres</small>")]
-    XML[("var/questions/<br/><small>Moodle_Questionnaire.xml</small>")]
 
     Cliente --> Rotas
     Rotas --> GEN
@@ -36,7 +35,6 @@ flowchart TD
     S3 --> LLM
     S4 --> EXE
     GEN <--> WS
-    S5 --> XML
 
     LLM -->|HTTPS| Fornecedor["Provedor compatível<br/>com OpenAI"]
     EXE -->|subprocess| GCC["gcc + binário"]
@@ -123,12 +121,12 @@ var/runs/20260918T221305Z-1a2b3c4d/
 | 2 `gen_code` | `statement.json` | `solution.c` |
 | 3 `gen_inputs` | `statement.json`, `solution.c` | `inputs.json` |
 | 4 `gen_testcases` | `solution.c`, `inputs.json` | `testcases.json` |
-| 5 `export_moodle_xml_question` | `statement.json`, `solution.c`, `testcases.json`, `meta.json` | `var/questions/Moodle_Questionnaire.xml` |
+| 5 `export_moodle_xml_question` | `statement.json`, `solution.c`, `testcases.json`, `meta.json` | nada — o XML vai na resposta |
 
 - **`run_id`** é `<timestamp UTC>-<8 hex>`, então `ls var/runs/` lista em ordem cronológica. O cliente envia o `run_id` e ele vira caminho no disco; `RunWorkspace.open()` valida o formato antes, e qualquer outra coisa (inclusive `../../etc`) é `404`.
-- **Concorrência:** duas execuções escrevem em diretórios diferentes e não se misturam ([ADR-0003](../adr/0003-one-workspace-per-run.md)). O XML de saída, porém, é um arquivo único lido e reescrito a cada exportação.
+- **Concorrência:** duas execuções escrevem em diretórios diferentes e não se misturam ([ADR-0003](../adr/0003-one-workspace-per-run.md)). A exportação também não compartilha nada: devolve o XML em vez de acrescentá-lo a um arquivo.
 - **Rastreabilidade:** `meta.json` registra as restrições, e para cada etapa com prompt, o modelo e a versão (`PROMPT_VERSIONS`). Não registra tokens nem custo.
-- **Rascunho em disco:** a etapa 4 grava o `.c` e o binário num diretório temporário do sistema e o apaga ao terminar, mesmo se falhar. É o único uso de disco do pipeline além do XML da etapa 5.
+- **Rascunho em disco:** a etapa 4 grava o `.c` e o binário num diretório temporário do sistema e o apaga ao terminar, mesmo se falhar. É o único uso de disco do pipeline.
 - **Limpeza:** nada é apagado automaticamente. `make clean` remove `var/` inteiro.
 
 ```json title="meta.json"

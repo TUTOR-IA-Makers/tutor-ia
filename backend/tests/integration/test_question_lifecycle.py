@@ -13,7 +13,7 @@ from httpx import Response
 
 from codeexpert.domain import Constraints, QuestionState
 from codeexpert.errors import CompilationError, ExecutionError
-from codeexpert.export import export_question
+from codeexpert.export import export_run
 from codeexpert.generation import create_question, generate_testcases
 from codeexpert.settings import get_settings
 from codeexpert.store import LocalFilesystemStore
@@ -238,7 +238,7 @@ def test_a_timeout_also_fails_verification(
 
 
 def test_retrying_verification_returns_to_generation_and_can_succeed(
-    workspace: RunWorkspace, statement_response: str, tmp_path: Path
+    workspace: RunWorkspace, statement_response: str
 ) -> None:
     llm = FakeLLM([statement_response, SOLUTION_SOURCE, INPUTS_RESPONSE])
     with pytest.raises(CompilationError):
@@ -248,7 +248,7 @@ def test_retrying_verification_returns_to_generation_and_can_succeed(
     generate_testcases(workspace, FakeRunner())
     assert workspace.state is QuestionState.GERANDO
 
-    export_question(workspace, output_dir=tmp_path / "out")
+    export_run(workspace)
     assert workspace.state is QuestionState.GERADA
 
 

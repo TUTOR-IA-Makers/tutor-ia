@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 
 from codeexpert.domain import Constraints, JobRecord, JobState, QuestionState
 from codeexpert.errors import CodeExpertError, InvalidTransitionError, RunNotFoundError
-from codeexpert.export import export_question
+from codeexpert.export import export_run
 from codeexpert.generation import (
     create_question,
     generate_code,
@@ -144,7 +144,7 @@ def test_a_run_started_elsewhere_finishes_without_its_local_directory(
     generate_inputs(second_process, 2, FakeLLM([INPUTS_RESPONSE]))
     runner = FakeRunner()
     testcases = generate_testcases(second_process, runner)
-    export = export_question(second_process, output_dir=tmp_path / "out")
+    export = export_run(second_process)
 
     assert len(testcases) == 2
     assert export.question_count == 1
@@ -357,7 +357,7 @@ def test_the_scratch_directory_is_deleted_when_the_step_fails(workspace: RunWork
 
 
 def test_a_failed_run_is_not_visible_and_can_be_resumed(
-    workspace: RunWorkspace, statement_response: str, tmp_path: Path
+    workspace: RunWorkspace, statement_response: str
 ) -> None:
     llm = FakeLLM([statement_response, SOLUTION_SOURCE, INPUTS_RESPONSE])
     with pytest.raises(CodeExpertError):
@@ -366,7 +366,7 @@ def test_a_failed_run_is_not_visible_and_can_be_resumed(
 
     # The client resumes by run id: the runner is fixed, the earlier steps are kept.
     generate_testcases(workspace, FakeRunner())
-    export_question(workspace, output_dir=tmp_path / "out")
+    export_run(workspace)
     assert workspace.is_complete()
 
 

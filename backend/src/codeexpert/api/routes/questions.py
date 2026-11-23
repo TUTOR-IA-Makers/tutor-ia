@@ -32,7 +32,7 @@ from codeexpert.api.schemas import (
 )
 from codeexpert.domain import Constraints, QuestionState, Statement, TestCase
 from codeexpert.errors import RunNotFoundError
-from codeexpert.export import export_question
+from codeexpert.export import export_run
 from codeexpert.generation import (
     create_question,
     generate_code,
@@ -87,12 +87,12 @@ async def gen_testcases(
 
 @router.post("/export_moodle_xml_question", response_model=ExportResponse)
 async def export_moodle_xml_question(request: RunRequest, store: StoreDep) -> ExportResponse:
-    """Step 5. Appends to the questionnaire file rather than replacing it."""
+    """Step 5. Returns the run's question as a Moodle XML of its own; writes no file."""
     workspace = open_run(request.run_id, store)
-    result = export_question(workspace)
+    result = export_run(workspace)
     return ExportResponse(
         run_id=workspace.run_id,
-        file_path=str(result.file_path),
+        xml=result.xml,
         question_count=result.question_count,
     )
 
@@ -125,7 +125,7 @@ async def create_question_endpoint(
         testcases=result.testcases,
         export=ExportResponse(
             run_id=result.run_id,
-            file_path=str(result.export.file_path),
+            xml=result.export.xml,
             question_count=result.export.question_count,
         ),
     )

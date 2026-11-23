@@ -36,7 +36,7 @@ def test_full_run_writes_every_artefact(workspace: RunWorkspace, statement_respo
 
     assert result.statement.name == "Soma de dois numeros"
     assert len(result.testcases) == 2
-    assert result.export.file_path.exists()
+    assert "<quiz>" in result.export.xml
     assert workspace.exists(META)
 
 

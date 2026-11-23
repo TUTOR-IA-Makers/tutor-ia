@@ -165,7 +165,6 @@ class MemoryStore:
 def isolated_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Point every path at tmp_path and guarantee a key is never read from disk."""
     monkeypatch.setenv("CODEEXPERT_WORKSPACE_ROOT", str(tmp_path / "runs"))
-    monkeypatch.setenv("CODEEXPERT_QUESTIONS_DIR", str(tmp_path / "questions"))
     # A developer's .env may select Postgres; the suite never follows it. Every
     # app startup touches the store (the G0-8 sweep), so this must be pinned.
     monkeypatch.setenv("CODEEXPERT_STORE_BACKEND", "local")
