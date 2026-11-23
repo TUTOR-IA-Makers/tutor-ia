@@ -7,6 +7,8 @@ import pytest
 from codeexpert.errors import LLMError
 from codeexpert.llm import get_llm_client
 from codeexpert.settings import reset_settings_cache
+from codeexpert.store import LocalFilesystemStore
+from codeexpert.workspace import RunWorkspace
 
 pytestmark = pytest.mark.integration
 
@@ -52,6 +54,40 @@ class TestStepByStep:
         body = response.json()
         assert body["run_id"]
         assert body["name"] == "Soma de dois numeros"
+
+    def test_named_structures_are_stored_on_the_run(
+        self, client, statement_response, isolated_settings
+    ) -> None:
+        client.fake_llm._responses = [statement_response]
+        run_id = client.post(
+            "/gen_statement", json={"required": ["while"], "forbidden": ["goto"]}
+        ).json()["run_id"]
+
+        store = LocalFilesystemStore(isolated_settings.workspace_root)
+        constraints = RunWorkspace.open(store, run_id).read_metadata().constraints
+        assert constraints is not None
+        assert constraints.required == ["while"]
+        assert "goto" in constraints.forbidden
+        assert "estruturas de repetição (for, while" in client.fake_llm.calls[0][1]
+
+    def test_the_old_booleans_are_still_accepted(self, client, statement_response) -> None:
+        # Clients written before G2-1 send flags; same request, same prompt.
+        client.fake_llm._responses = [statement_response, statement_response]
+        legacy = client.post(
+            "/gen_statement", json={"can_has_repetition": True, "can_has_else": False}
+        )
+        named = client.post(
+            "/gen_statement",
+            json={"allowed": ["for", "while", "do-while"], "forbidden": ["else"]},
+        )
+
+        assert legacy.status_code == named.status_code == 200
+        assert client.fake_llm.calls[0] == client.fake_llm.calls[1]
+
+    def test_a_contradictory_request_is_a_422(self, client) -> None:
+        response = client.post("/gen_statement", json={"required": ["for"], "forbidden": ["for"]})
+        assert response.status_code == 422
+        assert "forbidden and also" in response.text
 
     def test_steps_share_state_through_the_run_id(self, client, statement_response) -> None:
         client.fake_llm._responses = [statement_response, SOLUTION_SOURCE, '["1\\n2\\n"]']
