@@ -24,7 +24,6 @@ flowchart TD
     LLM["llm/<br/><small>chat completions</small>"]
     EXE["execution/<br/><small>gcc, com limites</small>"]
     WS[("store/<br/><small>estado da execução: disco ou Postgres</small>")]
-    XML[("var/questions/<br/><small>Moodle_Questionnaire.xml</small>")]
 
     Cliente --> Rotas
     Rotas --> GEN
@@ -36,7 +35,6 @@ flowchart TD
     S3 --> LLM
     S4 --> EXE
     GEN <--> WS
-    S5 --> XML
 
     LLM -->|HTTPS| Fornecedor["Provedor compatível<br/>com OpenAI"]
     EXE -->|subprocess| GCC["gcc + binário"]
@@ -123,12 +121,12 @@ var/runs/20260918T221305Z-1a2b3c4d/
 | 2 `gen_code` | `statement.json` | `solution.c` |
 | 3 `gen_inputs` | `statement.json`, `solution.c` | `inputs.json` |
 | 4 `gen_testcases` | `solution.c`, `inputs.json` | `testcases.json` |
-| 5 `export_moodle_xml_question` | `statement.json`, `solution.c`, `testcases.json`, `meta.json` | `var/questions/Moodle_Questionnaire.xml` |
+| 5 `export_moodle_xml_question` | `statement.json`, `solution.c`, `testcases.json`, `meta.json` | nada — o XML vai na resposta |
 
 - **`run_id`** é `<timestamp UTC>-<8 hex>`, então `ls var/runs/` lista em ordem cronológica. O cliente envia o `run_id` e ele vira caminho no disco; `RunWorkspace.open()` valida o formato antes, e qualquer outra coisa (inclusive `../../etc`) é `404`.
-- **Concorrência:** duas execuções escrevem em diretórios diferentes e não se misturam ([ADR-0003](../adr/0003-one-workspace-per-run.md)). O XML de saída, porém, é um arquivo único lido e reescrito a cada exportação.
+- **Concorrência:** duas execuções escrevem em diretórios diferentes e não se misturam ([ADR-0003](../adr/0003-one-workspace-per-run.md)). A exportação também não compartilha nada: devolve o XML em vez de acrescentá-lo a um arquivo.
 - **Rastreabilidade:** `meta.json` registra as restrições, e para cada etapa com prompt, o modelo e a versão (`PROMPT_VERSIONS`). Não registra tokens nem custo.
-- **Rascunho em disco:** a etapa 4 grava o `.c` e o binário num diretório temporário do sistema e o apaga ao terminar, mesmo se falhar. É o único uso de disco do pipeline além do XML da etapa 5.
+- **Rascunho em disco:** a etapa 4 grava o `.c` e o binário num diretório temporário do sistema e o apaga ao terminar, mesmo se falhar. É o único uso de disco do pipeline.
 - **Limpeza:** nada é apagado automaticamente. `make clean` remove `var/` inteiro.
 
 ```json title="meta.json"
@@ -173,10 +171,10 @@ A tabela completa de status está em [API § Erros](../reference/api.md#erros).
 | --- | --- | --- |
 | Autenticação e autorização | Nenhuma. Todos os endpoints são públicos | Acesso por convite, cota por usuário — [G8](../product/roadmap.md#acesso-e-custo) |
 | Banco de dados | Artefatos no Postgres ou em arquivos locais; [modelo estruturado](data-model.md) de questões, casos e execuções no Postgres | Versionamento e consultas da biblioteca — [G1](../product/roadmap.md#estado-da-geracao) |
-| Front-end | Só o Swagger UI em `/docs` | Interface do professor — [G4](../product/roadmap.md#interface-do-professor) |
-| Processamento assíncrono | Nenhum. O pedido fica aberto até o fim; as rotas são `async def` executando código síncrono, o que serializa os pedidos no processo | Geração como job com estado no banco — [G0-8](../product/roadmap.md#estado-da-geracao) |
+| Front-end | SPA servida pela imagem da API, na mesma origem ([Rodar com Docker](../guides/docker.md)); Swagger UI em `/docs` | Interface do professor completa — [G4](../product/roadmap.md#interface-do-professor) |
+| Processamento assíncrono | Só em `/api/v1`: a geração roda numa `BackgroundTask` com estado no banco e é retomável ([Geração em segundo plano](pipeline.md#geracao-em-segundo-plano)). As rotas RPC continuam síncronas: o pedido fica aberto até o fim | Fila externa fica para depois de 30/11 |
 | Isolamento da execução | Limite de tempo e de saída; sem limite de memória, processos, rede ou sistema de arquivos | Continua assim; risco aceito e documentado — [G8-3](../product/roadmap.md#execucao-de-codigo) |
-| Deploy | Nenhum em produção ainda. Roda com `make run` ou na [imagem Docker](../guides/docker.md); o [workflow de deploy](../guides/deploy.md) publica no Cloud Run, nunca rodou e vai ser substituído | VPS da Hostinger com deploy contínuo — [G0-9](../product/roadmap.md#infraestrutura-e-deploy) |
+| Deploy | Nenhum em produção ainda. Roda com `make run` ou na [imagem Docker](../guides/docker.md); o [workflow de deploy](../guides/deploy.md) publica na VPS da Hostinger por SSH, mas ainda não rodou contra uma VPS | VPS da Hostinger com deploy contínuo — [G0-9](../product/roadmap.md#infraestrutura-e-deploy) |
 
 !!! danger "Não exponha o serviço"
     Sem autenticação, qualquer máquina que alcance a porta gasta a chave de API e faz o servidor compilar e executar código. Rode em `127.0.0.1`.

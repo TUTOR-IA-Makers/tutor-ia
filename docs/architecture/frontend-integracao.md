@@ -1,22 +1,23 @@
 # Integração front-end e backend
 
-<p class="lead">Como o front-end em <code>frontend/</code> vai falar com a API. Hoje os dois não se conectam: o front roda com dados simulados e o backend expõe outra forma de API. Esta página descreve a lacuna, a forma combinada para fechá-la e a ordem de trabalho.</p>
+<p class="lead">Como o front-end em <code>frontend/</code> fala com a API. O formulário de geração já cria, acompanha e lê uma questão em <code>/api/v1</code>; o resto do front (biblioteca, revisão, exportação, sessão) ainda só funciona com dados simulados. Esta página descreve a lacuna que sobra, a forma combinada para fechá-la e a ordem de trabalho.</p>
 
 !!! warning "Quase tudo aqui é planejado"
-    <span class="ce-badge ce-status--done">Implementado</span> as camadas do front-end, o contrato de serviços, o modo simulado e o cliente HTTP com cabeçalho anti-CSRF.
-    <span class="ce-badge ce-status--planned">Planejado</span> a API de recursos em `/api/v1`, a sessão por cookie, as contas e convites, e cada fase da seção 6. A decisão está proposta no [ADR-0013](../adr/0013-resource-api-and-cookie-session.md) e ainda depende de aceite da equipe.
+    <span class="ce-badge ce-status--done">Implementado</span> as camadas do front-end, o contrato de serviços, o modo simulado, o cliente HTTP com cabeçalho anti-CSRF, a versão mínima de `POST /api/v1/questions`, `GET /api/v1/questions/{id}/generation` e `GET /api/v1/questions/{id}` (#38) e a listagem `GET /api/v1/questions` (#41).
+    <span class="ce-badge ce-status--planned">Planejado</span> o resto da API de recursos, a sessão por cookie, as contas e convites, e o que falta de cada fase da seção 6. A decisão está proposta no [ADR-0013](../adr/0013-resource-api-and-cookie-session.md) e ainda depende de aceite da equipe.
 
 ## 1. A lacuna, rota por rota
 
-O front-end já chama uma API de recursos sob `/api/v1` (`frontend/src/services/http/endpoints.ts`). O backend de `develop` expõe chamadas no estilo RPC na raiz, uma por etapa do pipeline (`backend/src/codeexpert/api/routes/`), sem sessão. Os artefatos de uma geração já podem ficar no Postgres pelo `ArtifactStore` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)).
+O front-end já chama uma API de recursos sob `/api/v1` (`frontend/src/services/http/endpoints.ts`). O backend de `develop` expõe chamadas no estilo RPC na raiz, uma por etapa do pipeline (`backend/src/codeexpert/api/routes/questions.py`), e as três rotas de geração de `/api/v1` (`api/routes/resources.py`), sem sessão. Os artefatos de uma geração já podem ficar no Postgres pelo `ArtifactStore` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)).
 
-| O front chama | O backend de `main` tem | Falta |
+| O front chama | O backend de `develop` tem | Falta |
 |---|---|---|
-| `GET /api/v1/questions` com filtros | nada | listar questões guardadas (G1-5); depende do banco (G0-4) |
-| `POST /api/v1/questions` → `202 {id}` | `POST /create_question` síncrono, ou as quatro etapas `/gen_statement`, `/gen_code`, `/gen_inputs`, `/gen_testcases` | geração como job fora do ciclo da requisição (G0-8) |
-| `GET /api/v1/questions/{id}` | `GET /questions/{run_id}`, na raiz e por id de execução | questão completa com casos e restrições |
-| `GET /api/v1/questions/{id}/generation` | nada | andamento do job: etapa atual, estado, motivo da falha |
-| `POST /api/v1/questions/{id}/approve`, `/reject`, `/regenerate` | nada | ciclo de vida da questão (G3-1, G3-2) |
+| `GET /api/v1/questions` com filtros | o mesmo, paginado, com `q`, `content`, `difficulty`, `status` e também `axis`, `page`, `page_size` ([API](../reference/api.md#get-api-v1-questions)) | a biblioteca usar o modo `http` e a paginação (G4-6) |
+| `POST /api/v1/questions` → `202 {id}` | o mesmo, com as cinco etapas numa `BackgroundTask` do FastAPI e o estado do job no banco; após um reinício o job fica `INTERROMPIDO` e `POST /api/v1/questions/{id}/resume` o retoma (G0-8) | o front oferecer **Retomar** quando `job.resumable` (G4-3) |
+| `GET /api/v1/questions/{id}` | o mesmo, lido dos artefatos, em qualquer estado | verificação de restrições, resultado de compilação, `actual_output`/`passed` (hoje `[]` ou `null`) |
+| `GET /api/v1/questions/{id}/generation` | o mesmo: estado, etapas concluídas, motivo da falha em português, e o objeto `job` (estado, etapa, `resumable`) | nada |
+| `POST /api/v1/questions/{id}/approve` | o mesmo, com corpo `{"approved_by": "..."}`, devolvendo a questão com `reviewed`, `approved_by`, `approved_at` ([API](../reference/api.md#post-api-v1-approve)) | o front enviar `approved_by` (G4-5); até lá recebe `422` |
+| `POST /api/v1/questions/{id}/reject`, `/regenerate` | `POST /questions/{run_id}/reject` na raiz, só com o estado ([ciclo de vida](question-lifecycle.md)) | rota sob `/api/v1`; `/regenerate` (G0-8) |
 | `PATCH /api/v1/questions/{id}/statement` | nada | edição do enunciado pelo professor |
 | `POST /api/v1/exports/moodle` com `question_ids` | `POST /export_moodle_xml_question`, que escreve num arquivo compartilhado | exportador puro que devolve o XML na resposta (G1-8) |
 | `GET /api/v1/session`, `POST /api/v1/session`, `POST /api/v1/session/logout` | nada | sessão (G4-9, G8-1) |
@@ -126,13 +127,15 @@ Os botões "Entrar com Google" e "Entrar com GitHub" são simulados e não fazem
 
 ## 6. Fases
 
-Cada fase vira uma issue própria e só começa quando a anterior está no `main`. Todas estão <span class="ce-badge ce-status--planned">Planejado</span>.
+Cada fase vira uma issue própria e só começa quando a anterior está no `main`. Todas estão <span class="ce-badge ce-status--planned">Planejado</span>, menos a fatia de F2/F3 descrita abaixo da tabela.
 
 | Fase | Entrega | Depende de | Front-end |
 |---|---|---|---|
 | F1 Sessão | contas, convites, `/session`, `/accounts`, cookie, limite de tentativas | G8-1, G4-9, G8-2 | guarda de rota `RequireSession` nas rotas do app, redirecionando para `/entrar?proximo=...`; botão de sair |
 | F2 Questões guardadas | `GET /questions`, `GET /questions/{id}`, aprovar, rejeitar, editar enunciado | G0-4, G1-5, G3-1, G3-2 | nenhuma mudança de tela; só `dto.ts` se o formato mudar |
 | F3 Geração assíncrona | `POST /questions` → `202`, `/generation`, `/regenerate`, estado `INTERROMPIDO` | G0-8 | a tela de acompanhamento já consulta `/generation` |
+
+<span class="ce-badge ce-status--done">Implementado</span> uma fatia de F2 e F3 (#38, #42): `POST /questions`, `/generation`, `GET /questions/{id}` e `/resume`, com o job em `BackgroundTask`, estado no banco e `INTERROMPIDO` após um reinício. `/regenerate` não existe. O contrato está em [API](../reference/api.md#api-v1) e o roteiro local em [Demonstrar o formulário ligado à API](../guides/form-to-database.md). `GET /api/v1/session` ainda não existe; no modo `http` o front trata a falha como "sem sessão" e o formulário continua funcionando.
 | F4 Exportação | `POST /exports/moodle` devolvendo o XML na resposta | G1-8 | nenhuma |
 | F5 Modo http por padrão | ambiente público com `VITE_PUBLIC_API_MODE=http`, mesmo domínio, CSP revisada | F1 a F4, ADR-0011 | remover a dependência do modo simulado fora de testes e demonstração |
 

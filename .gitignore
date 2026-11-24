@@ -194,6 +194,8 @@ Questions/
 # Secrets and machine-specific configuration.
 .env
 config/LLM_Config.txt
+# Lives only on the VPS (deploy/production.env.example is the committed template).
+deploy/production.env
 
 # Documentation build output.
 .dist/

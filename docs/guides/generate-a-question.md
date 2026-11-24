@@ -82,16 +82,16 @@ $EDITOR var/runs/$RUN/inputs.json           # opcional: acrescentar zero, negati
 # 4. Casos de teste — compila e executa; não chama o modelo
 curl -X POST $API/gen_testcases -H "$H" -d "{\"run_id\": \"$RUN\"}"
 
-# 5. Exportar para o XML
-curl -X POST $API/export_moodle_xml_question -H "$H" -d "{\"run_id\": \"$RUN\"}"
+# 5. Exportar: o XML vem no campo `xml` da resposta
+curl -s -X POST $API/export_moodle_xml_question -H "$H" -d "{\"run_id\": \"$RUN\"}" | jq -r .xml > questao.xml
 ```
 
 - Chamar uma etapa antes da anterior devolve `409`, dizendo qual arquivo falta e qual endpoint o produz.
 - Se você escrever a própria solução em `solution.c`, as saídas esperadas passam a refletir o seu código — dá para usar o serviço só como gerador de casos de teste.
 - Entradas precisam seguir exatamente o formato que os `scanf` da solução leem. Números separados por espaço quando o programa espera um por linha geram saídas vazias, sem erro.
 
-!!! warning "Exportar duas vezes duplica a questão"
-    O XML acumula. Chamar a etapa 5 duas vezes para o mesmo `run_id` deixa a questão duas vezes no arquivo. Para começar um questionário novo: `rm var/questions/Moodle_Questionnaire.xml`.
+!!! note "Exportar não grava arquivo"
+    A etapa 5 devolve o XML de uma questão só, numerada 1, e não escreve nada no servidor. Chamá-la de novo para o mesmo `run_id` devolve o mesmo XML; duas exportações simultâneas não interferem uma na outra.
 
 ## Retomar depois de uma falha {#retomar-depois-de-uma-falha}
 

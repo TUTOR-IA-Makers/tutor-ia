@@ -93,7 +93,7 @@ Leva algumas dezenas de segundos. O resultado fica em:
 | Caminho | Conteúdo |
 | --- | --- |
 | `var/runs/<run_id>/` | Enunciado, solução, entradas, casos de teste e `meta.json` (modelo e versão de prompt usados). É o `LocalFilesystemStore`, o padrão; com o `PostgresStore` os mesmos artefatos ficam no banco |
-| `var/questions/Moodle_Questionnaire.xml` | O XML para importar no Moodle. Cada exportação acrescenta uma questão |
+| campo `export.xml` da resposta | O XML para importar no Moodle, com esta questão. Não é gravado no servidor |
 
 `var/` é ignorado pelo Git. Se algo falhar, veja [Problemas comuns](../reference/troubleshooting.md). Para controlar cada etapa, veja [Gerar uma questão](../guides/generate-a-question.md).
 

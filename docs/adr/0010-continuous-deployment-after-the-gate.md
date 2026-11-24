@@ -1,6 +1,6 @@
 # ADR-0010 — Deploy main to Cloud Run after the gate, with keyless credentials
 
-- **Status** Proposed
+- **Status** Superseded by ADR-0011
 - **Date** 2026-10-07
 - **Deciders** the team (draft — a person accepts)
 

@@ -2,7 +2,7 @@
 
 <p class="lead">Cinco etapas: três chamam o modelo, uma compila e executa, uma monta o XML. Esta página descreve o que cada etapa pede, como interpreta a resposta e onde pode falhar em silêncio.</p>
 
-<span class="ce-badge ce-status--done">Implementado</span> Tudo nesta página. Mudanças previstas — verificação de escopo entre as etapas 2 e 3, entradas categorizadas, exportador sem arquivo compartilhado — estão no [Roadmap](../product/roadmap.md#verificacao-de-escopo).
+<span class="ce-badge ce-status--done">Implementado</span> Tudo nesta página. Mudanças previstas — verificação de escopo entre as etapas 2 e 3, entradas categorizadas — estão no [Roadmap](../product/roadmap.md#verificacao-de-escopo).
 
 ```mermaid
 flowchart TD
@@ -12,7 +12,7 @@ flowchart TD
     S2 -->|solution.c| S3["3 · inputs<br/><small>LLM</small>"]
     S3 -->|inputs.json| S4["4 · testcases<br/><small>gcc + execução</small>"]
     S4 -->|testcases.json| S5["5 · export<br/><small>templates</small>"]
-    S5 --> X[("var/questions/<br/>Moodle_Questionnaire.xml")]
+    S5 --> X["XML na resposta<br/><small>nenhum arquivo</small>"]
 
     style S4 stroke-width:3px
 ```
@@ -25,7 +25,7 @@ flowchart TD
 | 4 | `POST /gen_testcases` | `generation/testcases.py` | `gcc` | `solution`, `testcases.json` |
 | 5 | `POST /export_moodle_xml_question` | `export/moodle.py` | — | o XML |
 
-`POST /create_question` roda as cinco em ordem (`generation/pipeline.py`).
+`POST /create_question` roda as cinco em ordem (`generation/pipeline.py`). `POST /api/v1/questions` também, mas fora do pedido, como um job — ver [Geração em segundo plano](#geracao-em-segundo-plano).
 
 ## 1 · Enunciado
 
@@ -102,7 +102,7 @@ Três templates em `backend/src/codeexpert/export/templates/`, lidos via `import
 
 | Marcador | Substituído por |
 | --- | --- |
-| `Macro_QuestionNumber` | Número de questões já no arquivo + 1 |
+| `Macro_QuestionNumber` | Posição da questão na lista exportada, a partir de 1 |
 | `Macro_QuestionName` | Título, escapado |
 | `Macro_QuestionTextinHTML` | Enunciado escapado, `\n` → `<br>`, dentro de CDATA |
 | `Macro_Answer` | Código C dentro de CDATA; um `]]>` literal é neutralizado |
@@ -114,18 +114,67 @@ Três templates em `backend/src/codeexpert/export/templates/`, lidos via `import
 | `Macro_UseAsExample` | `"1"` nos três primeiros casos, `"0"` nos demais |
 | `Macro_Display` | vazio |
 
-**Acumulação.** A primeira exportação cria o arquivo; as seguintes inserem a questão antes de `</quiz>`. A resposta traz `question_count`, a posição da questão no arquivo.
+**Função pura, sem arquivo compartilhado.** O XML é montado em memória e devolvido; nada é lido nem gravado fora da execução. A interface, em `codeexpert.export`, é pensada para ser reutilizada pela exportação de uma seleção (G1-6):
+
+```python
+@dataclass(frozen=True)
+class ExportQuestion:          # o que o XML de uma questão precisa, e só isso
+    statement: Statement
+    code: str
+    testcases: tuple[TestCase, ...]
+    metadata: RunMetadata      # dificuldade e `reviewed`, para as tags
+
+def read_question(workspace: RunWorkspace) -> ExportQuestion: ...
+def export_questions(questions: Sequence[ExportQuestion]) -> str: ...
+def export_run(workspace: RunWorkspace) -> ExportResult: ...  # a etapa 5
+```
+
+| Função | Faz | Não faz |
+| --- | --- | --- |
+| `export_questions` | Devolve um `<quiz>` com as questões na ordem recebida, numeradas 1, 2, 3… pela posição na lista. A mesma lista dá sempre o mesmo XML. Lista vazia é `ValueError` | Ler ou gravar arquivo, consultar o store, recusar questão não aprovada (isso é do chamador, G3-4) |
+| `read_question` | Lê `statement.json`, `solution.c`, `testcases.json` e `meta.json` da execução. Artefato ausente é `MissingArtefactError` (`409`) | Validar o estado da questão |
+| `export_run` | A etapa 5: `export_questions([read_question(ws)])`, marca a execução como concluída e devolve `ExportResult(xml, question_count=1)` | Gravar o XML. Chamar de novo devolve o mesmo XML |
+
+Uma seleção é `export_questions([read_question(ws) for ws in selecionadas])`: a numeração sai da ordem da lista, não de um arquivo pré-existente.
 
 ```mermaid
 flowchart LR
-    A["Execução 1"] -->|cria| F1["&lt;quiz&gt;<br/>questão 1<br/>&lt;/quiz&gt;"]
-    B["Execução 2"] -->|insere| F2["&lt;quiz&gt;<br/>questão 1<br/>questão 2<br/>&lt;/quiz&gt;"]
+    A["Execução 1"] -->|etapa 5| F1["&lt;quiz&gt;<br/>questão 1<br/>&lt;/quiz&gt;"]
+    B["Execução 2"] -->|etapa 5| F2["&lt;quiz&gt;<br/>questão 1<br/>&lt;/quiz&gt;"]
 ```
 
-!!! warning "Leitura-modificação-escrita num arquivo único"
-    Duas exportações simultâneas leem o mesmo estado e uma sobrescreve a outra. Hoje isso não acontece porque as rotas serializam os pedidos no processo. Com mais de um worker ou instância, uma questão some sem erro. <span class="ce-badge ce-status--planned">Planejado</span> no G1-8 (exportador puro).
+Duas exportações ao mesmo tempo não interferem: não há estado compartilhado. Até o G1-8 (#43), a etapa 5 lia `var/questions/Moodle_Questionnaire.xml` inteiro, contava as questões para se numerar e reescrevia o arquivo — com mais de um worker, uma questão sumia sem erro.
 
 Limitações atuais: só C (`c_program` fixo), sem categoria de banco de questões, `generalfeedback` vazio, exemplos escolhidos por posição.
+
+## Geração em segundo plano {#geracao-em-segundo-plano}
+
+`POST /api/v1/questions` responde `202` antes de qualquer etapa e enfileira `run_generation` (`generation/job.py`) numa `BackgroundTask` do FastAPI, no mesmo processo da API. O estado do job fica no store, ao lado do estado da questão e independente dele: colunas `runs.job_*` no Postgres, arquivo `.job` no backend local. A decisão e as alternativas estão no [ADR-0017](../adr/0017-resumable-generation-job.md).
+
+```mermaid
+stateDiagram-v2
+    [*] --> EM_ANDAMENTO: POST /api/v1/questions
+    EM_ANDAMENTO --> CONCLUIDO: etapa 5 conclui
+    EM_ANDAMENTO --> FALHOU: uma etapa levanta erro
+    EM_ANDAMENTO --> INTERROMPIDO: o servidor reinicia no meio
+    INTERROMPIDO --> EM_ANDAMENTO: POST /resume
+    CONCLUIDO --> [*]
+    FALHOU --> [*]
+```
+
+**Persistência.** O registro é gravado antes do `draft.json`, então uma questão nunca aparece sem job. Antes de cada etapa o job grava `EM_ANDAMENTO` com o nome dela (`statement`, `code`, `inputs`, `testcases`, `export`); ao fim, `CONCLUIDO`. É isso que `/generation` lê para a tela de progresso.
+
+**Falhas.** Qualquer exceção numa etapa vira `FALHOU`, com a etapa, um motivo em português para o professor e o nome da classe da exceção. O texto da exceção (saída do compilador, corpo do provedor) fica só no log do servidor, com o `run_id`. Um job `FALHOU` não se retoma: gera-se a questão de novo.
+
+**Interrupção.** Um processo que morre não passa por `except` nenhum: o registro fica `EM_ANDAMENTO`. Na inicialização seguinte, o *lifespan* do app chama `interrupt_running_jobs()`, que passa todo job `EM_ANDAMENTO` para `INTERROMPIDO` mantendo a etapa: naquele instante nenhum job pode estar rodando neste processo. Se o store não responder, o erro vai para o log e o servidor sobe assim mesmo.
+
+**Retomada.** `POST /api/v1/questions/{id}/resume` troca `INTERROMPIDO` por `EM_ANDAMENTO` num *compare-and-set* (dois cliques iniciam um job só) e roda o mesmo `run_generation`. Ele pula as etapas que `meta.json → steps` registra, do início até a primeira lacuna, e roda dali em diante. Nenhuma chamada ao modelo já registrada se repete; os testes conferem isso contando as chamadas ao `FakeLLM`. A retomada é sempre pedida por uma pessoa, nunca automática na inicialização.
+
+!!! warning "Limitações"
+    - A varredura na inicialização supõe **um processo só** da API, que é o que roda em produção. Um segundo processo subindo marcaria como interrompidos os jobs vivos do primeiro.
+    - Uma etapa que gravou o artefato e morreu antes de se registrar em `meta.json` roda de novo na retomada: no máximo uma chamada repetida.
+    - A exportação acrescenta ao arquivo XML compartilhado antes de concluir a execução; uma queda entre as duas coisas exporta a questão duas vezes. O G1-8 remove o arquivo.
+    - Execuções anteriores a esta mudança não têm registro de job. Uma inacabada aparece como `INTERROMPIDO` e pode ser retomada; uma que tinha `failure.json` aparece como `FALHOU`.
 
 ## Cliente do modelo
 

@@ -15,6 +15,8 @@ from fastapi import APIRouter
 
 from codeexpert.api.deps import LLMDep, RunnerDep, StoreDep, create_run, open_run
 from codeexpert.api.schemas import (
+    ApprovalResponse,
+    ApproveRequest,
     CodeResponse,
     CreateQuestionRequest,
     CreateQuestionResponse,
@@ -22,14 +24,15 @@ from codeexpert.api.schemas import (
     InputRequest,
     InputResponse,
     QuestionDetail,
+    QuestionStateResponse,
     RunRequest,
     StatementRequest,
     StatementResponse,
     TestCaseResponse,
 )
-from codeexpert.domain import Constraints, Statement, TestCase
+from codeexpert.domain import Constraints, QuestionState, Statement, TestCase
 from codeexpert.errors import RunNotFoundError
-from codeexpert.export import export_question
+from codeexpert.export import export_run
 from codeexpert.generation import (
     create_question,
     generate_code,
@@ -84,12 +87,12 @@ async def gen_testcases(
 
 @router.post("/export_moodle_xml_question", response_model=ExportResponse)
 async def export_moodle_xml_question(request: RunRequest, store: StoreDep) -> ExportResponse:
-    """Step 5. Appends to the questionnaire file rather than replacing it."""
+    """Step 5. Returns the run's question as a Moodle XML of its own; writes no file."""
     workspace = open_run(request.run_id, store)
-    result = export_question(workspace)
+    result = export_run(workspace)
     return ExportResponse(
         run_id=workspace.run_id,
-        file_path=str(result.file_path),
+        xml=result.xml,
         question_count=result.question_count,
     )
 
@@ -115,13 +118,14 @@ async def create_question_endpoint(
     result = create_question(workspace, constraints, quantity, llm, runner)
     return CreateQuestionResponse(
         run_id=result.run_id,
+        state=workspace.state,
         statement=result.statement,
         code=result.code,
         inputs=result.inputs,
         testcases=result.testcases,
         export=ExportResponse(
             run_id=result.run_id,
-            file_path=str(result.export.file_path),
+            xml=result.export.xml,
             question_count=result.export.question_count,
         ),
     )
@@ -139,6 +143,7 @@ async def get_question(run_id: str, store: StoreDep) -> QuestionDetail:
         raise RunNotFoundError(f"Question '{run_id}' is not complete. Finish the run to see it.")
     return QuestionDetail(
         run_id=run_id,
+        state=workspace.state,
         statement=Statement.model_validate(workspace.read_json(STATEMENT)),
         code=workspace.read_text(SOLUTION),
         inputs=workspace.read_json(INPUTS)["inputs"],
@@ -147,3 +152,36 @@ async def get_question(run_id: str, store: StoreDep) -> QuestionDetail:
         ],
         metadata=workspace.read_metadata(),
     )
+
+
+# Review actions. Which state may follow which is decided in codeexpert.lifecycle;
+# an action the current state forbids is a 409 from InvalidTransitionError. G3-5
+# adds the rejection reason.
+
+
+@router.post("/questions/{run_id}/approve", response_model=ApprovalResponse)
+async def approve_question(
+    run_id: str, request: ApproveRequest, store: StoreDep
+) -> ApprovalResponse:
+    """GERADA → APROVADA, recording who and when.
+
+    Approving an APROVADA question again answers 200 with the first record.
+    Any other state, FALHOU_VERIFICACAO above all, is a 409.
+    """
+    workspace = open_run(run_id, store)
+    metadata = workspace.approve(request.approved_by)
+    return ApprovalResponse(
+        run_id=run_id,
+        state=QuestionState.APROVADA,
+        reviewed=metadata.reviewed,
+        approved_by=metadata.approved_by,
+        approved_at=metadata.approved_at,
+    )
+
+
+@router.post("/questions/{run_id}/reject", response_model=QuestionStateResponse)
+async def reject_question(run_id: str, store: StoreDep) -> QuestionStateResponse:
+    """GERADA or FALHOU_VERIFICACAO → REJEITADA. Anything else is a 409."""
+    workspace = open_run(run_id, store)
+    state = workspace.transition(QuestionState.REJEITADA)
+    return QuestionStateResponse(run_id=run_id, state=state)

@@ -35,9 +35,26 @@ CREATE TABLE IF NOT EXISTS questions (
     constraints jsonb,
     difficulty text CHECK (difficulty IN ('muito facil', 'facil', 'medio', 'dificil', 'muito dificil')),
     axis text CHECK (axis IN ('fundamentos', 'controle de fluxo',
-                             'estruturas de dados e ponteiros', 'modularizacao')),
-    state text NOT NULL DEFAULT 'draft' CHECK (state IN ('draft'))
+                             'estruturas de dados e ponteiros', 'modularizacao'))
 );
+
+-- The question lifecycle (G3-1, docs/adr/0015). It lives on runs, not questions:
+-- a question is GERANDO or FALHOU_VERIFICACAO before its snapshot row exists.
+-- The CHECK lists QuestionState; tests/unit/test_question_classification.py
+-- fails when the two disagree.
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS
+    state text CHECK (state IN ('GERANDO', 'GERADA', 'FALHOU_VERIFICACAO', 'APROVADA', 'REJEITADA'))
+    NOT NULL DEFAULT 'GERANDO';
+-- Runs completed before the lifecycle existed are generated questions nobody has
+-- reviewed. Also repairs a run whose process died between completing and
+-- recording GERADA, so it is safe to repeat on every start.
+UPDATE runs SET state = 'GERADA' WHERE status = 'complete' AND state = 'GERANDO';
+-- Who approved and when (G3-2, docs/adr/0016). Written in the same statement that
+-- sets state = 'APROVADA'; NULL on every question nobody has approved.
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS approved_by text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS approved_at timestamptz;
+-- The G1-2 placeholder only ever held 'draft'; the state now lives on runs.
+ALTER TABLE questions DROP COLUMN IF EXISTS state;
 
 CREATE TABLE IF NOT EXISTS test_cases (
     run_id text NOT NULL REFERENCES questions (run_id) ON DELETE CASCADE,
@@ -46,3 +63,15 @@ CREATE TABLE IF NOT EXISTS test_cases (
     output text NOT NULL,
     PRIMARY KEY (run_id, position)
 );
+
+-- The background generation job (G0-8, docs/adr/0017). On runs, beside the
+-- question state and independent of it: INTERROMPIDO describes the process that
+-- generates, not the question. NULL on runs no background job ever started (the
+-- RPC routes, and runs from before G0-8). The CHECK lists JobState;
+-- tests/unit/test_question_classification.py fails when the two disagree.
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS
+    job_state text CHECK (job_state IN ('EM_ANDAMENTO', 'INTERROMPIDO', 'FALHOU', 'CONCLUIDO'));
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_step text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_failure_reason text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_error text;
+ALTER TABLE runs ADD COLUMN IF NOT EXISTS job_updated_at timestamptz;

@@ -1,11 +1,11 @@
 name: Deploy
 
-# Ships main to Cloud Run, and only main, and only after the gate passed.
+# Ships main to the Hostinger VPS, and only main, and only after the gate passed.
 #
 # Triggered by the CI workflow finishing rather than by the push itself, so the
 # gate is `scripts/check.sh` exactly as CI ran it — not a second copy of it that
 # could drift (docs/adr/0008). A red, cancelled or skipped CI run never reaches
-# the deploy job. See docs/adr/0010.
+# the deploy job. Where it ships to, and how: docs/adr/0011, docs/guides/deploy.md.
 on:
   workflow_run:
     workflows: [CI]
@@ -59,90 +59,86 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: ${{ steps.deploy.outputs.url }}
+      url: ${{ vars.PRODUCTION_URL }}
     permissions:
       contents: read
-      # Keyless authentication to GCP (Workload Identity Federation): GitHub
-      # issues a short-lived OIDC token, so no service account key exists to leak.
-      id-token: write
+      # Push the image to GHCR with this run's own token: no registry credential
+      # is stored anywhere.
+      packages: write
     env:
       # The commit CI checked, not whatever main points at by now.
       SHA: ${{ github.event.workflow_run.head_sha }}
-      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-      REGION: ${{ vars.GCP_REGION }}
-      REPOSITORY: ${{ vars.GCP_ARTIFACT_REPOSITORY }}
-      SERVICE: ${{ vars.CLOUD_RUN_SERVICE }}
-      WIF_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-      DEPLOY_SA: ${{ vars.GCP_DEPLOY_SERVICE_ACCOUNT }}
+      VPS_HOST: ${{ vars.VPS_HOST }}
+      VPS_HOST_KEY: ${{ vars.VPS_HOST_KEY }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+      HAS_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY != '' }}
     steps:
       - name: Check the deploy configuration
         run: |
           missing=""
-          for name in PROJECT_ID REGION REPOSITORY SERVICE WIF_PROVIDER DEPLOY_SA; do
+          for name in VPS_HOST VPS_HOST_KEY PRODUCTION_URL; do
             [ -n "${!name}" ] || missing="$missing $name"
           done
+          [ "$HAS_SSH_KEY" = "true" ] || missing="$missing DEPLOY_SSH_KEY(secret)"
           if [ -n "$missing" ]; then
-            echo "::error::Repository variables not set:$missing. See docs/guides/deploy.md."
+            echo "::error::Not set on the production environment:$missing. See docs/guides/deploy.md."
             exit 1
           fi
-          echo "IMAGE=$REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/codeexpert:$SHA" >> "$GITHUB_ENV"
+          # GHCR rejects upper case, and the organisation name has some.
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/codeexpert:$SHA" >> "$GITHUB_ENV"
 
       - uses: actions/checkout@v6
         with:
           ref: ${{ env.SHA }}
 
-      - uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ env.WIF_PROVIDER }}
-          service_account: ${{ env.DEPLOY_SA }}
-
-      - uses: google-github-actions/setup-gcloud@v3
-
       - name: Build the image
-        run: docker build --tag "$IMAGE" backend
-
-      - name: Push to Artifact Registry
+        # The source label links the GHCR package to this repository. The
+        # front-end is a named context: the API's context stays backend/, and the
+        # Dockerfile's spa stage builds frontend/ into the same image (G4-1).
         run: |
-          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+          docker build \
+            --build-context frontend=frontend \
+            --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$SHA" \
+            --tag "$IMAGE" backend
+
+      - name: Push to GitHub Container Registry
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
           docker push "$IMAGE"
 
-      - id: deploy
-        uses: google-github-actions/deploy-cloudrun@v3
-        with:
-          service: ${{ env.SERVICE }}
-          region: ${{ env.REGION }}
-          project_id: ${{ env.PROJECT_ID }}
-          image: ${{ env.IMAGE }}
-          # Merged into the variables already set on the service, so settings
-          # configured there (the API key among them) are left alone.
-          env_vars: CODEEXPERT_COMMIT_SHA=${{ env.SHA }}
-          # The image listens on 8000; Cloud Run assumes 8080 (docs/adr/0009).
-          # No --allow-unauthenticated: who may call the service is decided on
-          # the service, by a person, not by every deploy.
-          flags: --port=8000
-
-      # The deploy step succeeds as soon as the revision is ready. This checks
-      # that the revision serving traffic is the one just built.
-      - name: Get a token to call the service
-        id: invoker
-        uses: google-github-actions/auth@v3
-        with:
-          workload_identity_provider: ${{ env.WIF_PROVIDER }}
-          service_account: ${{ env.DEPLOY_SA }}
-          token_format: id_token
-          id_token_audience: ${{ steps.deploy.outputs.url }}
-          id_token_include_email: true
-
-      - name: Check GET /health reports this commit
+      # The key's authorized_keys entry has a forced command
+      # (/usr/local/bin/codeexpert-deploy): the SHA is the only thing it accepts,
+      # and the only thing this step can make the VPS do.
+      - name: Deploy over SSH
         env:
-          URL: ${{ steps.deploy.outputs.url }}
-          TOKEN: ${{ steps.invoker.outputs.id_token }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # Pinned host key: a server that cannot prove it is our VPS gets nothing.
+          printf '%s\n' "$VPS_HOST_KEY" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile=~/.ssh/known_hosts \
+            -o BatchMode=yes -o ConnectTimeout=20 \
+            "deploy@$VPS_HOST" "$SHA"
+
+      - name: Remove the key from the runner
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      # deploy.sh already waited for the container to report healthy. This checks
+      # it from outside, through the proxy and TLS, as a teacher would reach it.
+      - name: Check GET /health reports this commit
         run: |
           body=$(curl --fail --silent --show-error --retry 5 --retry-all-errors \
-            -H "Authorization: Bearer $TOKEN" "$URL/health")
+            "${PRODUCTION_URL%/}/health")
           echo "$body"
           commit=$(printf '%s' "$body" | python3 -c 'import json, sys; print(json.load(sys.stdin)["commit"])')
           if [ "$commit" != "$SHA" ]; then
-            echo "::error::$URL/health reports commit '$commit', expected '$SHA'."
+            echo "::error::$PRODUCTION_URL/health reports commit '$commit', expected '$SHA'."
             exit 1
           fi

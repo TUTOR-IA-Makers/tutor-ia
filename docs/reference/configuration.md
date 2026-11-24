@@ -37,10 +37,10 @@ Lidas por `Settings` em `backend/src/codeexpert/settings.py`, com prefixo `CODEE
 | `CODEEXPERT_LLM_TIMEOUT_SECONDS` | `60` | Timeout por chamada ao modelo |
 | `CODEEXPERT_LLM_MAX_RETRIES` | `3` | Tentativas em erros transitórios (1 a 10) |
 | `CODEEXPERT_COMMIT_SHA` | *(vazia)* | Commit devolvido em `GET /health` como `commit`. O [workflow de deploy](../guides/deploy.md) define o commit publicado; fora dele fica `null` |
+| `CODEEXPERT_FRONTEND_DIR` | *(vazia)* | Pasta com o build do front-end (`frontend/dist`). Definida, a API serve `/`, as rotas da SPA e `/assets`; caminhos sob `/api/` nunca caem na SPA. Sem `index.html` a API não sobe. A imagem Docker define `/app/frontend`; vazia, `/` redireciona para `/docs` |
 | `CODEEXPERT_STORE_BACKEND` | `local` | Onde os artefatos de uma execução ficam: `local` (disco) ou `postgres` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)) |
 | `CODEEXPERT_DATABASE_URL` | *(vazia)* | Conexão do Postgres, obrigatória com `postgres`. Tem senha: trate como segredo, também aceita `/run/secrets/codeexpert_database_url` |
 | `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções, quando o backend é `local` |
-| `CODEEXPERT_QUESTIONS_DIR` | `var/questions` | Onde o XML é escrito |
 | `CODEEXPERT_COMPILE_TIMEOUT_SECONDS` | `20` | Timeout da compilação |
 | `CODEEXPERT_RUN_TIMEOUT_SECONDS` | `5` | Timeout de **cada** execução do binário |
 | `CODEEXPERT_RUN_MAX_OUTPUT_BYTES` | `65536` | Saída capturada por execução; o excedente é truncado |
@@ -80,7 +80,7 @@ Qualquer variável da tabela acima também pode vir de um arquivo em `/run/secre
 
 A ordem de precedência é: variável de ambiente, depois `.env`, depois o arquivo, depois o padrão. O arquivo só é lido quando nenhuma das duas primeiras fontes define a variável. Se `/run/secrets` não existe, como num notebook ou no CI, essa fonte é ignorada e nada muda em relação ao `.env`.
 
-É assim que a chave chega ao container sem virar variável de ambiente, e por isso não aparece em `docker inspect` nem em `/proc/1/environ`. Montar o arquivo na VPS é parte do [deploy](../guides/deploy.md#chave-do-modelo), <span class="ce-badge ce-status--planned">Planejado</span>.
+É assim que a chave chega ao container sem virar variável de ambiente, e por isso não aparece em `docker inspect` nem em `/proc/1/environ`. Na VPS, `deploy/compose.yaml` monta assim a chave e a URL do banco ([Deploy](../guides/deploy.md#na-vps)), <span class="ce-badge ce-status--wip">Em desenvolvimento</span>.
 
 ## Portas e caminhos
 
@@ -91,6 +91,5 @@ A ordem de precedência é: variável de ambiente, depois `.env`, depois o arqui
 | Documentação local | `127.0.0.1:8001` (`make docs`) |
 | Build da documentação | `.dist/site/` |
 | Artefatos de execução | `var/runs/<run_id>/` |
-| XML exportado | `var/questions/Moodle_Questionnaire.xml` |
 
 `var/` e `.dist/` são ignorados pelo Git. Se `git status` ficar sujo depois de rodar a aplicação, é bug.

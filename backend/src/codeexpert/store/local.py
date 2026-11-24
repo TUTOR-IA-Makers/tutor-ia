@@ -6,10 +6,19 @@ run against. See docs/adr/0012.
 """
 
 import shutil
+from collections.abc import Collection
+from datetime import UTC, datetime
 from pathlib import Path
 
-# Not an artefact name, so it cannot collide with one of the pipeline's files.
+from codeexpert.domain import JobRecord, JobState, QuestionState, RunMetadata
+from codeexpert.lifecycle import INITIAL_STATE
+from codeexpert.store.base import RunListing
+
+# Not artefact names, so they cannot collide with one of the pipeline's files.
 COMPLETE_MARKER = ".complete"
+STATE_FILE = ".state"
+JOB_FILE = ".job"
+META = "meta.json"
 
 
 class LocalFilesystemStore:
@@ -40,3 +49,76 @@ class LocalFilesystemStore:
 
     def is_complete(self, run_id: str) -> bool:
         return (self._dir(run_id) / COMPLETE_MARKER).is_file()
+
+    def get_state(self, run_id: str) -> QuestionState:
+        path = self._dir(run_id) / STATE_FILE
+        if path.is_file():
+            return QuestionState(path.read_text(encoding="utf-8").strip())
+        # Runs written before the lifecycle existed have no state file. A finished
+        # one is a generated question nobody has reviewed yet.
+        return QuestionState.GERADA if self.is_complete(run_id) else INITIAL_STATE
+
+    def set_state(self, run_id: str, expected: QuestionState, new: QuestionState) -> bool:
+        # Check-then-write is not atomic across processes. Acceptable for the
+        # development backend; the Postgres store does it in one statement.
+        if self.get_state(run_id) is not expected:
+            return False
+        (self._dir(run_id) / STATE_FILE).write_text(new.value, encoding="utf-8")
+        return True
+
+    def record_approval(self, run_id: str, expected: QuestionState, metadata: RunMetadata) -> bool:
+        if self.get_state(run_id) is not expected:
+            return False
+        # Record first, state second: a crash in between leaves a question that is
+        # still GERADA, and approving it again overwrites the orphaned record.
+        self.put(run_id, META, metadata.model_dump_json(indent=2) + "\n")
+        return self.set_state(run_id, expected, QuestionState.APROVADA)
+
+    def get_job(self, run_id: str) -> JobRecord | None:
+        path = self._dir(run_id) / JOB_FILE
+        if not path.is_file():
+            return None
+        return JobRecord.model_validate_json(path.read_text(encoding="utf-8"))
+
+    def save_job(self, run_id: str, job: JobRecord) -> None:
+        (self._dir(run_id) / JOB_FILE).write_text(job.model_dump_json(), encoding="utf-8")
+
+    def replace_job(self, run_id: str, expected: JobState | None, job: JobRecord) -> bool:
+        # Same caveat as set_state: not atomic across processes.
+        current = self.get_job(run_id)
+        if (current.state if current else None) is not expected:
+            return False
+        self.save_job(run_id, job)
+        return True
+
+    def interrupt_running_jobs(self) -> list[str]:
+        if not self._root.is_dir():
+            return []
+        now = datetime.now(UTC).isoformat()
+        interrupted = []
+        for directory in sorted(self._root.iterdir()):
+            job = self.get_job(directory.name) if directory.is_dir() else None
+            if job is not None and job.state is JobState.EM_ANDAMENTO:
+                self.save_job(
+                    directory.name,
+                    job.model_copy(update={"state": JobState.INTERROMPIDO, "updated_at": now}),
+                )
+                interrupted.append(directory.name)
+        return interrupted
+
+    def list_runs(self, names: Collection[str]) -> list[RunListing]:
+        if not self._root.is_dir():
+            # Nothing has been generated yet on this machine.
+            return []
+        listings = []
+        for directory in self._root.iterdir():
+            if not directory.is_dir():
+                continue
+            run_id = directory.name
+            artifacts = {
+                name: content for name in names if (content := self.get(run_id, name)) is not None
+            }
+            listings.append(
+                RunListing(run_id, self.get_state(run_id), artifacts, self.get_job(run_id))
+            )
+        return listings

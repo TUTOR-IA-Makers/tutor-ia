@@ -1,61 +1,143 @@
 # Deploy
 
-<p class="lead">Onde o serviço vai rodar e como um merge em <code>main</code> chega lá. A equipe trocou o Cloud Run por uma VPS da Hostinger; esta página separa o que existe no repositório do que ainda vai ser feito.</p>
+<p class="lead">Como um merge em <code>main</code> chega à VPS da Hostinger, e como preparar essa VPS do zero. Os arquivos estão no repositório; a primeira VPS ainda não foi montada com eles.</p>
 
-<span class="ce-badge ce-status--planned">Planejado</span> Não há deploy em produção nem URL pública. A hospedagem na Hostinger está proposta no [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md) e o workflow que a usa ainda não existe ([G0-9](../product/plano-30-11.md#g0-9)).
+<span class="ce-badge ce-status--wip">Em desenvolvimento</span> O workflow, o Compose e os scripts existem ([G0-9](../product/plano-30-11.md#g0-9), [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)). **Ainda não rodaram numa VPS**: não há URL de produção. Tudo abaixo que depende da máquina está *A confirmar* até a primeira configuração do zero.
 
 !!! danger "A imagem não é um sandbox"
-    O serviço compila e roda o código gerado sem isolamento além de tempo e tamanho de saída ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). Na VPS, só o proxy publica portas, e a URL não deve ser divulgada antes do acesso por convite ([G8-1](../product/roadmap.md#acesso-e-custo)). As [regras de segurança](https://github.com/TUTOR-IA-Makers/tutor-ia/blob/main/.agents/rules/security.md) pedem que o serviço não fique exposto à internet sem autenticação.
+    O serviço compila e roda o código gerado sem isolamento além de tempo, tamanho de saída e dos limites de memória e de processos do container ([ADR-0004](../adr/0004-execution-behind-a-runner-protocol.md)). Por isso o proxy pede usuário e senha em tudo, menos `GET /health`, até existir o acesso por convite ([G8-1](../product/roadmap.md#acesso-e-custo)). Não divulgue a URL nem a senha fora da equipe.
 
-## O que existe hoje
-
-`.github/workflows/deploy.yml` publica no **Cloud Run** ([ADR-0010](../adr/0010-continuous-deployment-after-the-gate.md)). Ele dispara quando o `ci.yml` termina em `main`, mas o projeto GCP nunca foi configurado: sem as variáveis `GCP_*` o job para com erro antes de construir a imagem, e cada merge em `main` deixa uma execução vermelha do *Deploy* no Actions. Esse workflow vai ser substituído, não configurado.
-
-O que dele continua valendo, e o G0-9 mantém:
-
-- O deploy só roda se o CI **passou** num push em `main` (`workflow_run`). Falha, cancelamento ou PR não chegam ao deploy, e o portão não é repetido ([ADR-0008](../adr/0008-one-gate-for-people-agents-and-ci.md)).
-- Um deploy nunca é cancelado no meio. Se o commit deixou de ser a ponta de `main` enquanto esperava, ele é pulado.
-- A imagem é marcada com o SHA do commit, e `CODEEXPERT_COMMIT_SHA` recebe o mesmo valor.
-- No fim, `GET /health` precisa devolver esse SHA em `commit`, ou o job falha.
-
-## Como vai ficar na Hostinger
-
-Resumo do [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md). Nada disto está configurado.
+## Como funciona
 
 ```mermaid
 flowchart LR
-    GH["GitHub Actions<br/><small>CI verde em main</small>"] -->|push da imagem :sha| GHCR[("GitHub Container<br/>Registry")]
-    GH -->|SSH, comando forçado| VPS
-    subgraph VPS["VPS Hostinger — Docker Compose"]
-        PX["proxy<br/><small>Caddy, 80/443, TLS</small>"] --> API["api<br/><small>imagem do ADR-0009</small>"]
-        API --> DB[("db<br/><small>Postgres 16, volume</small>")]
+    CI["CI verde<br/>push em main"] --> GH["deploy.yml"]
+    GH -->|push :sha| GHCR[("GitHub Container<br/>Registry")]
+    GH -->|"ssh deploy@vps &lt;sha&gt;"| D
+    subgraph VPS["VPS Hostinger"]
+        D["codeexpert-deploy<br/><small>comando forçado</small>"] -->|compose up| PX
+        PX["proxy<br/><small>Caddy, 80/443</small>"] --> API["api<br/><small>:8000, API + front-end</small>"]
+        API --> DB[("db<br/><small>Postgres 16</small>")]
     end
-    GHCR -.->|pull| VPS
-    P["Professor"] -->|HTTPS| PX
+    GHCR -.->|pull| D
 ```
 
-| Peça | Como |
+1. O `ci.yml` termina verde num push em `main`. Falha, cancelamento ou PR não chegam ao deploy ([ADR-0008](../adr/0008-one-gate-for-people-agents-and-ci.md)).
+2. O `deploy.yml` confere que o commit ainda é a ponta de `main`; se não for, pula. Deploys nunca são cancelados no meio.
+3. Constrói a imagem de `backend/`, com o build de `frontend/` dentro dela, e envia para `ghcr.io/tutor-ia-makers/codeexpert:<sha>` com o `GITHUB_TOKEN` do próprio job. A mesma API serve o front-end em `/` e as rotas em `/api/v1` ([Rodar com Docker](docker.md#o-que-a-imagem-contem)), atrás da mesma senha do proxy.
+4. Entra por SSH como `deploy`. A chave só executa `/usr/local/bin/codeexpert-deploy`, que recebe o SHA e mais nada.
+5. Na VPS, o script recusa um SHA que não esteja em `origin/main`, faz checkout dele, baixa a imagem e sobe o Compose. Ele só termina quando a API responde saudável.
+6. O job chama `GET /health` pela URL pública e exige que `commit` seja o SHA publicado.
+
+| Arquivo | Papel |
 | --- | --- |
-| Máquina | Uma VPS KVM com Ubuntu e Docker Compose, ≥ 2 vCPU. Plano e datacenter *A confirmar* |
-| Portas | Só o proxy publica, 80 e 443. API e Postgres ficam na rede interna do Compose. Firewall libera 22, 80 e 443 |
-| Imagem | GitHub Container Registry, tag = SHA. O job envia com o `GITHUB_TOKEN`; a VPS baixa. Como a imagem não contém segredo, o pacote pode ser público |
-| Deploy | O job, no ambiente `production` restrito a `main`, entra por SSH com uma chave cujo `authorized_keys` só permite rodar o script de deploy. A chave do host fica fixada numa variável do repositório |
-| Segredos | Chave do LLM e senha do banco ficam só na VPS, como arquivos montados pelo Compose em `/run/secrets`. Nunca passam pelo GitHub ([G0-3](../product/plano-30-11.md#g0-3)) |
-| Banco | Postgres no mesmo Compose, migrações aplicadas por um serviço que roda antes da API, `pg_dump` diário copiado para fora da VPS ([G1-1](../product/plano-30-11.md#g1-1)) |
-| Estado da geração | Até o [G0-4](../product/plano-30-11.md#g0-4), `var/` num volume Docker. Sobrevive a reinício e a deploy, porque há uma máquina só |
+| `.github/workflows/deploy.yml` | Os passos acima |
+| `deploy/compose.yaml` | `api`, `db` e `proxy`. Só o proxy publica portas. Segredos chegam por `secrets`, nunca por variável de ambiente |
+| `deploy/Caddyfile` | TLS automático, autenticação básica em tudo menos `/health`, proxy para `api:8000` |
+| `deploy/deploy.sh` | O que a chave de deploy executa. Instalado na VPS como cópia do root |
+| `deploy/bootstrap-vps.sh` | Configuração única de uma VPS Ubuntu nova |
+| `deploy/production.env.example` | Modelo do `/opt/codeexpert/production.env`: imagem, domínio e usuário/hash da autenticação |
 
-!!! warning "O que a troca custa"
-    Somos nós que operamos a máquina: atualizações do sistema e do Docker, disco, renovação do TLS, rotação de logs. Uma VPS é um ponto único de falha, e o backup só vale depois de um restore testado. A lista completa está nas consequências do [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md#consequences).
+## Na VPS
 
-## Chave do modelo
+| O quê | Onde |
+| --- | --- |
+| Checkout do repositório, no SHA publicado | `/opt/codeexpert/repo` (dono: `deploy`) |
+| Configuração não secreta | `/opt/codeexpert/production.env` |
+| Chave do LLM | `/etc/codeexpert/secrets/llm_api_key` → `/run/secrets/codeexpert_llm_api_key` (uid 1000, `0400`) |
+| URL do banco, com senha | `/etc/codeexpert/secrets/database_url` → `/run/secrets/codeexpert_database_url` (uid 1000, `0400`) |
+| Senha do Postgres | `/etc/codeexpert/secrets/postgres_password` (uid 999, `0400`) |
+| Dados | Volumes Docker `codeexpert_pgdata`, `codeexpert_var`, `codeexpert_caddy_data` |
 
-Sem `CODEEXPERT_LLM_API_KEY` o serviço sobe e responde `GET /health`, mas a geração responde `503` ([configuração](../reference/configuration.md#variaveis-de-ambiente)).
+Os segredos nunca passam pelo GitHub. A aplicação lê os arquivos de `/run/secrets` ([Segredos em arquivo](../reference/configuration.md#segredos-em-arquivo)), então a chave não aparece em `docker inspect` nem em `/proc/1/environ`.
 
-<span class="ce-badge ce-status--done">Implementado</span> A aplicação lê a chave de `/run/secrets/codeexpert_llm_api_key` quando a variável não está definida ([Segredos em arquivo](../reference/configuration.md#segredos-em-arquivo)).
+O esquema do banco é aplicado pela própria API ao iniciar (`store/schema.sql`, idempotente). Migrações versionadas e `pg_dump` diário são do [G1-1](../product/plano-30-11.md#g1-1), <span class="ce-badge ce-status--planned">Planejado</span>: **até lá não há backup do banco.**
 
-<span class="ce-badge ce-status--planned">Planejado</span> O lado da VPS, que depende do Compose do [G0-9](../product/plano-30-11.md#g0-9). Nada disto foi testado numa máquina:
+## Configuração única {#configuracao-unica}
 
-- O arquivo fica num diretório do root com permissão `0700`. O Compose monta o arquivo no container sem copiá-lo, então ele mantém dono e permissões do host. Como o container roda como o usuário `app` (uid `1000`, ver `Dockerfile`), o arquivo pertence ao uid `1000` e tem permissão `0400`. *A confirmar na VPS.*
-- No `compose.yaml`, o segredo é declarado com `file:` apontando para esse arquivo e entra no serviço `api` com `target: codeexpert_llm_api_key`. `CODEEXPERT_LLM_API_KEY` não aparece em `environment:` nem num `env_file:`.
-- A senha do banco segue o mesmo caminho quando existir o campo dela em `Settings` ([G1-1](../product/plano-30-11.md#g1-1)).
-- A demonstração do [G0-3](../product/plano-30-11.md#g0-3) é mostrar que `docker inspect` e `/proc/1/environ` do container não contêm a chave e que uma geração funciona.
+Feita uma vez por VPS. *A confirmar*: ainda não foi executada do zero.
+
+### 1. A máquina
+
+Na Hostinger, uma VPS KVM com Ubuntu 24.04, pelo menos 2 vCPU e 4 GB de RAM, de preferência num datacenter no Brasil. Entre como root com a sua chave SSH.
+
+No DNS do domínio, crie um registro **A** apontando para o IP da VPS. O Caddy só obtém o certificado depois que o domínio resolver para a máquina.
+
+### 2. A chave de deploy
+
+No seu computador, gere um par só para o GitHub. Ele não serve para mais nada:
+
+```bash
+ssh-keygen -t ed25519 -N "" -C deploy@github -f codeexpert-deploy
+```
+
+A parte pública (`codeexpert-deploy.pub`) vai para a VPS no passo seguinte. A privada vai para o GitHub no passo 4 e depois é apagada do computador.
+
+### 3. O bootstrap
+
+Na VPS, como root. Leia o script antes de rodá-lo:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/TUTOR-IA-Makers/tutor-ia/main/deploy/bootstrap-vps.sh
+less bootstrap-vps.sh
+DEPLOY_PUBLIC_KEY="ssh-ed25519 AAAA... deploy@github" bash bootstrap-vps.sh
+```
+
+Ele atualiza o sistema e liga as atualizações automáticas de segurança. Também instala Docker com rotação de logs e abre no firewall só as portas 22, 80 e 443. Por fim, cria o usuário `deploy`, clona o repositório e instala o `codeexpert-deploy`. Pede a chave do LLM sem mostrá-la, gera a senha do Postgres e grava a chave de deploy com o comando forçado. No fim, imprime os valores de `VPS_HOST` e `VPS_HOST_KEY`.
+
+Rodá-lo de novo é seguro: não sobrescreve segredo nem `production.env` existentes, e reinstala o `codeexpert-deploy`. **Mudou `deploy/deploy.sh`? Rode o bootstrap de novo**, porque a VPS só usa a cópia instalada.
+
+Depois, edite `/opt/codeexpert/production.env`. Preencha o `DOMAIN` e o usuário da autenticação, e gere o hash da senha:
+
+```bash
+docker run --rm caddy:2.8 caddy hash-password    # digite a senha da equipe
+```
+
+Coloque o hash entre **aspas simples**. Ele contém `$`, que o Compose tentaria expandir.
+
+### 4. O GitHub
+
+Em *Settings → Environments → production* (restrito à branch `main`):
+
+| Tipo | Nome | Valor |
+| --- | --- | --- |
+| Secret | `DEPLOY_SSH_KEY` | Conteúdo de `codeexpert-deploy` (a chave privada) |
+| Variable | `VPS_HOST` | IP da VPS |
+| Variable | `VPS_HOST_KEY` | A linha `IP ssh-ed25519 AAAA...` impressa pelo bootstrap |
+| Variable | `PRODUCTION_URL` | `https://` + o domínio |
+
+Sem qualquer um deles, o job para no primeiro passo e diz qual falta.
+
+### 5. O primeiro deploy
+
+Faça um merge em `main`, ou reexecute o último *Deploy* em *Actions → Deploy → Re-run jobs*. Na primeira vez o pacote `codeexpert` nasce **privado** no GHCR e a VPS não consegue baixá-lo. Torne-o público em *Packages → codeexpert → Package settings → Change visibility*. A imagem não contém segredo ([ADR-0009](../adr/0009-container-image-with-gcc.md)). Depois, reexecute o job.
+
+### 6. Conferir
+
+```bash
+curl https://SEU_DOMINIO/health                   # {"status":"ok",...,"commit":"<sha de main>"}
+curl -u equipe https://SEU_DOMINIO/config         # api_key_configured: true
+```
+
+Na VPS, confira que a chave não está no ambiente do container (demonstração do [G0-3](../product/plano-30-11.md#g0-3)):
+
+```bash
+key=$(sudo cat /etc/codeexpert/secrets/llm_api_key)
+docker inspect codeexpert-api-1 | grep -cF "$key"                              # 0
+docker exec codeexpert-api-1 cat /proc/1/environ | grep -caF "$key"            # 0
+unset key
+```
+
+O `grep` procura o valor da chave e só imprime quantas linhas o contêm, então a chave não aparece no terminal.
+
+## Operar
+
+| Tarefa | Como |
+| --- | --- |
+| Voltar para um commit anterior | Como `deploy` na VPS: `codeexpert-deploy <sha>`. Imagens de até 30 dias ficam na máquina |
+| Ver logs | `docker logs -f codeexpert-api-1` (e `codeexpert-proxy-1`, `codeexpert-db-1`) |
+| Trocar a chave do LLM | Sobrescreva `/etc/codeexpert/secrets/llm_api_key` (mantendo dono 1000 e `0400`) e rode `docker restart codeexpert-api-1` |
+| Trocar a chave de deploy | Gere outra (passo 2), troque a linha em `~deploy/.ssh/authorized_keys` e o secret `DEPLOY_SSH_KEY`. Faça isso também quando alguém com acesso de admin ao repositório sair |
+
+!!! warning "O que a VPS custa"
+    Somos nós que operamos a máquina: disco, atualizações do Docker, renovação do TLS. Quem tem acesso ao Docker na VPS (inclusive o usuário `deploy`) é root nela e lê os segredos. Uma VPS é um ponto único de falha. A lista completa está nas consequências do [ADR-0011](../adr/0011-host-on-a-hostinger-vps.md#consequences).

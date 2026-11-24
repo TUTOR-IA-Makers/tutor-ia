@@ -45,6 +45,9 @@ class Settings(BaseSettings):
     # Set by the deploy workflow to the commit it shipped. The package version
     # only moves on a release, so it cannot tell two deploys of main apart.
     commit_sha: str | None = None
+    # The built SPA (`frontend/dist`). The image sets it; unset, `/` redirects to
+    # the API docs as it always did, so `make run` needs no front-end build.
+    frontend_dir: Path | None = None
 
     # ── Where a run's artefacts live ──────────────────────────────────────────
     # `local` keeps one directory per run under `workspace_root`; `postgres` keeps
@@ -56,7 +59,6 @@ class Settings(BaseSettings):
 
     # ── Filesystem ────────────────────────────────────────────────────────────
     workspace_root: Path = Path("var/runs")
-    questions_dir: Path = Path("var/questions")
 
     # ── Local execution limits ────────────────────────────────────────────────
     # Resource limits, not isolation. See docs/adr/0004.

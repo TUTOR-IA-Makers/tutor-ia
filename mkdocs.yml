@@ -120,6 +120,7 @@ nav:
       - Primeiro dia: onboarding/index.md
       - Da issue ao PR: guides/first-task.md
       - Gerar uma questão: guides/generate-a-question.md
+      - Formulário ligado à API: guides/form-to-database.md
       - Rodar com Docker: guides/docker.md
       - Deploy: guides/deploy.md
       - Importar no Moodle: guides/import-into-moodle.md
@@ -128,6 +129,7 @@ nav:
       - architecture/index.md
       - Pipeline de geração: architecture/pipeline.md
       - Modelo de dados: architecture/data-model.md
+      - Ciclo de vida da questão: architecture/question-lifecycle.md
       - Integração com o front-end: architecture/frontend-integracao.md
       - Decisões (ADR):
           - adr/index.md
@@ -145,6 +147,11 @@ nav:
           - 0012 — Artifact store in Postgres: adr/0012-artifact-store-in-postgres.md
           - 0013 — Resource API and cookie session: adr/0013-resource-api-and-cookie-session.md
           - 0014 — Structured question snapshot: adr/0014-structured-question-snapshot.md
+          - 0015 — Question lifecycle on runs: adr/0015-question-lifecycle-on-runs.md
+          - 0016 — Approval record on runs: adr/0016-approval-record-on-runs.md
+          - 0017 — Resumable generation job: adr/0017-resumable-generation-job.md
+          - 0018 — Library filters in Python: adr/0018-library-filters-in-python.md
+          - 0019 — Pure exporter, no shared file: adr/0019-pure-exporter-no-shared-file.md
           - Modelo: adr/0000-template.md
   - Design:
       - Identidade visual: design/identidade.md

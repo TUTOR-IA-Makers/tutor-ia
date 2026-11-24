@@ -36,7 +36,7 @@ Distribuição por dupla, estimativas e ordem de corte em [Plano de entrega](pla
 
 | Hoje | Mudança planejada | Estado esperado |
 | --- | --- | --- |
-| Roda com `make run` ou na imagem Docker com `gcc` (**G0-1**, [guia](../guides/docker.md)). Sem deploy: o workflow do **G0-2** publica no Cloud Run e nunca rodou | **G0-9** VPS da Hostinger com Docker Compose (API, Postgres, proxy com TLS); imagem no GitHub Container Registry e deploy por SSH a cada merge em `main` ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
+| Roda com `make run` ou na imagem Docker com `gcc` (**G0-1**, [guia](../guides/docker.md)). Sem deploy: o workflow, o Compose e os scripts do **G0-9** existem, mas ainda não rodaram numa VPS | **G0-9** VPS da Hostinger com Docker Compose (API, Postgres, proxy com TLS); imagem no GitHub Container Registry e deploy por SSH a cada merge em `main` ([ADR-0011](../adr/0011-host-on-a-hostinger-vps.md)) | Uma imagem, a mesma local e em produção. URL pública no `README.md`, respondendo `GET /health` com a versão de `main` |
 | Chave no `.env` local | **G0-3** chave só na VPS, como arquivo montado em `/run/secrets` (S1) | Nenhuma chave no repositório, no GitHub, nos logs ou em `docker inspect` |
 | Logs em `stdout`, sem `run_id` | **G0-5** logs estruturados com `run_id`, etapa e duração (P1, sem sprint) | Uma geração inteira rastreável nos logs da VPS |
 
@@ -49,11 +49,11 @@ S0 e S1. G0-1 está <span class="ce-badge ce-status--done">Implementado</span>; 
 | Estado em `var/runs/<run_id>/`. Numa VPS só, com `var/` num volume, isso funciona em produção; mas arquivos não dão consulta (G1-5) nem transação (G0-8, G3) | **G0-4** protocolo `ArtifactStore`: `LocalFilesystemStore` em dev/testes, `PostgresStore` em produção, com ADR (S1) | Estado no Postgres a cada etapa. Disco só como rascunho de uma etapa (`/tmp/<run_id>` para o `.c` e o binário) |
 | Nenhum banco | **G1-1** Postgres no Compose da VPS, com backup diário fora dela e migrações Alembic aplicadas no deploy · **G1-2** tabelas de questão, caso de teste e execução (S1) | O que hoje está em `meta.json` (modelo, versão de prompt) vira coluna; tokens e custo ficam vazios até o G2-4 |
 | Pedido HTTP síncrono, aberto por dezenas de segundos | **G0-8** `POST /questions` responde `202` com id; as etapas rodam numa `BackgroundTask`; `GET /questions/{id}` mostra progresso (S2) | Job interrompido fica `INTERROMPIDO`, com as etapas pagas preservadas. Não é fila distribuída |
-| XML acumulado em um arquivo, lido e reescrito a cada exportação | **G1-8** `export_question` vira função pura: recebe questões, devolve XML (S2) · **G1-6** `POST /export` com ids selecionados (S4) | Exportação sem arquivo compartilhado; só questões aprovadas |
-| Sem listagem | **G1-5** `GET /questions` com filtros por eixo, nível, estado e texto, paginado (S2) | Biblioteca do professor |
+| XML acumulado em um arquivo, lido e reescrito a cada exportação | **G1-8** exportador puro: recebe questões, devolve XML (S2) <span class="ce-badge ce-status--done">Implementado</span> como [`export_questions`](../architecture/pipeline.md#5-exportacao-moodle-xml) · **G1-6** `POST /export` com ids selecionados (S4) | Exportação sem arquivo compartilhado; só questões aprovadas |
+| Sem listagem | **G1-5** `GET /questions` com filtros por eixo, nível, estado e texto, paginado (S2) <span class="ce-badge ce-status--done">Implementado</span> como [`GET /api/v1/questions`](../reference/api.md#get-api-v1-questions) | Biblioteca do professor |
 | Os 3 primeiros casos são exemplo, por ordem | **G1-4** categoria (típico, limite, borda, inválido) e visibilidade (público, privado) (S4, P1) | Casos privados ocultos no XML; ≥ 1 público e 1 privado para aprovar |
 
-Todos <span class="ce-badge ce-status--planned">Planejados</span>. G0-4 era o risco técnico do plano por causa do Cloud Run; na VPS deixou de bloquear o deploy, mas continua antes de G1-5, G0-8 e G3.
+Todos <span class="ce-badge ce-status--planned">Planejados</span>, menos o G1-5, o G1-8 e o G0-8. G0-4 era o risco técnico do plano por causa do Cloud Run; na VPS deixou de bloquear o deploy, mas continua antes de G1-5, G0-8 e G3. O G0-8 está <span class="ce-badge ce-status--done">Implementado</span> (#38, #42): `POST /api/v1/questions` → `202`, estado do job no banco, `INTERROMPIDO` após um reinício e retomada sem repetir chamadas ao modelo — ver [API](../reference/api.md#api-v1) e [ADR-0017](../adr/0017-resumable-generation-job.md).
 
 ### Verificação de escopo {#verificacao-de-escopo}
 
@@ -75,7 +75,7 @@ Todos <span class="ce-badge ce-status--planned">Planejados</span>. Plano B do G2
 | Editar exige mexer nos arquivos em `var/runs/` | **G3-3** editar enunciado, solução ou casos; editar a solução reexecuta compilação, verificação e saídas esperadas (S4) | Saída esperada nunca é digitada nem herdada — sempre recalculada |
 | Qualquer execução pode ser exportada | **G3-4** o exportador recusa o que não está `APROVADA` (S4) | Impossível levar para a turma algo que ninguém revisou |
 
-Todos <span class="ce-badge ce-status--planned">Planejados</span>. Aprovador ≠ solicitante e trilha de auditoria ficam fora (exigem papéis).
+G3-1 <span class="ce-badge ce-status--done">Implementado</span> ([Ciclo de vida da questão](../architecture/question-lifecycle.md)); o resto <span class="ce-badge ce-status--planned">Planejado</span>. Aprovador ≠ solicitante e trilha de auditoria ficam fora (exigem papéis).
 
 ### Interface do professor {#interface-do-professor}
 

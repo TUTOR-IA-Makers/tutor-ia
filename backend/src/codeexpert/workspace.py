@@ -13,11 +13,12 @@ saw its files. See docs/adr/0012.
 import json
 import re
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, NoReturn
 from uuid import uuid4
 
-from codeexpert.domain import RunMetadata
-from codeexpert.errors import MissingArtefactError, RunNotFoundError
+from codeexpert.domain import JobRecord, JobState, QuestionState, RunMetadata
+from codeexpert.errors import InvalidTransitionError, MissingArtefactError, RunNotFoundError
+from codeexpert.lifecycle import check_transition
 from codeexpert.store import ArtifactStore
 
 STATEMENT = "statement.json"
@@ -26,6 +27,12 @@ BINARY = "solution"
 INPUTS = "inputs.json"
 TESTCASES = "testcases.json"
 META = "meta.json"
+# What the teacher asked for, verbatim. The constraints derived from it lose
+# information (ten contents become four axes), so the original is kept.
+DRAFT = "draft.json"
+# Written by background generations before G0-8 when they stopped early. Read
+# only to report those old runs; failures now live in the job record.
+FAILURE = "failure.json"
 
 # Run ids come from clients as path segments. Anything outside this alphabet is
 # rejected before it reaches the filesystem.
@@ -78,11 +85,85 @@ class RunWorkspace:
         self._store.delete_run(self.run_id)
 
     def complete(self) -> None:
-        """Mark the run finished. Until then it is a draft and no question is shown."""
+        """Mark the run finished. Until then it is a draft and no question is shown.
+
+        A question still being generated becomes `GERADA`. One already reviewed,
+        or one whose last verification failed, keeps its state: finishing step 5
+        again is not a reason to forget a teacher's decision or a failed run.
+        """
         self._store.mark_complete(self.run_id)
+        if self.state is QuestionState.GERANDO:
+            self.transition(QuestionState.GERADA)
 
     def is_complete(self) -> bool:
         return self._store.is_complete(self.run_id)
+
+    # ── Question state ────────────────────────────────────────────────────────
+
+    @property
+    def state(self) -> QuestionState:
+        return self._store.get_state(self.run_id)
+
+    def transition(self, target: QuestionState) -> QuestionState:
+        """Move the question to `target`, or raise `InvalidTransitionError`.
+
+        The only way code changes a state. The rules are in `codeexpert.lifecycle`;
+        the store refuses the write if someone else changed the state between
+        reading and writing it, and the fresh state is then judged instead.
+        """
+        current = self.state
+        check_transition(self.run_id, current, target)
+        if not self._store.set_state(self.run_id, current, target):
+            self._raise_lost_race(target)
+        return target
+
+    def approve(self, approved_by: str) -> RunMetadata:
+        """Move the question to `APROVADA`, recording who approved it and when.
+
+        Idempotent: on a question that is already `APROVADA` nothing is written
+        and the first approval's record is returned, whoever asks. Every other
+        state is judged by `codeexpert.lifecycle`, so `FALHOU_VERIFICACAO` and the
+        rest raise `InvalidTransitionError`.
+        """
+        current = self.state
+        if current is QuestionState.APROVADA:
+            return self.read_metadata()
+        check_transition(self.run_id, current, QuestionState.APROVADA)
+
+        metadata = self.read_metadata().model_copy(
+            update={
+                "reviewed": True,
+                "approved_by": approved_by,
+                "approved_at": datetime.now(UTC).isoformat(),
+            }
+        )
+        if self._store.record_approval(self.run_id, current, metadata):
+            return metadata
+        # Another approval won the race. The outcome the caller asked for holds,
+        # so this is the idempotent case, not a conflict.
+        if self.state is QuestionState.APROVADA:
+            return self.read_metadata()
+        self._raise_lost_race(QuestionState.APROVADA)
+
+    def _raise_lost_race(self, target: QuestionState) -> NoReturn:
+        check_transition(self.run_id, self.state, target)
+        # Valid from the new state too, yet the write lost a race: say so rather
+        # than retry blindly over a change this request never saw.
+        raise InvalidTransitionError(
+            f"Question '{self.run_id}' changed while it was being updated. Read it again."
+        )
+
+    # ── Background job ────────────────────────────────────────────────────────
+
+    def read_job(self) -> JobRecord | None:
+        """The stored job record as written. `codeexpert.generation.job` interprets it."""
+        return self._store.get_job(self.run_id)
+
+    def save_job(self, job: JobRecord) -> None:
+        self._store.save_job(self.run_id, job)
+
+    def replace_job(self, expected: JobState | None, job: JobRecord) -> bool:
+        return self._store.replace_job(self.run_id, expected, job)
 
     # ── Artefacts ─────────────────────────────────────────────────────────────
 
