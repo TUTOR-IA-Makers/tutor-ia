@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { cx } from '@/lib/cx'
 import styles from './ProgressBar.module.css'
 
 export interface ProgressBarProps {
@@ -6,13 +7,14 @@ export interface ProgressBarProps {
   max?: number
   label: string
   valueText?: string
+  className?: string | undefined
 }
 
-export function ProgressBar({ value, max = 100, label, valueText }: ProgressBarProps) {
+export function ProgressBar({ value, max = 100, label, valueText, className }: ProgressBarProps) {
   const ratio = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0
   return (
     <div
-      className={styles.track}
+      className={cx(styles.track, className)}
       role="progressbar"
       aria-label={label}
       aria-valuemin={0}

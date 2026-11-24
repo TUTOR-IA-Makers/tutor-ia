@@ -18,6 +18,12 @@
   gap: var(--space-4);
 }
 
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
 .aside {
   display: flex;
   flex-wrap: wrap;

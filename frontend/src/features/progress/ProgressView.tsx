@@ -4,16 +4,17 @@ import { useEffect, useRef } from 'react'
 import {
   DescriptionList,
   Disclosure,
-  ErrorState,
   Icon,
   LinkButton,
   LoadingState,
   PageHeader,
   useToast,
 } from '@/components/ui'
-import { currentStep, isFinished, type QuestionSummary } from '@/domain'
-import { describeError } from '@/lib/http'
+import { currentStep, failedStep, isFinished, type QuestionSummary } from '@/domain'
 import { questionKeys, useGeneration } from '@/features/questions'
+import { RequestErrorState } from '@/features/session'
+import { GenerationFailure } from './GenerationFailure'
+import { ResumeGenerationButton } from './ResumeGenerationButton'
 import { GenerationPanel } from './GenerationPanel'
 import { QuestionSummaryCard } from './QuestionSummaryCard'
 import { StepList } from './StepList'
@@ -25,11 +26,20 @@ const GENERATED_TOAST = {
   description: 'Revise antes de aprovar.',
 } as const
 
-const FAILED_TOAST = {
-  tone: 'danger',
-  title: 'A questão falhou na verificação',
-  description: 'Veja o motivo e gere de novo.',
-} as const
+function failedToast(stepLabel: string, resumable: boolean) {
+  if (resumable) {
+    return {
+      tone: 'info',
+      title: `A geração foi interrompida em: ${stepLabel}`,
+      description: 'Retome para continuar de onde parou.',
+    } as const
+  }
+  return {
+    tone: 'danger',
+    title: `A geração parou em: ${stepLabel}`,
+    description: 'Veja o motivo e gere de novo.',
+  } as const
+}
 
 export interface ProgressViewProps {
   question: QuestionSummary
@@ -40,7 +50,8 @@ export function ProgressView({ question }: ProgressViewProps) {
   const client = useQueryClient()
   const toast = useToast()
   const finished = generation.data ? isFinished(generation.data) : false
-  const failed = generation.data?.status === 'FALHOU_VERIFICACAO'
+  const stopped = generation.data ? failedStep(generation.data) : null
+  const resumable = generation.data?.resumable ?? false
   const announced = useRef(false)
 
   useEffect(() => {
@@ -48,22 +59,23 @@ export function ProgressView({ question }: ProgressViewProps) {
     announced.current = true
     void client.invalidateQueries({ queryKey: questionKeys.detail(question.id) })
     void client.invalidateQueries({ queryKey: questionKeys.lists() })
-    toast.show(failed ? FAILED_TOAST : GENERATED_TOAST)
-  }, [finished, failed, client, question.id, toast])
+    toast.show(stopped ? failedToast(stopped.label, resumable) : GENERATED_TOAST)
+  }, [finished, stopped, resumable, client, question.id, toast])
 
   return (
     <div className={styles.page}>
       <PageHeader title="Acompanhar geração" description="Veja o andamento da sua nova questão." />
       {generation.isPending && <LoadingState label="Consultando o andamento" />}
       {generation.isError && (
-        <ErrorState
-          {...describeError(generation.error)}
-          onRetry={() => void generation.refetch()}
-        />
+        <RequestErrorState error={generation.error} onRetry={() => void generation.refetch()} />
       )}
       {generation.data && (
         <>
-          <GenerationPanel generation={generation.data} />
+          {stopped ? (
+            <GenerationFailure generation={generation.data} />
+          ) : (
+            <GenerationPanel generation={generation.data} />
+          )}
           <div className={styles.columns}>
             <StepList generation={generation.data} />
             <QuestionSummaryCard question={question} />
@@ -77,7 +89,9 @@ export function ProgressView({ question }: ProgressViewProps) {
                     { term: 'Execução', value: <code>{generation.data.runId}</code> },
                     {
                       term: 'Etapa atual',
-                      value: <code>{currentStep(generation.data)?.id ?? 'concluída'}</code>,
+                      value: (
+                        <code>{(stopped ?? currentStep(generation.data))?.id ?? 'concluída'}</code>
+                      ),
                     },
                   ]}
                 />
@@ -86,9 +100,12 @@ export function ProgressView({ question }: ProgressViewProps) {
                 <Icon icon={Info} />A geração continua enquanto você navega.
               </p>
             </div>
-            <LinkButton to="/biblioteca" variant="primary" size="lg" icon={ArrowLeft}>
-              Voltar à biblioteca
-            </LinkButton>
+            <div className={styles.actions}>
+              {stopped && resumable && <ResumeGenerationButton questionId={question.id} />}
+              <LinkButton to="/biblioteca" variant="primary" size="lg" icon={ArrowLeft}>
+                Voltar à biblioteca
+              </LinkButton>
+            </div>
           </div>
         </>
       )}
