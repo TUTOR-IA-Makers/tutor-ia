@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help setup run check check-fast fix test docs task clean \
         front-install front-dev front-build front-check front-e2e \
-		validate-catalog
+        catalog catalog-regenerate
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | \
@@ -21,8 +21,11 @@ check: ## The gate — run before every push (same checks as CI)
 check-fast: ## The gate without the documentation build
 	@./scripts/check.sh --fast
 
-validate-catalog: ## Validate the project structure and configuration
-	@./scripts/validate-catalog.sh
+catalog: ## Check data/catalog/: schema, coverage, outputs re-run with gcc
+	@backend/.venv/bin/python scripts/validate_catalog.py
+
+catalog-regenerate: ## Rewrite catalog outputs by running each solution — review the diff
+	@backend/.venv/bin/python scripts/validate_catalog.py --regenerate
 
 fix: ## Apply formatting and auto-fixable lint
 	@./scripts/fix.sh
