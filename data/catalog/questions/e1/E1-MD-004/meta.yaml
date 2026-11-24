@@ -4,4 +4,4 @@ nivel: "MD"
 estruturas:
   - "math.h"
 origem: "Beecrowd (URI Online Judge) — Problema 2164 (Fibonacci Rápido)"
-direitos_restritos: false
+direitos_restritos: true

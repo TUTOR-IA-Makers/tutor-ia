@@ -8,7 +8,8 @@
       "eixo": "E2",
       "nivel": "D",
       "estruturas": [
-        "for"
+        "for",
+        "if"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 200",
       "direitos_restritos": true,
@@ -35,7 +36,6 @@
       "eixo": "E2",
       "nivel": "D",
       "estruturas": [
-        "for",
         "if"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 118",
@@ -64,7 +64,8 @@
       "nivel": "D",
       "estruturas": [
         "if",
-        "else"
+        "else",
+        "ternario"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 157",
       "direitos_restritos": true,
@@ -96,7 +97,8 @@
       "nivel": "D",
       "estruturas": [
         "if",
-        "else"
+        "else",
+        "math.h"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 159",
       "direitos_restritos": true,
@@ -128,7 +130,8 @@
       "nivel": "D",
       "estruturas": [
         "for",
-        "if"
+        "if",
+        "else"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 187",
       "direitos_restritos": true,
@@ -174,6 +177,10 @@
         {
           "entrada": "212 212 10\n",
           "saida": "212 100.00\n"
+        },
+        {
+          "entrada": "100 50 25\n",
+          "saida": "100 37.78\n75 23.89\n50 10.00\n"
         }
       ]
     },

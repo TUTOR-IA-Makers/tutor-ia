@@ -11,8 +11,8 @@
         "if",
         "else"
       ],
-      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.3",
-      "direitos_restritos": false,
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.3 — CC BY-NC-ND 4.0",
+      "direitos_restritos": true,
       "path": "questions/e2/E2-F-001",
       "enunciado": "Leia a base e a altura de dois retângulos A e B (inteiros). Calcule e compare suas áreas, imprimindo `primeiro maior`, `segundo maior` ou `iguais`.",
       "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int b1, h1, b2, h2;\n    scanf(\"%d %d %d %d\", &b1, &h1, &b2, &h2);\n    int a1 = b1 * h1;\n    int a2 = b2 * h2;\n    if (a1 > a2) {\n        printf(\"primeiro maior\\n\");\n    } else if (a2 > a1) {\n        printf(\"segundo maior\\n\");\n    } else {\n        printf(\"iguais\\n\");\n    }\n    return 0;\n}\n",
@@ -43,8 +43,8 @@
         "if",
         "else"
       ],
-      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.12",
-      "direitos_restritos": false,
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.12 — CC BY-NC-ND 4.0",
+      "direitos_restritos": true,
       "path": "questions/e2/E2-F-002",
       "enunciado": "Calcule o valor de uma corrida de táxi em Brasília. Leia o número da bandeira (`1` ou `2`), a quilometragem rodada (real) e se possui desconto de 30% (`1` para sim, `2` para não). Bandeira 1 custa R$ 1,80/km e bandeira 2 custa R$ 2,30/km. Há uma taxa mínima de R$ 3,50 (aplicada após o eventual desconto). Imprima o valor final com 2 casas decimais.",
       "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int band, desc;\n    double kms, valor, corrida, min = 3.5;\n    scanf(\"%d %lf %d\", &band, &kms, &desc);\n    if (band == 1) valor = 1.8;\n    else valor = 2.3;\n    corrida = valor * kms;\n    if (desc == 1) corrida *= 0.7;\n    if (corrida < min) corrida = min;\n    printf(\"%.2f\\n\", corrida);\n    return 0;\n}\n",
@@ -73,10 +73,11 @@
       "nivel": "F",
       "estruturas": [
         "if",
-        "else"
+        "else",
+        "ternario"
       ],
-      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.4",
-      "direitos_restritos": false,
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.4 — CC BY-NC-ND 4.0",
+      "direitos_restritos": true,
       "path": "questions/e2/E2-F-003",
       "enunciado": "Leia dois números inteiros e informe o maior deles e se esse maior número é par ou ímpar. Se forem iguais, imprima `iguais`. Caso contrário, imprima `<maior> par` ou `<maior> impar`.",
       "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    if (a == b) {\n        printf(\"iguais\\n\");\n    } else {\n        int maior = a > b ? a : b;\n        if (maior % 2 == 0) printf(\"%d par\\n\", maior);\n        else printf(\"%d impar\\n\", maior);\n    }\n    return 0;\n}\n",
@@ -222,7 +223,8 @@
       "eixo": "E2",
       "nivel": "F",
       "estruturas": [
-        "switch"
+        "switch",
+        "ternario"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 148",
       "direitos_restritos": true,

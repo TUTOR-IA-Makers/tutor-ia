@@ -4,5 +4,5 @@ nivel: "F"
 estruturas:
   - "if"
   - "else"
-origem: "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.3"
-direitos_restritos: false
+origem: "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.3 — CC BY-NC-ND 4.0"
+direitos_restritos: true

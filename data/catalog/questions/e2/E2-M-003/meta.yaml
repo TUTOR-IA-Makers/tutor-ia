@@ -4,5 +4,6 @@ nivel: "M"
 estruturas:
   - "if"
   - "else"
+  - "ternario"
 origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 152"
 direitos_restritos: true

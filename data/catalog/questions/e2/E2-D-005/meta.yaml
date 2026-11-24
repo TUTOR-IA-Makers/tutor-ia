@@ -4,5 +4,6 @@ nivel: "D"
 estruturas:
   - "for"
   - "if"
+  - "else"
 origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 187"
 direitos_restritos: true

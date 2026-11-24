@@ -73,7 +73,8 @@
       "nivel": "M",
       "estruturas": [
         "if",
-        "else"
+        "else",
+        "ternario"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 152",
       "direitos_restritos": true,
@@ -105,7 +106,8 @@
       "nivel": "M",
       "estruturas": [
         "if",
-        "else"
+        "else",
+        "ternario"
       ],
       "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 156",
       "direitos_restritos": true,

@@ -3,5 +3,6 @@ eixo: "E2"
 nivel: "D"
 estruturas:
   - "for"
+  - "if"
 origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 200"
 direitos_restritos: true

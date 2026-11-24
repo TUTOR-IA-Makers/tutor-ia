@@ -4,5 +4,6 @@ nivel: "D"
 estruturas:
   - "if"
   - "else"
+  - "math.h"
 origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 159"
 direitos_restritos: true
