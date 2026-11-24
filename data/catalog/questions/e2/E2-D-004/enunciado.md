@@ -1,0 +1,1 @@
+Calcule o valor da função real `f(x) = (5x + 3) / sqrt(x² - 16)`. Leia um número real `x`. Se a expressão não puder ser avaliada nos reais (divisão por zero ou raiz de negativo), imprima `NAO PODE SER FEITA`. Caso contrário, imprima `f(x)` com 4 casas decimais.

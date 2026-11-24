@@ -1,0 +1,1 @@
+Leia três medidas reais `a`, `b` e `c`. Verifique se podem formar um triângulo. Se não puderem, imprima `nao forma triangulo`. Caso formem, classifique quanto aos lados imprimindo `equilatero`, `isosceles` ou `escaleno`.

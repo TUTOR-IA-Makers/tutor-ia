@@ -66,6 +66,22 @@ run_docs() {
   "$PY" -m mkdocs build --strict 2>&1 | { grep -v '^INFO' || true; }
 }
 
+# The reference catalog (data/catalog/): schema, coverage, and every expected
+# output re-checked by compiling and running its solution (AGENTS.md rule 4).
+run_catalog() {
+  if ! command -v gcc >/dev/null 2>&1; then
+    # Locally a missing compiler is a skip, like the front-end; in CI it must not
+    # be, or the check would pass by never running.
+    if [[ -n "${CI:-}" ]]; then
+      echo "  gcc not found in CI — the catalog cannot be checked"
+      return 1
+    fi
+    echo "  gcc not installed — skipping (CI checks the catalog)"
+    return 0
+  fi
+  "$PY" scripts/validate_catalog.py
+}
+
 run_front() {
   if ! command -v npm >/dev/null 2>&1 || [[ ! -d frontend/node_modules ]]; then
     echo "  front-end not installed — skipping (make front-install)"
@@ -79,6 +95,7 @@ step "no credentials in the working tree"      guard_secrets
 step "formatting"                              run_format
 step "lint"                                    run_lint
 step "tests"                                   run_tests
+step "reference catalog"                       run_catalog
 step "front-end"                               run_front
 [[ $FAST -eq 1 ]] || step "documentation builds in strict mode" run_docs
 

@@ -1,0 +1,1 @@
+Escreva um programa em C que receba dois números reais `a` e `b` (b ≠ 0) e mostre a soma, a subtração, a multiplicação e a divisão dos números, nessa ordem, cada resultado em uma linha com 2 casas decimais.

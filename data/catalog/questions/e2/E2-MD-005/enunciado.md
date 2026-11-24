@@ -1,0 +1,1 @@
+Leia cinco números inteiros. Verifique se todos são distintos entre si; caso haja repetidos, imprima `Os valores devem ser diferentes`. Caso todos sejam diferentes, imprima o maior e o menor valor, cada um em uma linha.

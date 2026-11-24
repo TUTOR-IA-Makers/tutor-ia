@@ -1,0 +1,7 @@
+id: "E2-MF-002"
+eixo: "E2"
+nivel: "MF"
+estruturas:
+  - "if"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 91"
+direitos_restritos: true

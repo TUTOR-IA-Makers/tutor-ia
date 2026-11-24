@@ -1,0 +1,248 @@
+{
+  "eixo": "E2",
+  "nivel": "M",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E2-M-001",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 123",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-001",
+      "enunciado": "Leia três medidas reais `a`, `b` e `c`. Verifique se podem formar um triângulo. Se não puderem, imprima `nao forma triangulo`. Caso formem, classifique quanto aos lados imprimindo `equilatero`, `isosceles` ou `escaleno`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b, c;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    if (a < b + c && b < a + c && c < a + b) {\n        if (a == b && b == c) printf(\"equilatero\\n\");\n        else if (a == b || a == c || b == c) printf(\"isosceles\\n\");\n        else printf(\"escaleno\\n\");\n    } else {\n        printf(\"nao forma triangulo\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3.0 3.0 3.0\n",
+          "saida": "equilatero\n"
+        },
+        {
+          "entrada": "3.0 3.0 4.0\n",
+          "saida": "isosceles\n"
+        },
+        {
+          "entrada": "3.0 4.0 5.0\n",
+          "saida": "escaleno\n"
+        },
+        {
+          "entrada": "1.0 2.0 5.0\n",
+          "saida": "nao forma triangulo\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-M-002",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 124",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-002",
+      "enunciado": "Leia três medidas reais `a`, `b` e `c` de um triângulo. Se não formarem triângulo, imprima `nao forma triangulo`. Caso contrário, classifique quanto aos ângulos: `retangulo`, `obtusangulo` ou `acutangulo`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b, c, maior2, lados2;\n    scanf(\"%lf %lf %lf\", &a, &b, &c);\n    if (a < b + c && b < a + c && c < a + b) {\n        if (a >= b && a >= c) { maior2 = a * a; lados2 = b * b + c * c; }\n        else if (b >= a && b >= c) { maior2 = b * b; lados2 = a * a + c * c; }\n        else { maior2 = c * c; lados2 = a * a + b * b; }\n        if (maior2 == lados2) printf(\"retangulo\\n\");\n        else if (maior2 > lados2) printf(\"obtusangulo\\n\");\n        else printf(\"acutangulo\\n\");\n    } else {\n        printf(\"nao forma triangulo\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3.0 4.0 5.0\n",
+          "saida": "retangulo\n"
+        },
+        {
+          "entrada": "3.0 4.0 6.0\n",
+          "saida": "obtusangulo\n"
+        },
+        {
+          "entrada": "4.0 5.0 6.0\n",
+          "saida": "acutangulo\n"
+        },
+        {
+          "entrada": "1.0 2.0 10.0\n",
+          "saida": "nao forma triangulo\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-M-003",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "if",
+        "else",
+        "ternario"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 152",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-003",
+      "enunciado": "Calcule a dosagem em gotas de um medicamento (500 mg/ml, 20 gotas/ml). Leia a idade (inteiro) e o peso (real) do paciente. Se peso < 5 kg, imprima `nao pode tomar`. Para 12 anos ou mais: peso >= 60 kg toma 1000 mg; abaixo de 60 kg toma 875 mg. Abaixo de 12 anos: 5 a 9 kg (125 mg), >9 a 16 kg (250 mg), >16 a 24 kg (375 mg), >24 a 30 kg (500 mg), >30 kg (750 mg). Imprima a quantidade inteira de gotas.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int idade;\n    double peso, mg = 0;\n    scanf(\"%d %lf\", &idade, &peso);\n    if (peso < 5.0) {\n        printf(\"nao pode tomar\\n\");\n        return 0;\n    }\n    if (idade >= 12) {\n        mg = (peso >= 60.0) ? 1000.0 : 875.0;\n    } else {\n        if (peso <= 9.0) mg = 125.0;\n        else if (peso <= 16.0) mg = 250.0;\n        else if (peso <= 24.0) mg = 375.0;\n        else if (peso <= 30.0) mg = 500.0;\n        else mg = 750.0;\n    }\n    printf(\"%d\\n\", (int)(mg / 25.0));\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "25 70.0\n",
+          "saida": "40\n"
+        },
+        {
+          "entrada": "15 55.0\n",
+          "saida": "35\n"
+        },
+        {
+          "entrada": "8 20.0\n",
+          "saida": "15\n"
+        },
+        {
+          "entrada": "1 4.2\n",
+          "saida": "nao pode tomar\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-M-004",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "if",
+        "else",
+        "ternario"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 156",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-004",
+      "enunciado": "Leia três inteiros representando dia, mês e ano de uma data (ano >= 1). Verifique se a data é válida no calendário gregoriano (considerando anos bissextos) e imprima `DATA VALIDA` ou `DATA INVALIDA`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int dia, mes, ano, vd = 1;\n    scanf(\"%d %d %d\", &dia, &mes, &ano);\n    if (ano < 1 || mes < 1 || mes > 12 || dia < 1 || dia > 31) {\n        vd = 0;\n    } else if ((mes == 4 || mes == 6 || mes == 9 || mes == 11) && dia > 30) {\n        vd = 0;\n    } else if (mes == 2) {\n        int bissexto = (ano % 4 == 0 && ano % 100 != 0) || (ano % 400 == 0);\n        if (dia > (bissexto ? 29 : 28)) vd = 0;\n    }\n    printf(\"%s\\n\", vd ? \"DATA VALIDA\" : \"DATA INVALIDA\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "29 2 2024\n",
+          "saida": "DATA VALIDA\n"
+        },
+        {
+          "entrada": "29 2 2023\n",
+          "saida": "DATA INVALIDA\n"
+        },
+        {
+          "entrada": "31 4 2026\n",
+          "saida": "DATA INVALIDA\n"
+        },
+        {
+          "entrada": "15 8 2026\n",
+          "saida": "DATA VALIDA\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-M-005",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "for",
+        "if"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 206",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-005",
+      "enunciado": "Leia um inteiro `N` (N >= 1) e, em seguida, `N` números reais (podendo ser negativos). Imprima o maior e o menor número digitados, cada um em uma linha com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    double num, maior, menor;\n    scanf(\"%d %lf\", &n, &num);\n    maior = menor = num;\n    for (int i = 1; i < n; i++) {\n        scanf(\"%lf\", &num);\n        if (num > maior) maior = num;\n        if (num < menor) menor = num;\n    }\n    printf(\"%.2f\\n%.2f\\n\", maior, menor);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "4\n-7.0 -3.0 -15.0 -1.0\n",
+          "saida": "-1.00\n-15.00\n"
+        },
+        {
+          "entrada": "3\n10.5 2.0 8.3\n",
+          "saida": "10.50\n2.00\n"
+        },
+        {
+          "entrada": "1\n42.0\n",
+          "saida": "42.00\n42.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-M-006",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 207",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-006",
+      "enunciado": "Calcule o produto de dois números inteiros não-negativos `A` e `B` utilizando exclusivamente somas sucessivas em um laço de repetição. Imprima o resultado.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b, soma = 0;\n    scanf(\"%d %d\", &a, &b);\n    for (int i = 0; i < b; i++) {\n        soma += a;\n    }\n    printf(\"%d\\n\", soma);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "4 5\n",
+          "saida": "20\n"
+        },
+        {
+          "entrada": "7 0\n",
+          "saida": "0\n"
+        },
+        {
+          "entrada": "12 3\n",
+          "saida": "36\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-M-007",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 209",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-007",
+      "enunciado": "A série de RICCI difere da série de Fibonacci porque os dois primeiros termos são fornecidos pelo usuário. Leia o 1º termo, o 2º termo e `N` (N >= 3). Imprima os `N` primeiros termos da série de Ricci separados por espaço e, na linha seguinte, a soma de todos esses termos.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long a1, a2, termo, soma;\n    int n;\n    scanf(\"%lld %lld %d\", &a1, &a2, &n);\n    soma = a1 + a2;\n    printf(\"%lld %lld\", a1, a2);\n    for (int i = 3; i <= n; i++) {\n        termo = a1 + a2;\n        printf(\" %lld\", termo);\n        soma += termo;\n        a1 = a2;\n        a2 = termo;\n    }\n    printf(\"\\n%lld\\n\", soma);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "2 5 5\n",
+          "saida": "2 5 7 12 19\n45\n"
+        },
+        {
+          "entrada": "1 1 6\n",
+          "saida": "1 1 2 3 5 8\n20\n"
+        },
+        {
+          "entrada": "3 4 3\n",
+          "saida": "3 4 7\n14\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-M-008",
+      "eixo": "E2",
+      "nivel": "M",
+      "estruturas": [
+        "for",
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 210",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-M-008",
+      "enunciado": "A série de FETUCCINE é gerada a partir de dois termos iniciais fornecidos pelo usuário: para posição `i` ímpar (i >= 3), `A_i = A_{i-1} + A_{i-2}`; para `i` par, `A_i = A_{i-1} - A_{i-2}`. Leia os dois primeiros termos e `N` (N >= 3) e imprima os `N` primeiros termos separados por espaço.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    long long a1, a2, termo;\n    int n;\n    scanf(\"%lld %lld %d\", &a1, &a2, &n);\n    printf(\"%lld %lld\", a1, a2);\n    for (int i = 3; i <= n; i++) {\n        if (i % 2 == 0) termo = a2 - a1;\n        else termo = a2 + a1;\n        printf(\" %lld\", termo);\n        a1 = a2;\n        a2 = termo;\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1 2 6\n",
+          "saida": "1 2 3 1 4 3\n"
+        },
+        {
+          "entrada": "5 3 5\n",
+          "saida": "5 3 8 5 13\n"
+        },
+        {
+          "entrada": "2 2 4\n",
+          "saida": "2 2 4 2\n"
+        }
+      ]
+    }
+  ]
+}

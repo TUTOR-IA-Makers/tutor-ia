@@ -1,0 +1,1 @@
+Escreva um programa em C que efetue o cálculo do valor de uma prestação em atraso utilizando a fórmula `prestacao = valor + (valor * (taxa / 100) * tempo)`. O programa deverá ler o valor original da prestação (real), a taxa de juros percentual por período (real) e o tempo de atraso em meses (inteiro), imprimindo o valor final da prestação com 2 casas decimais.

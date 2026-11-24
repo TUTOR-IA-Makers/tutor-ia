@@ -1,0 +1,254 @@
+{
+  "eixo": "E2",
+  "nivel": "F",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E2-F-001",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.3 — CC BY-NC-ND 4.0",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-001",
+      "enunciado": "Leia a base e a altura de dois retângulos A e B (inteiros). Calcule e compare suas áreas, imprimindo `primeiro maior`, `segundo maior` ou `iguais`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int b1, h1, b2, h2;\n    scanf(\"%d %d %d %d\", &b1, &h1, &b2, &h2);\n    int a1 = b1 * h1;\n    int a2 = b2 * h2;\n    if (a1 > a2) {\n        printf(\"primeiro maior\\n\");\n    } else if (a2 > a1) {\n        printf(\"segundo maior\\n\");\n    } else {\n        printf(\"iguais\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "10 3 9 12\n",
+          "saida": "segundo maior\n"
+        },
+        {
+          "entrada": "5 2 1 6\n",
+          "saida": "primeiro maior\n"
+        },
+        {
+          "entrada": "3 4 4 3\n",
+          "saida": "iguais\n"
+        },
+        {
+          "entrada": "2 2 2 2\n",
+          "saida": "iguais\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-F-002",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.12 — CC BY-NC-ND 4.0",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-002",
+      "enunciado": "Calcule o valor de uma corrida de táxi em Brasília. Leia o número da bandeira (`1` ou `2`), a quilometragem rodada (real) e se possui desconto de 30% (`1` para sim, `2` para não). Bandeira 1 custa R$ 1,80/km e bandeira 2 custa R$ 2,30/km. Há uma taxa mínima de R$ 3,50 (aplicada após o eventual desconto). Imprima o valor final com 2 casas decimais.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int band, desc;\n    double kms, valor, corrida, min = 3.5;\n    scanf(\"%d %lf %d\", &band, &kms, &desc);\n    if (band == 1) valor = 1.8;\n    else valor = 2.3;\n    corrida = valor * kms;\n    if (desc == 1) corrida *= 0.7;\n    if (corrida < min) corrida = min;\n    printf(\"%.2f\\n\", corrida);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "2 10.0 1\n",
+          "saida": "16.10\n"
+        },
+        {
+          "entrada": "1 0.5 2\n",
+          "saida": "3.50\n"
+        },
+        {
+          "entrada": "1 14.0 2\n",
+          "saida": "25.20\n"
+        },
+        {
+          "entrada": "2 1.0 1\n",
+          "saida": "3.50\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-F-003",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "if",
+        "else",
+        "ternario"
+      ],
+      "origem": "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 5.4 — CC BY-NC-ND 4.0",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-003",
+      "enunciado": "Leia dois números inteiros e informe o maior deles e se esse maior número é par ou ímpar. Se forem iguais, imprima `iguais`. Caso contrário, imprima `<maior> par` ou `<maior> impar`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    if (a == b) {\n        printf(\"iguais\\n\");\n    } else {\n        int maior = a > b ? a : b;\n        if (maior % 2 == 0) printf(\"%d par\\n\", maior);\n        else printf(\"%d impar\\n\", maior);\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "15 72\n",
+          "saida": "72 par\n"
+        },
+        {
+          "entrada": "21 10\n",
+          "saida": "21 impar\n"
+        },
+        {
+          "entrada": "8 8\n",
+          "saida": "iguais\n"
+        },
+        {
+          "entrada": "-3 -5\n",
+          "saida": "-3 impar\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-F-004",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 99",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-004",
+      "enunciado": "Leia um número inteiro de 3 casas decimais e imprima se o algarismo da casa das centenas é `par` ou `impar`.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int num, c;\n    scanf(\"%d\", &num);\n    c = num / 100;\n    if (c % 2 == 0) {\n        printf(\"par\\n\");\n    } else {\n        printf(\"impar\\n\");\n    }\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "245\n",
+          "saida": "par\n"
+        },
+        {
+          "entrada": "312\n",
+          "saida": "impar\n"
+        },
+        {
+          "entrada": "800\n",
+          "saida": "par\n"
+        },
+        {
+          "entrada": "999\n",
+          "saida": "impar\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-F-005",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "if",
+        "else"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 134",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-005",
+      "enunciado": "Leia a idade de um nadador e imprima sua categoria: `sem categoria` (< 5), `Infantil A` (5 a 7), `Infantil B` (8 a 10), `Juvenil A` (11 a 13), `Juvenil B` (14 a 17) ou `Senior` (18 ou mais).",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int idade;\n    scanf(\"%d\", &idade);\n    if (idade < 5) printf(\"sem categoria\\n\");\n    else if (idade <= 7) printf(\"Infantil A\\n\");\n    else if (idade <= 10) printf(\"Infantil B\\n\");\n    else if (idade <= 13) printf(\"Juvenil A\\n\");\n    else if (idade <= 17) printf(\"Juvenil B\\n\");\n    else printf(\"Senior\\n\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "4\n",
+          "saida": "sem categoria\n"
+        },
+        {
+          "entrada": "6\n",
+          "saida": "Infantil A\n"
+        },
+        {
+          "entrada": "12\n",
+          "saida": "Juvenil A\n"
+        },
+        {
+          "entrada": "20\n",
+          "saida": "Senior\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-F-006",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 181",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-006",
+      "enunciado": "Imprima todos os números de 1 até `N` (um por linha) e, na última linha, a soma de todos eles.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n, soma = 0;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++) {\n        printf(\"%d\\n\", i);\n        soma += i;\n    }\n    printf(\"%d\\n\", soma);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "3\n",
+          "saida": "1\n2\n3\n6\n"
+        },
+        {
+          "entrada": "5\n",
+          "saida": "1\n2\n3\n4\n5\n15\n"
+        },
+        {
+          "entrada": "1\n",
+          "saida": "1\n1\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-F-007",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "for"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 193",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-007",
+      "enunciado": "Leia um número inteiro positivo `N` e imprima os `N` primeiros números pares a partir de 2, separados por espaço.",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int i = 1; i <= n; i++) {\n        printf(\"%d%s\", 2 * i, i == n ? \"\" : \" \");\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "4\n",
+          "saida": "2 4 6 8\n"
+        },
+        {
+          "entrada": "1\n",
+          "saida": "2\n"
+        },
+        {
+          "entrada": "6\n",
+          "saida": "2 4 6 8 10 12\n"
+        }
+      ]
+    },
+    {
+      "id": "E2-F-008",
+      "eixo": "E2",
+      "nivel": "F",
+      "estruturas": [
+        "switch",
+        "ternario"
+      ],
+      "origem": "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 148",
+      "direitos_restritos": true,
+      "path": "questions/e2/E2-F-008",
+      "enunciado": "Leia o código do destino (`1` Norte, `2` Nordeste, `3` Centro-Oeste, `4` Sul) e se inclui retorno (`1` Ida, `2` Ida e Volta). Imprima o preço da passagem com 2 casas decimais conforme tabela: Norte (500 / 900), Nordeste (350 / 650), Centro-Oeste (350 / 600), Sul (300 / 550).",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int op, iv;\n    scanf(\"%d %d\", &op, &iv);\n    double preco = 0.0;\n    switch (op) {\n        case 1: preco = (iv == 1) ? 500.0 : 900.0; break;\n        case 2: preco = (iv == 1) ? 350.0 : 650.0; break;\n        case 3: preco = (iv == 1) ? 350.0 : 600.0; break;\n        case 4: preco = (iv == 1) ? 300.0 : 550.0; break;\n    }\n    printf(\"%.2f\\n\", preco);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1 1\n",
+          "saida": "500.00\n"
+        },
+        {
+          "entrada": "3 2\n",
+          "saida": "600.00\n"
+        },
+        {
+          "entrada": "4 2\n",
+          "saida": "550.00\n"
+        },
+        {
+          "entrada": "2 1\n",
+          "saida": "350.00\n"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+id: "E2-MF-004"
+eixo: "E2"
+nivel: "MF"
+estruturas:
+  - "if"
+  - "else"
+origem: "Linguagem C: Aprendendo com Exercícios Resolvidos (André Barros de Sales & Arthur de Moura Del Esposte) — Exercício 4.1 — CC BY-NC-ND 4.0"
+direitos_restritos: true

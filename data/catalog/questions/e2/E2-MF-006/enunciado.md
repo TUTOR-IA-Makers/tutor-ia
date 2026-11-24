@@ -1,0 +1,1 @@
+Leia dois números reais e efetue a adição. Caso o valor somado seja maior que 20, apresente o valor somando-se a ele mais 8; caso seja menor ou igual a 20, apresente-o subtraindo-se 5. Imprima com 2 casas decimais.

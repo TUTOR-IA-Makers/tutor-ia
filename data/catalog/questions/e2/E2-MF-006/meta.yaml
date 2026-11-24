@@ -1,0 +1,8 @@
+id: "E2-MF-006"
+eixo: "E2"
+nivel: "MF"
+estruturas:
+  - "if"
+  - "else"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 92"
+direitos_restritos: true

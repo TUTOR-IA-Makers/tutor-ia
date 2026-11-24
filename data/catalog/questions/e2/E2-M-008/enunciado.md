@@ -1,0 +1,1 @@
+A série de FETUCCINE é gerada a partir de dois termos iniciais fornecidos pelo usuário: para posição `i` ímpar (i >= 3), `A_i = A_{i-1} + A_{i-2}`; para `i` par, `A_i = A_{i-1} - A_{i-2}`. Leia os dois primeiros termos e `N` (N >= 3) e imprima os `N` primeiros termos separados por espaço.

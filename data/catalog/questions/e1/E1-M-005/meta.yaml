@@ -1,0 +1,7 @@
+id: "E1-M-005"
+eixo: "E1"
+nivel: "M"
+estruturas:
+  - "math.h"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 61"
+direitos_restritos: true

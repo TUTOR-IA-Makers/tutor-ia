@@ -1,0 +1,1 @@
+Sabendo que 100 quilowatts de energia custam um sétimo do salário mínimo, escreva um programa em C que leia o valor do salário mínimo e a quantidade de quilowatts gasta por uma residência (ambos reais) e imprima, cada um em uma linha com 2 casas decimais: o valor em reais de cada quilowatt, o valor total a ser pago e o novo valor a ser pago com um desconto de 10%.

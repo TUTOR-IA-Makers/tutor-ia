@@ -1,0 +1,1 @@
+Escreva um programa em C para determinar o consumo médio de um automóvel, considerando que a distância total percorrida (km) e o total de combustível gasto (litros) são fornecidos como números reais. Imprima o resultado com 2 casas decimais.

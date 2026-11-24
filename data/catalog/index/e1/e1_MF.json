@@ -1,0 +1,239 @@
+{
+  "eixo": "E1",
+  "nivel": "MF",
+  "total": 8,
+  "questoes": [
+    {
+      "id": "E1-MF-001",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Linguagem C (Luís Damas) — Capítulo 2, Exercícios Resolvidos",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-001",
+      "enunciado": "Escreva um programa em C que leia dois números inteiros `a` e `b` (b ≠ 0) e apresente o resultado das cinco operações aritméticas tradicionais (`+`, `-`, `*`, `/` e `%`), uma por linha, no formato `<a> <op> <b> = <resultado>`.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    printf(\"%d + %d = %d\\n\", a, b, a + b);\n    printf(\"%d - %d = %d\\n\", a, b, a - b);\n    printf(\"%d * %d = %d\\n\", a, b, a * b);\n    printf(\"%d / %d = %d\\n\", a, b, a / b);\n    printf(\"%d %% %d = %d\\n\", a, b, a % b);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "10 3\n",
+          "saida": "10 + 3 = 13\n10 - 3 = 7\n10 * 3 = 30\n10 / 3 = 3\n10 % 3 = 1\n"
+        },
+        {
+          "entrada": "8 4\n",
+          "saida": "8 + 4 = 12\n8 - 4 = 4\n8 * 4 = 32\n8 / 4 = 2\n8 % 4 = 0\n"
+        },
+        {
+          "entrada": "5 9\n",
+          "saida": "5 + 9 = 14\n5 - 9 = -4\n5 * 9 = 45\n5 / 9 = 0\n5 % 9 = 5\n"
+        },
+        {
+          "entrada": "-7 2\n",
+          "saida": "-7 + 2 = -5\n-7 - 2 = -9\n-7 * 2 = -14\n-7 / 2 = -3\n-7 % 2 = -1\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MF-002",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Linguagem C (Luís Damas) — Capítulo 2, Exercício 9",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-002",
+      "enunciado": "Escreva um programa em C que leia três inteiros representando dia, mês e ano de uma determinada data e a mostre em seguida no formato `dd/mm/aaaa`.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    int dia, mes, ano;\n    scanf(\"%d %d %d\", &dia, &mes, &ano);\n    printf(\"%02d/%02d/%04d\\n\", dia, mes, ano);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "5 3 2026\n",
+          "saida": "05/03/2026\n"
+        },
+        {
+          "entrada": "25 12 1999\n",
+          "saida": "25/12/1999\n"
+        },
+        {
+          "entrada": "1 1 2000\n",
+          "saida": "01/01/2000\n"
+        },
+        {
+          "entrada": "14 10 2024\n",
+          "saida": "14/10/2024\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MF-003",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 1",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-003",
+      "enunciado": "Escreva um programa em C que leia o valor do raio de uma circunferência (real) e calcule o valor do seu comprimento (`C = 2 * pi * r`). Considere `pi = 3.14159` e imprima o resultado com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n\n#define PI 3.14159\n\nint main(void) {\n    double r;\n    scanf(\"%lf\", &r);\n    printf(\"%.2f\\n\", 2.0 * PI * r);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "1.0\n",
+          "saida": "6.28\n"
+        },
+        {
+          "entrada": "5.0\n",
+          "saida": "31.42\n"
+        },
+        {
+          "entrada": "2.5\n",
+          "saida": "15.71\n"
+        },
+        {
+          "entrada": "0.0\n",
+          "saida": "0.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MF-004",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 2",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-004",
+      "enunciado": "Escreva um programa em C que receba dois números reais e exiba o resultado da sua soma com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b;\n    scanf(\"%lf %lf\", &a, &b);\n    printf(\"%.2f\\n\", a + b);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "4.5 3.2\n",
+          "saida": "7.70\n"
+        },
+        {
+          "entrada": "-10.0 4.5\n",
+          "saida": "-5.50\n"
+        },
+        {
+          "entrada": "0.0 0.0\n",
+          "saida": "0.00\n"
+        },
+        {
+          "entrada": "12.75 8.25\n",
+          "saida": "21.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MF-005",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 3",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-005",
+      "enunciado": "Escreva um programa em C que receba dois números reais `a` e `b` (b ≠ 0) e mostre a soma, a subtração, a multiplicação e a divisão dos números, nessa ordem, cada resultado em uma linha com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double a, b;\n    scanf(\"%lf %lf\", &a, &b);\n    printf(\"%.2f\\n\", a + b);\n    printf(\"%.2f\\n\", a - b);\n    printf(\"%.2f\\n\", a * b);\n    printf(\"%.2f\\n\", a / b);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "10.0 2.0\n",
+          "saida": "12.00\n8.00\n20.00\n5.00\n"
+        },
+        {
+          "entrada": "5.0 4.0\n",
+          "saida": "9.00\n1.00\n20.00\n1.25\n"
+        },
+        {
+          "entrada": "-6.0 3.0\n",
+          "saida": "-3.00\n-9.00\n-18.00\n-2.00\n"
+        },
+        {
+          "entrada": "7.5 2.5\n",
+          "saida": "10.00\n5.00\n18.75\n3.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MF-006",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 4",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-006",
+      "enunciado": "Escreva um programa em C para determinar o consumo médio de um automóvel, considerando que a distância total percorrida (km) e o total de combustível gasto (litros) são fornecidos como números reais. Imprima o resultado com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double distancia, combustivel;\n    scanf(\"%lf %lf\", &distancia, &combustivel);\n    printf(\"%.2f\\n\", distancia / combustivel);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "500.0 40.0\n",
+          "saida": "12.50\n"
+        },
+        {
+          "entrada": "300.0 25.0\n",
+          "saida": "12.00\n"
+        },
+        {
+          "entrada": "150.5 10.0\n",
+          "saida": "15.05\n"
+        },
+        {
+          "entrada": "0.0 15.0\n",
+          "saida": "0.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MF-007",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 7",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-007",
+      "enunciado": "Escreva um programa em C que leia uma temperatura em graus Celsius e a apresente convertida em graus Fahrenheit usando a fórmula `F = (9 * C + 160) / 5`. Imprima o resultado com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double c;\n    scanf(\"%lf\", &c);\n    double f = (9.0 * c + 160.0) / 5.0;\n    printf(\"%.2f\\n\", f);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "0.0\n",
+          "saida": "32.00\n"
+        },
+        {
+          "entrada": "100.0\n",
+          "saida": "212.00\n"
+        },
+        {
+          "entrada": "25.0\n",
+          "saida": "77.00\n"
+        },
+        {
+          "entrada": "-40.0\n",
+          "saida": "-40.00\n"
+        }
+      ]
+    },
+    {
+      "id": "E1-MF-008",
+      "eixo": "E1",
+      "nivel": "MF",
+      "estruturas": [],
+      "origem": "Algoritmos e Programação em Linguagem C (Renato Soffner) — Capítulo 1, Exercício 8",
+      "direitos_restritos": true,
+      "path": "questions/e1/E1-MF-008",
+      "enunciado": "Escreva um programa em C que efetue a apresentação do valor da conversão em real (R$) de um valor lido em dólar (US$). O programa deverá ler o valor da cotação do dólar e a quantidade de dólares disponíveis, imprimindo o valor em reais com 2 casas decimais.\n",
+      "solucao_referencia": "#include <stdio.h>\n\nint main(void) {\n    double cotacao, dolares;\n    scanf(\"%lf %lf\", &cotacao, &dolares);\n    printf(\"%.2f\\n\", cotacao * dolares);\n    return 0;\n}\n",
+      "casos_teste": [
+        {
+          "entrada": "5.50 100.0\n",
+          "saida": "550.00\n"
+        },
+        {
+          "entrada": "4.80 25.0\n",
+          "saida": "120.00\n"
+        },
+        {
+          "entrada": "5.00 0.0\n",
+          "saida": "0.00\n"
+        },
+        {
+          "entrada": "5.25 10.5\n",
+          "saida": "55.12\n"
+        }
+      ]
+    }
+  ]
+}

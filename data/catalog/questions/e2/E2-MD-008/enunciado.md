@@ -1,0 +1,1 @@
+Leia um número inteiro `N`. Verifique se ele é par ou ímpar. O programa deve imprimir `par maior que 15` apenas se for par e estritamente maior que 15; deve imprimir `impar menor que 50` apenas se for ímpar e estritamente menor que 50; caso contrário, imprima `nenhuma condicao`.

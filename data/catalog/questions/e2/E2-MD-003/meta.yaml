@@ -1,0 +1,7 @@
+id: "E2-MD-003"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "for"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 172"
+direitos_restritos: true

@@ -1,0 +1,9 @@
+id: "E2-MD-004"
+eixo: "E2"
+nivel: "MD"
+estruturas:
+  - "if"
+  - "else"
+  - "math.h"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 137"
+direitos_restritos: true

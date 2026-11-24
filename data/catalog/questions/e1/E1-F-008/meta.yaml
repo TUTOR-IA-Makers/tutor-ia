@@ -1,0 +1,7 @@
+id: "E1-F-008"
+eixo: "E1"
+nivel: "F"
+estruturas:
+  - "math.h"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 53"
+direitos_restritos: true

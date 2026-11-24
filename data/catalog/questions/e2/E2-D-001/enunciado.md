@@ -1,0 +1,1 @@
+Leia os limites inferior `L` e superior `U` de um intervalo crescente e um inteiro positivo `K`. Imprima todos os múltiplos de `K` no intervalo aberto `(L, U)` separados por espaço. Se não houver nenhum, imprima uma linha vazia.

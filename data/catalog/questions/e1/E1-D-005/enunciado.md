@@ -1,0 +1,1 @@
+Escreva um programa em C que leia os quatro valores reais correspondentes aos eixos `x` e `y` de dois pontos quaisquer no plano, `p1(x1, y1)` e `p2(x2, y2)`, e calcule a distância euclidiana entre eles (`sqrt((x2 - x1)² + (y2 - y1)²)`), mostrando o resultado com 4 casas decimais.

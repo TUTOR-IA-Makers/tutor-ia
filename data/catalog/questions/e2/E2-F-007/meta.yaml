@@ -1,0 +1,7 @@
+id: "E2-F-007"
+eixo: "E2"
+nivel: "F"
+estruturas:
+  - "for"
+origem: "Introdução à Programação: 500 Algoritmos Resolvidos (Anita Lopes & Guto Garcia) — Algoritmo 193"
+direitos_restritos: true

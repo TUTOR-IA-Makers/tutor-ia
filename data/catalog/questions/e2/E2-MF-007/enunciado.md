@@ -1,0 +1,1 @@
+Leia um número inteiro e informe se ele é divisível por 3 e por 7 simultaneamente, imprimindo `divisivel por 3 e por 7` ou `nao e divisivel por 3 e por 7`.

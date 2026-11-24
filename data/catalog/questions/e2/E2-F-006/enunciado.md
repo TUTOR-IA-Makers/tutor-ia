@@ -1,0 +1,1 @@
+Imprima todos os números de 1 até `N` (um por linha) e, na última linha, a soma de todos eles.

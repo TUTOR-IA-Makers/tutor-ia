@@ -1,0 +1,1 @@
+Escreva um programa em C que leia o valor do raio de uma circunferência (real) e calcule o valor do seu comprimento (`C = 2 * pi * r`). Considere `pi = 3.14159` e imprima o resultado com 2 casas decimais.

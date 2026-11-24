@@ -1,0 +1,1 @@
+Escreva um programa em C que leia dois números inteiros diferentes de zero e imprima na tela, cada um em uma linha: a soma, a subtração, o produto, a divisão inteira e a média aritmética real (com 2 casas decimais).
