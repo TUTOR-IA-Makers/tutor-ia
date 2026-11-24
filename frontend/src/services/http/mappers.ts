@@ -55,6 +55,7 @@ export function toGeneration(dto: GenerationDto): Generation {
     status: dto.status,
     completedSteps: dto.completed_steps,
     failureReason: dto.failure_reason,
+    resumable: dto.job?.resumable ?? false,
   }
 }
 

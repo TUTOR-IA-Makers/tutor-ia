@@ -55,6 +55,7 @@ export function createHttpServices({
       approve: async (id) => toQuestion(await api.post(ENDPOINTS.approve(id), questionDto)),
       reject: async (id) => toQuestion(await api.post(ENDPOINTS.reject(id), questionDto)),
       regenerate: (id) => api.post(ENDPOINTS.regenerate(id), createdDto),
+      resume: async (id) => toGeneration(await api.post(ENDPOINTS.resume(id), generationDto)),
       updateStatement: async (id, statement) =>
         toQuestion(
           await api.patch(ENDPOINTS.statement(id), questionDto, { body: fromStatement(statement) }),
