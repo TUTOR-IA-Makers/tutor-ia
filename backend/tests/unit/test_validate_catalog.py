@@ -1,155 +1,257 @@
-"""Unit tests for scripts/validate_catalog.py (G6-2).
+"""scripts/validate_catalog.py and scripts/build_catalog.py (G6-2).
 
-Tests cover: directory parsing, missing required files, C compilation errors,
-index synchronization, and strict coverage enforcement (fails if < 8).
+The validator is the gate for the reference catalog, so the tests pin what it
+must reject — above all a recorded output that differs from what the solution
+prints, which is how model-predicted outputs got into the first draft of #32.
 """
 
 from __future__ import annotations
 
 import json
-import os
-import subprocess
 import sys
 from pathlib import Path
 
-# Make scripts/ importable without installing the package.
-SCRIPTS_DIR = Path(__file__).parent.parent.parent.parent / "scripts"
-sys.path.insert(0, str(SCRIPTS_DIR))
+import pytest
 
-# Caminho para o novo validador
-VALIDATOR_SCRIPT = SCRIPTS_DIR / "validate_catalog.py"
+from tests.conftest import requires_gcc
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-# ---------------------------------------------------------------------------
-# Fixtures & Helpers
-# ---------------------------------------------------------------------------
+import build_catalog  # noqa: E402
+import validate_catalog  # noqa: E402
 
-
-def _create_mock_question(
-    base_path: Path, q_id: str, eixo: str, nivel: str, valid_c: bool = True
-) -> None:
-    """Cria a estrutura de pastas e arquivos de uma questão mockada em questions/."""
-    q_dir = base_path / "questions" / eixo.lower() / q_id
-    q_dir.mkdir(parents=True, exist_ok=True)
-
-    # enunciado.md
-    (q_dir / "enunciado.md").write_text("Enunciado mockado.\n", encoding="utf-8")
-
-    # meta.yaml
-    meta_content = f'id: "{q_id}"\neixo: "{eixo}"\nnivel: "{nivel}"\ndireitos_restritos: true\n'
-    (q_dir / "meta.yaml").write_text(meta_content, encoding="utf-8")
-
-    # solucao.c
-    c_code = (
-        "#include <stdio.h>\nint main(){ return 0; }" if valid_c else "int main() { erro_sintaxe }"
-    )
-    (q_dir / "solucao.c").write_text(c_code, encoding="utf-8")
-
-    # entradas/01.in
-    entradas_dir = q_dir / "entradas"
-    entradas_dir.mkdir(exist_ok=True)
-    (entradas_dir / "01.in").write_text("1 2\n", encoding="utf-8")
+ECHO_SUM = '#include <stdio.h>\nint main(void){int a,b;scanf("%d %d",&a,&b);printf("%d\\n",a+b);}\n'
 
 
-def _write_mock_index(base_path: Path, eixo: str, nivel: str, q_ids: list[str]) -> None:
-    """Cria o arquivo de índice correspondente em index/{eixo}/{eixo}_{nivel}.json."""
-    index_dir = base_path / "index" / eixo.lower()
-    index_dir.mkdir(parents=True, exist_ok=True)
-    index_file = index_dir / f"{eixo.lower()}_{nivel.upper()}.json"
-
-    payload = {
-        "eixo": eixo.upper(),
-        "nivel": nivel.upper(),
-        "total": len(q_ids),
-        "questoes": [{"id": qid, "eixo": eixo.upper(), "nivel": nivel.upper()} for qid in q_ids],
+def _question(qid: str = "E1-MF-001", saida: str = "3\n", **overrides: object) -> dict:
+    axis, level, _ = qid.split("-")
+    question = {
+        "id": qid,
+        "eixo": axis,
+        "nivel": level,
+        "estruturas": [],
+        "origem": "Autoria própria",
+        "direitos_restritos": False,
+        "path": f"questions/{axis.lower()}/{qid}",
+        "enunciado": "Leia dois inteiros e imprima a soma.",
+        "solucao_referencia": ECHO_SUM,
+        "casos_teste": [{"entrada": "1 2\n", "saida": saida}],
     }
-    index_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    question.update(overrides)
+    return question
 
 
-def run_validator(catalog_dir: Path) -> subprocess.CompletedProcess:
-    """Roda o validador injetando um diretório customizado."""
-    env = {**os.environ, "CATALOG_DIR_OVERRIDE": str(catalog_dir)}
-    # O subprocesso é seguro pois não há input de usuário externo
-    return subprocess.run(  # noqa: S603
-        [sys.executable, str(VALIDATOR_SCRIPT)], capture_output=True, text=True, env=env
+def _index(tmp_path: Path, questions: list[dict], axis: str = "E1", level: str = "MF"):
+    """One index file holding `questions`, as load_index() would return it."""
+    path = tmp_path / "index" / axis.lower() / f"{axis.lower()}_{level}.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = {"eixo": axis, "nivel": level, "total": len(questions), "questoes": questions}
+    build_catalog.write_index(path, data)
+    return build_catalog.load_index(tmp_path / "index")
+
+
+@pytest.fixture
+def one_combination(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Shrink the required grid to E1 x MF with one question, so tests stay small."""
+    monkeypatch.setattr(validate_catalog, "AXES", ("E1",))
+    monkeypatch.setattr(validate_catalog, "LEVELS", ("MF",))
+    monkeypatch.setattr(validate_catalog, "REQUIRED_COVERAGE", 1)
+
+
+@pytest.fixture
+def catalog_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Point both scripts at a scratch catalog instead of data/catalog/."""
+    monkeypatch.setattr(build_catalog, "INDEX_DIR", tmp_path / "index")
+    monkeypatch.setattr(build_catalog, "QUESTIONS_DIR", tmp_path / "questions")
+    return tmp_path
+
+
+# ── schema ────────────────────────────────────────────────────────────────────
+
+
+def test_well_formed_index_has_no_schema_errors(tmp_path: Path, one_combination: None) -> None:
+    assert validate_catalog.check_schema(_index(tmp_path, [_question()])) == []
+
+
+@pytest.mark.parametrize(
+    ("overrides", "expected"),
+    [
+        ({"direitos_restritos": None}, "'direitos_restritos' ausente"),
+        ({"estruturas": ["laco"]}, "fora do vocabulário"),
+        ({"eixo": "E2"}, "eixo/nível diferentes"),
+        ({"path": "questions/e1/outra"}, "'path' deve ser"),
+        ({"origem": "  "}, "'origem' vazia"),
+        ({"casos_teste": []}, "nenhum caso de teste"),
+        ({"casos_teste": [{"entrada": "1\n"}]}, "precisa de 'entrada' e 'saida'"),
+    ],
+)
+def test_schema_rejects_malformed_question(
+    tmp_path: Path, one_combination: None, overrides: dict, expected: str
+) -> None:
+    errors = validate_catalog.check_schema(_index(tmp_path, [_question(**overrides)]))
+    assert any(expected in e for e in errors), errors
+
+
+def test_schema_rejects_duplicate_ids_and_wrong_total(
+    tmp_path: Path, one_combination: None
+) -> None:
+    index = _index(tmp_path, [_question(), _question()])
+    index[0][1]["total"] = 5
+    errors = validate_catalog.check_schema(index)
+    assert any("id duplicado: E1-MF-001" in e for e in errors)
+    assert any("'total' = 5" in e for e in errors)
+
+
+def test_schema_requires_an_index_file_per_combination(tmp_path: Path) -> None:
+    errors = validate_catalog.check_schema(_index(tmp_path, [_question()]))
+    assert any("index/e2/e2_MD.json" in e for e in errors)
+
+
+# ── outputs ───────────────────────────────────────────────────────────────────
+
+
+@requires_gcc
+def test_matching_output_passes(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question(saida="3\n")])
+    assert validate_catalog.check_outputs(index, regenerate=False) == []
+
+
+@requires_gcc
+def test_recorded_output_that_differs_from_execution_fails(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question(saida="4\n")])
+    errors = validate_catalog.check_outputs(index, regenerate=False)
+    assert len(errors) == 1
+    assert "E1-MF-001 caso 01: saída registrada difere" in errors[0]
+    assert index[0][1]["questoes"][0]["casos_teste"][0]["saida"] == "4\n", "check must not write"
+
+
+@requires_gcc
+def test_regenerate_records_what_the_solution_prints(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question(saida="")])
+    assert validate_catalog.check_outputs(index, regenerate=True) == []
+    assert index[0][1]["questoes"][0]["casos_teste"][0]["saida"] == "3\n"
+
+
+@requires_gcc
+def test_solution_that_does_not_compile_fails(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question(solucao_referencia="int main(void) { erro }")])
+    errors = validate_catalog.check_outputs(index, regenerate=False)
+    assert "não compila" in errors[0]
+
+
+@requires_gcc
+def test_solution_using_the_maths_library_links(tmp_path: Path) -> None:
+    source = (
+        "#include <stdio.h>\n#include <math.h>\n"
+        'int main(void){double x;scanf("%lf",&x);printf("%.1f\\n",sqrt(x));}\n'
     )
+    question = _question(solucao_referencia=source)
+    question["casos_teste"] = [{"entrada": "9\n", "saida": "3.0\n"}]
+    assert validate_catalog.check_outputs(_index(tmp_path, [question]), regenerate=False) == []
 
 
-# ---------------------------------------------------------------------------
-# Testes de Cobertura e Erros (Item 4 do PR)
-# ---------------------------------------------------------------------------
+@requires_gcc
+def test_solution_that_crashes_fails(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question(solucao_referencia="int main(void) { return 3; }")])
+    errors = validate_catalog.check_outputs(index, regenerate=False)
+    assert "execução falhou (exit 3" in errors[0]
 
 
-def test_coverage_fails_if_below_8(tmp_path: Path) -> None:
-    """Garante que a execução FALHA se tivermos menos de 8 questões."""
-    # Cria apenas 7 questões para o E1-MF
-    for i in range(1, 8):
-        _create_mock_question(tmp_path, f"E1-MF-00{i}", "E1", "MF")
-
-    result = run_validator(tmp_path)
-    assert result.returncode != 0
-    assert "FALHOU" in result.stdout
-    assert "cobertura insuficiente" in result.stdout
+# ── questions/ in sync with index/ ────────────────────────────────────────────
 
 
-def test_coverage_passes_if_exactly_8(tmp_path: Path) -> None:
-    """Garante que a contagem de E1-MF chega a 8 e o índice sincroniza."""
-    q_ids = [f"E1-MF-00{i}" for i in range(1, 9)]
-    for qid in q_ids:
-        _create_mock_question(tmp_path, qid, "E1", "MF")
-    _write_mock_index(tmp_path, "E1", "MF", q_ids)
-
-    result = run_validator(tmp_path)
-    assert "E1 Nível MF: 8/8 [OK]" in result.stdout
-    assert "[OK] e1/e1_MF.json (8/8 sincronizadas)" in result.stdout
+def test_materialized_tree_in_sync_passes(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question()])
+    build_catalog.materialize(index, tmp_path / "questions")
+    assert validate_catalog.check_materialized(index, tmp_path / "questions") == []
 
 
-def test_index_desync_fails_validation(tmp_path: Path) -> None:
-    """Garante que uma dessincronia entre questions/ e index/ quebra a validação."""
-    q_ids = [f"E1-MF-00{i}" for i in range(1, 9)]
-    for qid in q_ids:
-        _create_mock_question(tmp_path, qid, "E1", "MF")
-
-    # Índice omite a oitava questão
-    _write_mock_index(tmp_path, "E1", "MF", q_ids[:7])
-
-    result = run_validator(tmp_path)
-    assert result.returncode != 0
-    assert "Dessincronia em e1_MF.json" in result.stdout
+def test_hand_edited_output_in_questions_fails(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question()])
+    build_catalog.materialize(index, tmp_path / "questions")
+    (tmp_path / "questions/e1/E1-MF-001/saidas/01.out").write_text("999\n", encoding="utf-8")
+    errors = validate_catalog.check_materialized(index, tmp_path / "questions")
+    assert "questions/e1/E1-MF-001/saidas/01.out: difere de index/" in errors
 
 
-def test_invalid_c_code_fails_validation(tmp_path: Path) -> None:
-    """Garante que código C que não compila gera erro."""
-    _create_mock_question(tmp_path, "E1-MF-001", "E1", "MF", valid_c=False)
-    result = run_validator(tmp_path)
-    assert result.returncode != 0
-    assert "Falha na compilação" in result.stdout
+def test_stray_file_in_questions_fails(tmp_path: Path) -> None:
+    index = _index(tmp_path, [_question()])
+    build_catalog.materialize(index, tmp_path / "questions")
+    (tmp_path / "questions/e1/E1-MF-001/exec_temp").write_bytes(b"\x7fELF")
+    errors = validate_catalog.check_materialized(index, tmp_path / "questions")
+    assert "questions/e1/E1-MF-001/exec_temp: não existe em index/" in errors
 
 
-def test_missing_essential_files_fails(tmp_path: Path) -> None:
-    """Garante que a falta de meta.yaml ou solucao.c quebra a validação."""
-    _create_mock_question(tmp_path, "E1-MF-001", "E1", "MF")
-    (tmp_path / "questions" / "e1" / "E1-MF-001" / "meta.yaml").unlink()  # Deleta o meta
-
-    result = run_validator(tmp_path)
-    assert result.returncode != 0
-    assert "Arquivos essenciais" in result.stdout
+def test_materialize_removes_cases_deleted_from_the_index(tmp_path: Path) -> None:
+    question = _question()
+    question["casos_teste"].append({"entrada": "2 2\n", "saida": "4\n"})
+    build_catalog.materialize(_index(tmp_path, [question]), tmp_path / "questions")
+    build_catalog.materialize(_index(tmp_path, [_question()]), tmp_path / "questions")
+    assert not (tmp_path / "questions/e1/E1-MF-001/entradas/02.in").exists()
 
 
-# ---------------------------------------------------------------------------
-# Testes do Catálogo Real (Sem pytest.skip)
-# ---------------------------------------------------------------------------
+def test_meta_yaml_lists_structures_and_rights() -> None:
+    meta = build_catalog.render_meta(_question(estruturas=["if", "else"], direitos_restritos=True))
+    assert '  - "if"\n  - "else"\n' in meta
+    assert meta.endswith("direitos_restritos: true\n")
 
 
-def test_real_e1_catalog_exists() -> None:
-    """Garante que as pastas de questões e índices do E1 existem. (Sem skip!)"""
-    catalog_root = Path(__file__).parent.parent.parent.parent / "data" / "catalog"
-    assert (catalog_root / "questions" / "e1").exists(), "A pasta questions/e1 não foi encontrada!"
-    assert (catalog_root / "index" / "e1").exists(), "A pasta index/e1 não foi encontrada!"
+# ── coverage ──────────────────────────────────────────────────────────────────
 
 
-def test_real_e2_catalog_exists() -> None:
-    """Garante que as pastas de questões e índices do E2 existem. (Sem skip!)"""
-    catalog_root = Path(__file__).parent.parent.parent.parent / "data" / "catalog"
-    assert (catalog_root / "questions" / "e2").exists(), "A pasta questions/e2 não foi encontrada!"
-    assert (catalog_root / "index" / "e2").exists(), "A pasta index/e2 não foi encontrada!"
+def _level(n: int) -> list[dict]:
+    return [_question(f"E1-MF-{i:03d}") for i in range(1, n + 1)]
+
+
+def test_coverage_below_eight_fails(tmp_path: Path) -> None:
+    report, errors = validate_catalog.coverage(_index(tmp_path, _level(7)))
+    assert "  E1 MF: 7/8 FALHOU" in report
+    assert "cobertura insuficiente em E1 MF: 7/8" in errors
+
+
+def test_coverage_of_exactly_eight_passes(tmp_path: Path) -> None:
+    report, errors = validate_catalog.coverage(_index(tmp_path, _level(8)))
+    assert "  E1 MF: 8/8 OK" in report
+    assert not [e for e in errors if "E1 MF" in e]
+
+
+# ── end to end ────────────────────────────────────────────────────────────────
+
+
+@requires_gcc
+def test_check_mode_fails_on_wrong_output_and_writes_nothing(
+    catalog_dir: Path, one_combination: None
+) -> None:
+    index = _index(catalog_dir, [_question(saida="4\n")])
+    build_catalog.materialize(index, catalog_dir / "questions")
+    index_file = catalog_dir / "index/e1/e1_MF.json"
+    before = index_file.read_bytes()
+
+    assert validate_catalog.main([]) == 1
+    assert index_file.read_bytes() == before
+    assert (catalog_dir / "questions/e1/E1-MF-001/saidas/01.out").read_text() == "4\n"
+
+
+@requires_gcc
+def test_regenerate_mode_fixes_outputs_and_rebuilds_questions(
+    catalog_dir: Path, one_combination: None
+) -> None:
+    _index(catalog_dir, [_question(saida="4\n")])
+
+    assert validate_catalog.main(["--regenerate"]) == 0
+    saved = json.loads((catalog_dir / "index/e1/e1_MF.json").read_text(encoding="utf-8"))
+    assert saved["questoes"][0]["casos_teste"][0]["saida"] == "3\n"
+    assert (catalog_dir / "questions/e1/E1-MF-001/saidas/01.out").read_text() == "3\n"
+    assert validate_catalog.main([]) == 0
+
+
+# ── the real catalog ──────────────────────────────────────────────────────────
+# The gate runs the full validator; these cheap checks also run without gcc.
+
+
+def test_real_catalog_is_well_formed_and_in_sync() -> None:
+    index = build_catalog.load_index(REPO_ROOT / "data/catalog/index")
+    assert validate_catalog.check_schema(index) == []
+    assert validate_catalog.check_materialized(index, REPO_ROOT / "data/catalog/questions") == []
+    assert validate_catalog.coverage(index)[1] == []

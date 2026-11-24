@@ -1,126 +1,91 @@
+"""Materialise data/catalog/questions/ from data/catalog/index/ (G6-2).
+
+`index/` is the single source of truth: one JSON file per axis x level, edited by
+hand. `questions/` is derived from it so each solution can be compiled and each
+test case read on its own, and it is committed so a reviewer can open a question
+without running anything. Never edit `questions/` directly: change `index/` and
+run this script. `validate_catalog.py` fails when the two disagree.
+
+    python scripts/build_catalog.py
+"""
+
+from __future__ import annotations
+
 import json
 import os
+import shutil
+import sys
+from pathlib import Path
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-CATALOG_DIR = os.environ.get("CATALOG_DIR_OVERRIDE", os.path.join(REPO_ROOT, "data", "catalog"))
-
-INDEX_DIR = os.path.join(CATALOG_DIR, "index")
-QUESTIONS_DIR = os.path.join(CATALOG_DIR, "questions")
-
-MAPA_NIVEIS = {
-    "MUITO FACIL": "MF", "MUITO FÁCIL": "MF",
-    "FACIL": "F", "FÁCIL": "F",
-    "MEDIO": "M", "MÉDIO": "M",
-    "DIFICIL": "D", "DIFÍCIL": "D",
-    "MUITO DIFICIL": "MD", "MUITO DIFÍCIL": "MD",
-}
+REPO_ROOT = Path(__file__).resolve().parent.parent
+CATALOG_DIR = Path(os.environ.get("CATALOG_DIR_OVERRIDE", REPO_ROOT / "data" / "catalog"))
+INDEX_DIR = CATALOG_DIR / "index"
+QUESTIONS_DIR = CATALOG_DIR / "questions"
 
 
-def write_yaml(filepath, meta):
-    yaml_lines = [
-        f'id: "{meta["id"]}"',
-        f'eixo: "{meta["eixo"]}"',
-        f'nivel: "{meta["nivel"]}"',
+def load_index(index_dir: Path) -> list[tuple[Path, dict]]:
+    """Every index file under `index_dir`, parsed, in a stable order."""
+    files = sorted(index_dir.glob("*/*.json"))
+    return [(path, json.loads(path.read_text(encoding="utf-8"))) for path in files]
+
+
+def write_index(path: Path, data: dict) -> None:
+    """Write an index file in the format it is kept in, so diffs stay minimal."""
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def render_meta(question: dict) -> str:
+    """meta.yaml for one question. Hand-written so no YAML dependency is needed."""
+    lines = [
+        f'id: "{question["id"]}"',
+        f'eixo: "{question["eixo"]}"',
+        f'nivel: "{question["nivel"]}"',
     ]
-
-    if meta["estruturas"]:
-        yaml_lines.append("estruturas:")
-        for est in meta["estruturas"]:
-            yaml_lines.append(f'  - "{est}"')
+    if question["estruturas"]:
+        lines.append("estruturas:")
+        lines.extend(f'  - "{name}"' for name in question["estruturas"])
     else:
-        yaml_lines.append("estruturas: []")
-
-    yaml_lines.append(f'origem: "{meta["origem"]}"')
-    yaml_lines.append(f'direitos_restritos: {str(meta["direitos_restritos"]).lower()}')
-
-    with open(filepath, "w", encoding="utf-8") as f:
-        f.write("\n".join(yaml_lines) + "\n")
+        lines.append("estruturas: []")
+    lines.append(f'origem: "{question["origem"]}"')
+    lines.append(f"direitos_restritos: {str(question['direitos_restritos']).lower()}")
+    return "\n".join(lines) + "\n"
 
 
-def build_questions_from_index():
-    """Materializa data/catalog/questions/{eixo}/{id} a partir de data/catalog/index/."""
-    if not os.path.exists(INDEX_DIR):
+def materialize(index: list[tuple[Path, dict]], questions_dir: Path) -> int:
+    """Rewrite `questions_dir` from scratch so a deleted question or case leaves no file behind."""
+    if questions_dir.exists():
+        shutil.rmtree(questions_dir)
+
+    total = 0
+    for _path, data in index:
+        for q in data["questoes"]:
+            q_dir = questions_dir / q["eixo"].lower() / q["id"]
+            (q_dir / "entradas").mkdir(parents=True)
+            (q_dir / "saidas").mkdir()
+            _write(q_dir / "enunciado.md", q["enunciado"])
+            _write(q_dir / "solucao.c", q["solucao_referencia"])
+            _write(q_dir / "meta.yaml", render_meta(q))
+            for number, case in enumerate(q["casos_teste"], start=1):
+                _write(q_dir / "entradas" / f"{number:02d}.in", case["entrada"])
+                _write(q_dir / "saidas" / f"{number:02d}.out", case["saida"])
+            total += 1
+    return total
+
+
+def _write(path: Path, text: str) -> None:
+    # newline="" keeps "\n" as "\n" on Windows, so the files match the index byte for byte.
+    with path.open("w", encoding="utf-8", newline="") as f:
+        f.write(text)
+
+
+def main() -> int:
+    if not INDEX_DIR.is_dir():
         print(f"[ERRO] Diretório {INDEX_DIR} não encontrado.")
-        return
-
-    total_geradas = 0
-
-    for eixo_folder in sorted(os.listdir(INDEX_DIR)):
-        eixo_index_path = os.path.join(INDEX_DIR, eixo_folder)
-        if not os.path.isdir(eixo_index_path):
-            continue
-
-        for filename in sorted(os.listdir(eixo_index_path)):
-            if not filename.endswith(".json"):
-                continue
-
-            json_path = os.path.join(eixo_index_path, filename)
-            with open(json_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-
-            questoes = data.get("questoes", data if isinstance(data, list) else [])
-
-            for q in questoes:
-                qid = q.get("id")
-                if not qid:
-                    continue
-
-                pasta_eixo = q.get("eixo", qid.split("-")[0]).lower()
-                q_dir = os.path.join(QUESTIONS_DIR, pasta_eixo, qid)
-                entradas_dir = os.path.join(q_dir, "entradas")
-                saidas_dir = os.path.join(q_dir, "saidas")
-                os.makedirs(entradas_dir, exist_ok=True)
-                os.makedirs(saidas_dir, exist_ok=True)
-
-                with open(os.path.join(q_dir, "enunciado.md"), "w", encoding="utf-8") as f:
-                    f.write(q.get("enunciado", ""))
-
-                codigo_c = q.get("solucao_referencia", q.get("solucao", ""))
-                with open(os.path.join(q_dir, "solucao.c"), "w", encoding="utf-8") as f:
-                    f.write(codigo_c)
-
-                casos = q.get("casos_teste", q.get("casos_de_teste", []))
-                for idx, caso in enumerate(casos, start=1):
-                    prefixo = f"{idx:02d}"
-                    with open(
-                        os.path.join(entradas_dir, f"{prefixo}.in"),
-                        "w",
-                        encoding="utf-8",
-                        newline="\n",
-                    ) as f_in:
-                        f_in.write(caso.get("input", caso.get("entrada", "")))
-
-                    with open(
-                        os.path.join(saidas_dir, f"{prefixo}.out"),
-                        "w",
-                        encoding="utf-8",
-                        newline="\n",
-                    ) as f_out:
-                        f_out.write(caso.get("output", caso.get("saida", "")))
-
-                origem = q.get("origem", "")
-                estruturas = q.get("estruturas") or []
-                is_restricted = q.get("direitos_restritos", False)
-                if "genéric" in origem.lower() or "clássic" in origem.lower():
-                    is_restricted = True
-
-                nivel_raw = q.get("nivel", qid.split("-")[1]).upper().strip()
-                nivel_formatado = MAPA_NIVEIS.get(nivel_raw, nivel_raw)
-
-                meta = {
-                    "id": qid,
-                    "eixo": pasta_eixo.upper(),
-                    "nivel": nivel_formatado,
-                    "estruturas": estruturas,
-                    "origem": origem,
-                    "direitos_restritos": is_restricted,
-                }
-                write_yaml(os.path.join(q_dir, "meta.yaml"), meta)
-                total_geradas += 1
-
-    print(f"Materialização concluída: {total_geradas} questão(ões) gerada(s) em questions/.")
+        return 1
+    total = materialize(load_index(INDEX_DIR), QUESTIONS_DIR)
+    print(f"Materialização concluída: {total} questão(ões) gerada(s) em {QUESTIONS_DIR}.")
+    return 0
 
 
 if __name__ == "__main__":
-    build_questions_from_index()
+    sys.exit(main())
