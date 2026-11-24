@@ -4,6 +4,10 @@ export const AUTH_PATHS = { login: '/entrar', signup: '/criar-conta' } as const
 export const AFTER_AUTH = '/biblioteca'
 export const NEXT_PARAM = 'proximo'
 
+export function loginPath(next: string): string {
+  return `${AUTH_PATHS.login}?${new URLSearchParams({ [NEXT_PARAM]: next }).toString()}`
+}
+
 // Where to go after a session starts. safeNextPath already refuses other
 // origins; this also refuses the auth pages, so a crafted link cannot bounce
 // a teacher who just signed in back to the form.
