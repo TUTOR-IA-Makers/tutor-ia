@@ -29,7 +29,9 @@
 }
 
 .groupTitle {
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
+  letter-spacing: normal;
 }
 
 .empty {

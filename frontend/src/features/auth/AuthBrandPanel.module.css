@@ -41,7 +41,7 @@
   margin: 0;
   padding-left: var(--space-3);
   border-left: var(--border-width-strong) solid var(--color-on-fill);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
 }
 
 /* Display size on purpose: --code-string reaches 3.34:1 on the green end of

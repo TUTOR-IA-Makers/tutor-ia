@@ -183,21 +183,22 @@ O último par é proibido de propósito: texto `#1B7A70` sobre `#E3F2EF` fica ab
 
 ## 5. Tipografia
 
-Duas famílias, com papéis que não se misturam. As amostras abaixo usam os mesmos arquivos woff2 do front-end.
+Três famílias, com papéis que não se misturam: serifa para títulos, sem serifa para o resto da interface, monoespaçada para código. As amostras abaixo usam os mesmos arquivos woff2 do front-end.
 
 <div class="ce-id-families">
-<div class="ce-id-family"><div class="ce-id-family__glyphs ce-id-sans">Aa Çç Ãã</div><div class="ce-id-family__name ce-id-sans">Source Sans 3 · 400 e 600</div><div class="ce-id-family__use ce-id-sans">Toda a interface: títulos, texto, botões, rótulos.</div></div>
+<div class="ce-id-family"><div class="ce-id-family__glyphs ce-id-serif">Aa Çç Ãã</div><div class="ce-id-family__name ce-id-serif">Source Serif 4 · 400 e 600</div><div class="ce-id-family__use ce-id-sans">Títulos h1 a h3: cabeçalho de página, nome da questão, seções, painéis, diálogos.</div></div>
+<div class="ce-id-family"><div class="ce-id-family__glyphs ce-id-sans">Aa Çç Ãã</div><div class="ce-id-family__name ce-id-sans">Source Sans 3 · 400 e 600</div><div class="ce-id-family__use ce-id-sans">O resto da interface: texto, botões, rótulos, títulos pequenos (h4).</div></div>
 <div class="ce-id-family"><div class="ce-id-family__glyphs ce-id-mono">0O 1l {}</div><div class="ce-id-family__name ce-id-mono">IBM Plex Mono · 400 e 500</div><div class="ce-id-family__use ce-id-sans">Código C, entradas, saídas, identificadores (#0142) e estruturas (if / else, for).</div></div>
 </div>
 
 <div class="ce-id-type">
-<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-display<br>36 a 60px · 600</div><div class="ce-id-type__sample" style="font-size:48px;font-weight:600;line-height:1.1;color:#243C8C">Questões de C verificadas</div></div>
-<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-3xl<br>36px · 600</div><div class="ce-id-type__sample" style="font-size:36px;font-weight:600">Como funciona</div></div>
-<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-2xl<br>30px · 600</div><div class="ce-id-type__sample" style="font-size:30px;font-weight:600;color:#243C8C">Biblioteca de questões</div></div>
-<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-xl<br>24px · 600</div><div class="ce-id-type__sample" style="font-size:24px;font-weight:600;color:#243C8C">Verificando a solução</div></div>
-<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-lg<br>20px · 600</div><div class="ce-id-type__sample" style="font-size:20px;font-weight:600">Etapas da geração</div></div>
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-display<br>36 a 60px · 600</div><div class="ce-id-type__sample ce-id-serif" style="font-size:48px;font-weight:600;line-height:1.1;color:#243C8C">Questões de C verificadas</div></div>
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-3xl<br>36px · 600</div><div class="ce-id-type__sample ce-id-serif" style="font-size:36px;font-weight:600;color:#243C8C">Biblioteca de questões</div></div>
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-2xl<br>30px · 600</div><div class="ce-id-type__sample ce-id-serif" style="font-size:30px;font-weight:600">Como funciona</div></div>
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-xl<br>24px · 600</div><div class="ce-id-type__sample ce-id-serif" style="font-size:24px;font-weight:600;color:#243C8C">Verificando a solução</div></div>
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-lg<br>20px · 600</div><div class="ce-id-type__sample ce-id-serif" style="font-size:20px;font-weight:600">Enunciado da questão</div></div>
 <div class="ce-id-type__row"><div class="ce-id-type__meta">--text-md<br>16px · 400</div><div class="ce-id-type__sample" style="font-size:16px;line-height:1.5">Estamos compilando o código e executando os casos de teste.</div></div>
-<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-sm<br>14px · 400</div><div class="ce-id-type__sample" style="font-size:14px;line-height:1.5;color:#5B616B">Recomendado entre 4 e 8 casos para uma cobertura adequada.</div></div>
+<div class="ce-id-type__row"><div class="ce-id-type__meta">--text-sm<br>14px · 400</div><div class="ce-id-type__sample" style="font-size:14px;line-height:1.5;color:#5B616B">Atualizado às 14:32</div></div>
 <div class="ce-id-type__row"><div class="ce-id-type__meta">--text-xs<br>13px · 600</div><div class="ce-id-type__sample" style="font-size:13px;font-weight:600"><span class="ce-id-badge" style="color:#8A5A00;background:#FDF3E1">Aguardando revisão</span></div></div>
 </div>
 
@@ -205,13 +206,16 @@ Duas famílias, com papéis que não se misturam. As amostras abaixo usam os mes
 |---|---|
 | Entrelinha do texto | 1.5 |
 | Entrelinha de títulos | 1.2 |
+| Espaçamento de títulos | `--tracking-tight` (-0.01em) em h1 a h3 |
+| Família de títulos | `--font-heading` em h1 a h3, pelo `base.css`; h4 e rótulos ficam em Source Sans 3 |
 | Landing page | texto explicativo em `--color-text` (contraste 18:1 sobre branco, acima do AAA) e nada abaixo de 16px fora do editor de código |
-| Tamanhos de destaque | `--text-display` (escala com a largura da tela, de 36 a 60px, entrelinha 1.1) e `--text-3xl` só na landing page; as telas do app param em `--text-2xl` |
+| Tamanhos de destaque | `--text-display` (escala com a largura da tela, de 36 a 60px, entrelinha 1.1) só na landing page; nas telas do app o h1 do cabeçalho usa `--text-3xl`, e `--text-2xl` abaixo de 640px |
+| Peso 500 | só existe na IBM Plex Mono; na Source Sans 3 cai para 400, então texto sem serifa usa 400 ou 600 |
 | Largura máxima de linha | cerca de 75 caracteres (`--width-prose`, 47rem) |
 | Caixa | frase normal; sem rótulos em caixa alta |
-| Carregamento | 4 arquivos woff2, subset latin, servidos pelo próprio projeto, `font-display: swap` |
+| Carregamento | 6 arquivos woff2, subset latin, servidos pelo próprio projeto, `font-display: swap` |
 
-**Por que estas fontes:** Source Sans 3 é legível em tamanhos pequenos, tem acentuação completa do português e aparência sóbria. IBM Plex Mono diferencia caracteres que confundem em código (`0` e `O`, `1` e `l`), o que importa quando o professor confere entradas e saídas. As duas são livres (SIL Open Font License; licenças em `docs/assets/fonts/`).
+**Por que estas fontes:** Source Serif 4 foi desenhada como par da Source Sans 3 (mesma altura de x e proporções), então a troca de família marca o título sem destoar do texto; antes, os títulos usavam a mesma família do corpo e a hierarquia dependia só do tamanho. Source Sans 3 é legível em tamanhos pequenos, tem acentuação completa do português e aparência sóbria. IBM Plex Mono diferencia caracteres que confundem em código (`0` e `O`, `1` e `l`), o que importa quando o professor confere entradas e saídas. As três são livres (SIL Open Font License; licenças em `docs/assets/fonts/`).
 
 ## 6. Espaçamento e grid
 

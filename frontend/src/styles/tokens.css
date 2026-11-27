@@ -39,7 +39,7 @@
   --code-success: #8fd6a8;
   --code-error: #f5a3a3;
   --font-sans: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-heading: 'Trebuchet MS', arial, sans-serif;
+  --font-heading: 'Source Serif 4', georgia, 'Times New Roman', serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', menlo, consolas, monospace;
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
@@ -53,8 +53,9 @@
   --leading-tight: 1.2;
   --leading-body: 1.5;
   --leading-code: 1.6;
+  --tracking-tight: -0.01em;
   --weight-regular: 400;
-  --weight-medium: 500;
+  --weight-medium: 500; /* only IBM Plex Mono ships 500; Source Sans 3 falls back to 400 */
   --weight-semibold: 600;
   --space-0: 2px;
   --space-1: 4px;

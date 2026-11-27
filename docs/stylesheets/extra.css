@@ -343,7 +343,22 @@
   src: url("../assets/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
 }
 
+@font-face {
+  font-family: "CE Source Serif 4";
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/source-serif-4-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "CE Source Serif 4";
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/source-serif-4-latin-600-normal.woff2") format("woff2");
+}
+
 .ce-id-sans { font-family: "CE Source Sans 3", system-ui, sans-serif; }
+.ce-id-serif { font-family: "CE Source Serif 4", georgia, serif; letter-spacing: -0.01em; }
 .ce-id-mono { font-family: "CE IBM Plex Mono", ui-monospace, monospace; }
 
 .ce-id-hero {

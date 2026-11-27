@@ -32,7 +32,7 @@
   border-left: var(--border-width-strong) solid var(--color-on-fill);
   font-family: var(--font-sans);
   font-size: var(--text-md);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: var(--leading-body);
 }
 
