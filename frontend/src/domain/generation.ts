@@ -7,30 +7,40 @@ export const GENERATION_STEPS = [
     headline: 'Escrevendo o enunciado',
     description:
       'Estamos redigindo o enunciado a partir do conteúdo e das regras que você escolheu.',
+    recovery:
+      'O enunciado não ficou pronto. Gere de novo. Se repetir, encurte o contexto ou as dicas dos casos de teste.',
   },
   {
     id: 'solution',
     label: 'Gerar solução em C',
     headline: 'Gerando a solução',
     description: 'Estamos escrevendo a solução de referência em C.',
+    recovery:
+      'A solução de referência não ficou pronta. Gere de novo. Se repetir, revise as estruturas obrigatórias e proibidas.',
   },
   {
     id: 'testcases',
     label: 'Criar casos de teste',
     headline: 'Criando os casos de teste',
     description: 'Estamos criando as entradas que vão exercitar a solução.',
+    recovery:
+      'As entradas de teste não ficaram prontas. Gere de novo. Se repetir, peça menos casos de teste.',
   },
   {
     id: 'verification',
     label: 'Compilar e testar',
     headline: 'Verificando a solução',
     description: 'Estamos compilando o código e executando os casos de teste.',
+    recovery:
+      'A solução não compilou, não terminou em algum caso ou não respeitou as estruturas pedidas. Gere de novo. Se repetir, revise as regras de estruturas.',
   },
   {
     id: 'export',
     label: 'Preparar exportação',
     headline: 'Preparando a exportação',
     description: 'Estamos montando a questão no formato do Moodle.',
+    recovery:
+      'A questão foi verificada, mas o arquivo do Moodle não foi montado. Gere de novo. Se repetir, avise a equipe do CodeExpert.',
   },
 ] as const
 
@@ -43,6 +53,7 @@ export interface Generation {
   status: QuestionStatus
   completedSteps: number
   failureReason: string | null
+  resumable: boolean
 }
 
 export type StepState = 'done' | 'current' | 'pending' | 'failed'
@@ -66,4 +77,26 @@ export function stepState(generation: Generation, index: number): StepState {
 export function progressPercent(generation: Generation): number {
   if (generation.status !== 'GERANDO' && generation.status !== 'FALHOU_VERIFICACAO') return 100
   return Math.round((generation.completedSteps / GENERATION_STEPS.length) * 100)
+}
+
+export function failedStep(generation: Generation): GenerationStep | null {
+  if (generation.status !== 'FALHOU_VERIFICACAO') return null
+  return GENERATION_STEPS[Math.min(generation.completedSteps, GENERATION_STEPS.length - 1)] ?? null
+}
+
+export function stepPosition(step: GenerationStep): number {
+  return GENERATION_STEPS.findIndex((item) => item.id === step.id) + 1
+}
+
+const TRACE = /Traceback \(most recent call last\)|^\s+at \S|File "[^"]+", line \d+/m
+const SUMMARY_MAX = 240
+
+export function failureSummary(reason: string | null): string | null {
+  if (!reason || TRACE.test(reason)) return null
+  const line = reason
+    .split('\n')
+    .map((part) => part.trim())
+    .find((part) => part.length > 0)
+  if (!line) return null
+  return line.length > SUMMARY_MAX ? `${line.slice(0, SUMMARY_MAX - 1).trimEnd()}…` : line
 }

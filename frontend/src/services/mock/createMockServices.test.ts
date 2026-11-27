@@ -5,9 +5,14 @@ import { MOCK_ACCOUNT, MOCK_INVITE_CODE } from './fixtures'
 
 const STEP = 1000
 
-function setup() {
+function setup(interrupted: readonly string[] = []) {
   const clock = { now: 1_000_000 }
-  const services = createMockServices({ latencyMs: 0, stepMs: STEP, now: () => clock.now })
+  const services = createMockServices({
+    latencyMs: 0,
+    stepMs: STEP,
+    now: () => clock.now,
+    interrupted,
+  })
   return { clock, services, questions: services.questions }
 }
 
@@ -64,6 +69,32 @@ describe('createMockServices', () => {
       status: 'FALHOU_VERIFICACAO',
       completedSteps: 3,
     })
+  })
+
+  it('retoma uma geração interrompida da etapa em que parou, no mesmo run', async () => {
+    const { clock, questions } = setup(['q-0142'])
+    const stopped = await questions.generation('q-0142')
+    expect(stopped).toMatchObject({
+      status: 'FALHOU_VERIFICACAO',
+      completedSteps: 2,
+      resumable: true,
+    })
+    const resumed = await questions.resume('q-0142')
+    expect(resumed).toMatchObject({
+      status: 'GERANDO',
+      completedSteps: 2,
+      resumable: false,
+      runId: stopped.runId,
+    })
+    clock.now += 3 * STEP
+    expect((await questions.get('q-0142')).status).toBe('GERADA')
+  })
+
+  it('recusa retomar o que não foi interrompido', async () => {
+    const { questions } = setup()
+    expect((await questions.generation('q-0141')).resumable).toBe(false)
+    await expect(questions.resume('q-0141')).rejects.toMatchObject({ status: 409 })
+    await expect(questions.resume('q-0143')).rejects.toMatchObject({ status: 409 })
   })
 
   it('aprova e rejeita só a partir de "aguardando revisão"', async () => {

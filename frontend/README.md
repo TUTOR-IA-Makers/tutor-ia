@@ -23,7 +23,7 @@ Para rodar os testes de ponta a ponta uma vez por máquina: `npx playwright inst
 | `/` | Redireciona para `/biblioteca` | |
 | `/biblioteca` | Busca, filtros na URL, grade de questões, seleção de aprovadas e modal de exportação | [biblioteca](../docs/design/telas/biblioteca.png), [exportar](../docs/design/telas/exportar.png) |
 | `/gerar` | Conteúdo, dificuldade em intervalo, casos de teste, casos específicos e estruturas em C | [gerar](../docs/design/telas/gerar.png) |
-| `/questoes/:id` | Acompanhar geração enquanto o estado é `GERANDO`; revisão nos demais | [progresso](../docs/design/telas/progresso.png), [revisão: enunciado](../docs/design/telas/revisao-enunciado.png), [revisão: testes](../docs/design/telas/revisao-testes.png) |
+| `/questoes/:id` | Acompanhar geração enquanto o estado é `GERANDO`; revisão nos demais. Na falha, as duas telas dizem em qual etapa parou, com uma barra da posição (por exemplo 3 de 5), e o que fazer. Se o servidor reiniciou no meio, as duas oferecem **Retomar geração** (`POST /questions/{id}/resume`), que continua da etapa em que parou. Uma questão que não existe mostra só a mensagem e **Voltar à biblioteca**. Fechar e reabrir a página não perde a geração: o estado vem do servidor | [progresso](../docs/design/telas/progresso.png), [revisão: enunciado](../docs/design/telas/revisao-enunciado.png), [revisão: testes](../docs/design/telas/revisao-testes.png) |
 | `/ajuda` | Passo a passo, estados, importação no Moodle, glossário, status do servidor | |
 | `*` | 404 com volta à biblioteca | |
 
@@ -111,7 +111,7 @@ O que já está pronto no modo `http`:
 | Formato das respostas, validado com Zod | `services/http/dto.ts` |
 | Conversão DTO (snake_case) ↔ domínio (camelCase) | `services/http/mappers.ts` |
 | Cliente: mesma origem, `credentials: 'same-origin'`, header anti-CSRF nas mutações, timeout, query string, download com `Content-Disposition` | `lib/http/` |
-| Erros HTTP, rede e timeout traduzidos para o professor | `lib/http/describeError.ts` |
+| Erros HTTP, rede e timeout traduzidos para o professor, com o próximo passo (tabela abaixo) | `lib/http/describeError.ts` |
 | Cache, polling da geração a cada 1,5 s e invalidação depois de cada ação | `features/questions/queries.ts` e `mutations.ts` |
 
 O contrato do backend ainda não existe. Endpoints e DTOs são uma proposta. Quando a API ficar pronta:
@@ -119,6 +119,23 @@ O contrato do backend ainda não existe. Endpoints e DTOs são uma proposta. Qua
 1. Ajuste `endpoints.ts` e `dto.ts` ao `openapi.json` (ou troque por um cliente gerado a partir do `openapi.json`, por exemplo com o orval).
 2. Ajuste `mappers.ts`. As telas não mudam, porque dependem só do domínio.
 3. Rode `src/services/http/createHttpServices.test.ts`: ele usa MSW e mostra o que quebrou.
+
+### Como cada erro aparece para o professor
+
+`describeError` monta título e mensagem em português. A mensagem sempre termina com o que fazer a seguir. O `detail` do backend nunca aparece: ele vem em inglês, escrito para quem desenvolve (por exemplo `Question 'x' not found. Create one with POST /api/v1/questions.`).
+
+| Status | Título | O que a tela pede |
+| --- | --- | --- |
+| `401` | Sessão expirada | Entrar de novo; as telas de carregamento trocam "Tentar de novo" por **Entrar de novo**, que volta para a mesma página depois do login (`/entrar?proximo=`) |
+| `409` | A questão mudou de estado | Conferir a versão recarregada; a tela já recarrega a questão e a biblioteca |
+| `429` | Cota de gerações atingida | Tentar mais tarde; com `Retry-After`, diz em quantos minutos ou horas |
+| `502` | Provedor de IA indisponível | Tentar de novo em alguns minutos |
+| `503` | Geração indisponível | Avisar a equipe; a biblioteca continua funcionando |
+| outro `5xx` | Erro no servidor | Tentar de novo e, se continuar, avisar a equipe |
+
+O backend já responde `502` quando o provedor de IA falha (`LLMError`) e `503` quando falta configuração (`ConfigurationError`), em `backend/src/codeexpert/api/errors.py`. A cota de gerações (G0-6) ainda não existe no backend: o front espera `429` com `Retry-After` em segundos ou data HTTP, e hoje esse caso só aparece nos testes.
+
+No modo simulado, a questão `q-0142` começa interrompida, para demonstrar o **Retomar geração** sem backend.
 
 ## Segurança
 

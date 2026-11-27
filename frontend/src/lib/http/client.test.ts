@@ -9,6 +9,7 @@ import {
   download,
   filenameFrom,
   request,
+  retryAfterSeconds,
 } from './client'
 import { describeError } from './describeError'
 import { HttpError, NetworkError, ResponseShapeError, TimeoutError } from './errors'
@@ -144,7 +145,20 @@ describe('request', () => {
     )
     const error = await request('/api/item', schema).catch((e: unknown) => e)
     expect(error).toMatchObject({ status: 422, detail: '' })
-    expect(describeError(error).message).toBe('Confira os campos destacados e tente de novo.')
+    expect(describeError(error).message).toBe(
+      'Alguns campos não passaram na validação. Corrija os campos destacados e tente de novo.',
+    )
+  })
+
+  it('lê o Retry-After da cota estourada', async () => {
+    server.use(
+      http.post(
+        '*/api/item',
+        () => new HttpResponse(null, { status: 429, headers: { 'Retry-After': '1800' } }),
+      ),
+    )
+    const error = await request('/api/item', schema, { method: 'POST' }).catch((e: unknown) => e)
+    expect(error).toMatchObject({ status: 429, retryAfterSeconds: 1800 })
   })
 
   it('rejeita resposta fora do contrato', async () => {
@@ -218,5 +232,21 @@ describe('filenameFrom', () => {
 
   it('mantém o nome como veio quando o escape é inválido', () => {
     expect(filenameFrom('attachment; filename="100%.xml"', 'x')).toBe('100%.xml')
+  })
+})
+
+describe('retryAfterSeconds', () => {
+  const now = Date.parse('2026-10-26T12:00:00Z')
+
+  it.each([
+    [null, undefined],
+    ['', undefined],
+    ['120', 120],
+    [' 0 ', 0],
+    ['Mon, 26 Oct 2026 12:30:00 GMT', 1800],
+    ['Mon, 26 Oct 2026 11:00:00 GMT', 0],
+    ['amanhã', undefined],
+  ])('converte %s em %s', (header, expected) => {
+    expect(retryAfterSeconds(header, now)).toBe(expected)
   })
 })

@@ -77,6 +77,9 @@ describe('LibraryView', () => {
       'href',
       '/gerar',
     )
+    expect(screen.getByRole('heading', { name: 'Sua biblioteca está vazia' })).toBeInTheDocument()
+    expect(screen.getByText(/Gere a primeira questão/)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Limpar filtros' })).toBeNull()
   })
 
   it('explica a falha e permite tentar de novo', async () => {

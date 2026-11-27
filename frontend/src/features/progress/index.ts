@@ -1,4 +1,6 @@
+export { GenerationFailure } from './GenerationFailure'
 export { GenerationPanel } from './GenerationPanel'
 export { ProgressView } from './ProgressView'
 export { QuestionSummaryCard } from './QuestionSummaryCard'
+export { ResumeGenerationButton } from './ResumeGenerationButton'
 export { StepList } from './StepList'

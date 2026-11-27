@@ -4,6 +4,7 @@ export class HttpError extends Error {
   constructor(
     readonly status: number,
     readonly detail: string,
+    readonly retryAfterSeconds?: number,
   ) {
     super(`HTTP ${String(status)}: ${detail}`)
   }

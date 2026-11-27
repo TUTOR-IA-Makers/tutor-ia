@@ -1,16 +1,9 @@
 import { FilePlus2, Plus, SearchX } from 'lucide-react'
 import { useMemo, useState, type ReactNode } from 'react'
-import {
-  Button,
-  EmptyState,
-  ErrorState,
-  LinkButton,
-  LoadingState,
-  PageHeader,
-} from '@/components/ui'
+import { Button, EmptyState, LinkButton, LoadingState, PageHeader } from '@/components/ui'
 import { hasActiveFilters } from '@/domain'
-import { describeError } from '@/lib/http'
 import { useQuestionList } from '@/features/questions'
+import { RequestErrorState } from '@/features/session'
 import { ExportDialog } from './ExportDialog'
 import { LibraryFilterBar } from './LibraryFilterBar'
 import { QuestionGrid } from './QuestionGrid'
@@ -92,8 +85,7 @@ function LibraryContent({
 }: LibraryContentProps) {
   if (state.isPending) return <LoadingState label="Carregando questões" />
   if (state.isError) {
-    const { title, message } = describeError(state.error)
-    return <ErrorState title={title} message={message} onRetry={() => void state.refetch()} />
+    return <RequestErrorState error={state.error} onRetry={() => void state.refetch()} />
   }
   if (isEmpty && filtered) {
     return (

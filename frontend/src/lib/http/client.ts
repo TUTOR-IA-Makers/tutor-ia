@@ -54,6 +54,15 @@ async function readDetail(response: Response): Promise<string> {
   return ''
 }
 
+export function retryAfterSeconds(header: string | null, now = Date.now()): number | undefined {
+  const value = header?.trim()
+  if (!value) return undefined
+  if (/^\d+$/.test(value)) return Number(value)
+  const date = Date.parse(value)
+  if (Number.isNaN(date)) return undefined
+  return Math.max(0, Math.ceil((date - now) / 1000))
+}
+
 function linkAbort(timeoutMs: number, external?: AbortSignal) {
   const controller = new AbortController()
   let timedOut = false
@@ -98,7 +107,12 @@ export async function send(path: string, options: RequestOptions = {}): Promise<
 
   try {
     const response = await fetch(url, init)
-    if (!response.ok) throw new HttpError(response.status, await readDetail(response))
+    if (!response.ok)
+      throw new HttpError(
+        response.status,
+        await readDetail(response),
+        retryAfterSeconds(response.headers.get('Retry-After')),
+      )
     return response
   } catch (error) {
     if (error instanceof HttpError) throw error

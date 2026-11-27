@@ -1,10 +1,12 @@
 import { Check, RotateCcw, X } from 'lucide-react'
 import { useState } from 'react'
-import { Button, Callout, Dialog, LinkButton } from '@/components/ui'
-import { can, passedCount, type Question } from '@/domain'
+import { Button, Callout, Dialog, LinkButton, Spinner } from '@/components/ui'
+import { can, failureSummary, passedCount, type Generation, type Question } from '@/domain'
+import { GenerationFailure, ResumeGenerationButton } from '@/features/progress'
 import {
   QuestionStatusBadge,
   useApproveQuestion,
+  useGeneration,
   useRegenerateQuestion,
   useRejectQuestion,
 } from '@/features/questions'
@@ -14,13 +16,27 @@ export interface ReviewSidebarProps {
   question: Question
 }
 
-function VerificationSummary({ question }: ReviewSidebarProps) {
+interface VerificationSummaryProps extends ReviewSidebarProps {
+  generation: { data: Generation | undefined; isPending: boolean }
+}
+
+function VerificationSummary({ question, generation }: VerificationSummaryProps) {
+  const failed = question.status === 'FALHOU_VERIFICACAO'
   const passed = passedCount(question.testCases)
   const total = question.testCases.length
-  if (question.failureReason) {
+  if (failed && generation.data) return <GenerationFailure generation={generation.data} />
+  if (failed && generation.isPending) {
+    return (
+      <p className={styles.checking} role="status">
+        <Spinner size="sm" />
+        Buscando a etapa em que a geração parou
+      </p>
+    )
+  }
+  if (failed || question.failureReason) {
     return (
       <Callout tone="danger" title="A questão falhou na verificação">
-        {question.failureReason}
+        {failureSummary(question.failureReason) ?? 'Gere de novo para tentar outra versão.'}
       </Callout>
     )
   }
@@ -38,6 +54,8 @@ export function ReviewSidebar({ question }: ReviewSidebarProps) {
   const approve = useApproveQuestion(question.id)
   const reject = useRejectQuestion(question.id)
   const regenerate = useRegenerateQuestion(question.id)
+  const generation = useGeneration(question.id, question.status === 'FALHOU_VERIFICACAO')
+  const resumable = question.status === 'FALHOU_VERIFICACAO' && generation.data?.resumable === true
   const [confirmingReject, setConfirmingReject] = useState(false)
   const busy = approve.isPending || reject.isPending || regenerate.isPending
 
@@ -49,12 +67,9 @@ export function ReviewSidebar({ question }: ReviewSidebarProps) {
       <div aria-live="polite">
         <QuestionStatusBadge status={question.status} />
       </div>
-      <VerificationSummary question={question} />
-      <p className={styles.note}>
-        Confira o enunciado, o código e os casos de teste antes de aprovar para a sua turma. A
-        validação técnica é um suporte; a aprovação é sua.
-      </p>
+      <VerificationSummary question={question} generation={generation} />
       <div className={styles.actions}>
+        {resumable && <ResumeGenerationButton questionId={question.id} block disabled={busy} />}
         {can(question.status, 'approve') && (
           <Button
             variant="accent"
@@ -103,11 +118,6 @@ export function ReviewSidebar({ question }: ReviewSidebarProps) {
           </LinkButton>
         )}
       </div>
-      {can(question.status, 'approve') && (
-        <p className={styles.footnote}>
-          Ao aprovar, a questão fica disponível na biblioteca para exportação em XML do Moodle.
-        </p>
-      )}
       <Dialog
         open={confirmingReject}
         onClose={() => {

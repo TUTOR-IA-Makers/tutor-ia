@@ -99,16 +99,29 @@ describe('ReviewView', () => {
     expect(await screen.findByText('Questão rejeitada')).toBeInTheDocument()
   })
 
-  it('mostra a causa da falha e oferece gerar de novo', async () => {
+  it('mostra em qual etapa falhou, a causa e o que fazer, e oferece gerar de novo', async () => {
     const user = userEvent.setup()
     const { services } = renderReview(seed('q-0141'))
     const regenerate = vi.spyOn(services.questions, 'regenerate')
-    expect(screen.getByText('A questão falhou na verificação')).toBeInTheDocument()
+    expect(screen.getByText('Buscando a etapa em que a geração parou')).toHaveAttribute(
+      'role',
+      'status',
+    )
+    expect(await screen.findByText('4 de 5: Compilar e testar')).toBeInTheDocument()
+    expect(screen.queryByText('A questão falhou na verificação')).toBeNull()
     expect(screen.getByText(/usou repetição/)).toBeInTheDocument()
+    expect(screen.getByText(/revise as regras de estruturas/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Aprovar e salvar' })).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Gerar de novo' }))
     expect(regenerate).toHaveBeenCalledWith('q-0141')
     expect(await screen.findByText('Gerando a questão de novo')).toBeInTheDocument()
+  })
+
+  it('sem a etapa da falha, ainda avisa que a questão falhou', async () => {
+    const generation = vi.fn().mockRejectedValue(new HttpError(500, ''))
+    renderReview(seed('q-0141'), '/questoes/x', withQuestions({ generation }))
+    expect(await screen.findByText('A questão falhou na verificação')).toBeInTheDocument()
+    expect(screen.getByText(/usou repetição/)).toBeInTheDocument()
   })
 
   it('questão aprovada leva à exportação e não oferece aprovar de novo', () => {
@@ -148,7 +161,9 @@ describe('ReviewView', () => {
     await user.clear(text)
     await user.type(text, 'Novo enunciado')
     await user.click(screen.getByRole('button', { name: 'Salvar enunciado' }))
-    expect(await screen.findByText('O enunciado é obrigatório.')).toBeInTheDocument()
+    expect(await screen.findByText(/^Alguns campos não passaram/)).toHaveTextContent(
+      'Corrija os campos destacados e tente de novo.',
+    )
     expect(screen.getByRole('textbox', { name: /Texto do enunciado/ })).toHaveValue(
       'Novo enunciado',
     )

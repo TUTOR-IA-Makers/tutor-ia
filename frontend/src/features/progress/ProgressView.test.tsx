@@ -1,8 +1,8 @@
 import { screen, waitFor, within } from '@testing-library/react'
-import { GENERATION_STEPS, type Generation } from '@/domain'
+import { GENERATION_STEPS, type Generation, type QuestionDraft } from '@/domain'
 import { HttpError } from '@/lib/http'
-import { renderInRouter } from '@/test/render'
-import { withQuestions } from '@/test/services'
+import { createTestServices, renderInRouter } from '@/test/render'
+import { createClock, withQuestions } from '@/test/services'
 import { GenerationPanel } from './GenerationPanel'
 import { ProgressView } from './ProgressView'
 import { StepList } from './StepList'
@@ -18,12 +18,22 @@ const summary = {
   testCaseCount: 4,
 }
 
+const draft: QuestionDraft = {
+  contentId: 'vetores',
+  difficulty: { min: 800, max: 900 },
+  testCaseCount: 4,
+  testCaseHints: '',
+  context: '',
+  structures: { required: [], allowed: [], forbidden: [] },
+}
+
 const generating: Generation = {
   questionId: 'q-0143',
   runId: 'run-abc',
   status: 'GERANDO',
   completedSteps: 3,
   failureReason: null,
+  resumable: false,
 }
 
 describe('StepList', () => {
@@ -97,9 +107,52 @@ describe('ProgressView', () => {
     const services = withQuestions({ generation })
     renderInRouter(<ProgressView question={summary} />, '/', { services })
     expect(
-      await screen.findByText('A questão falhou na verificação', {}, { timeout: 4000 }),
+      await screen.findByText('A geração parou em: Compilar e testar', {}, { timeout: 4000 }),
     ).toBeInTheDocument()
+    expect(screen.getByText('A geração da questão parou na etapa:')).toBeInTheDocument()
+    expect(screen.getByText('4 de 5: Compilar e testar')).toBeInTheDocument()
+    expect(
+      screen.getByRole('progressbar', { name: 'Etapa em que a geração parou' }),
+    ).toHaveAttribute('aria-valuenow', '4')
+    expect(screen.queryByText('Geração em andamento')).toBeNull()
     expect(screen.queryByText('Questão gerada')).toBeNull()
+  })
+
+  it('não mostra stack trace quando a falha traz um', async () => {
+    const reason = 'Traceback (most recent call last):\n  File "pipeline.py", line 3, in run'
+    const services = withQuestions({
+      generation: () =>
+        Promise.resolve({
+          ...generating,
+          completedSteps: 1,
+          status: 'FALHOU_VERIFICACAO',
+          failureReason: reason,
+        }),
+    })
+    renderInRouter(<ProgressView question={summary} />, '/', { services })
+    expect(await screen.findByText('2 de 5: Gerar solução em C')).toBeInTheDocument()
+    expect(screen.getByText(/A solução de referência não ficou pronta/)).toBeInTheDocument()
+    expect(document.body).not.toHaveTextContent('Traceback')
+    expect(document.body).not.toHaveTextContent('pipeline.py')
+  })
+
+  it('fechar e reabrir retoma a geração na etapa em que ela está', async () => {
+    const { clock, now } = createClock()
+    const services = createTestServices({ stepMs: 1000, now })
+    const { id } = await services.questions.create(draft)
+    const question = { ...summary, id }
+
+    const first = renderInRouter(<ProgressView question={question} />, '/', { services })
+    expect(await screen.findByText('Escrevendo o enunciado')).toBeInTheDocument()
+    first.unmount()
+
+    clock.now += 2500
+    renderInRouter(<ProgressView question={question} />, '/', { services })
+    expect(await screen.findByText('Criando os casos de teste')).toBeInTheDocument()
+    const items = screen.getAllByRole('listitem')
+    expect(items[0]).toHaveTextContent('concluída')
+    expect(items[1]).toHaveTextContent('concluída')
+    expect(items[2]).toHaveAttribute('aria-current', 'step')
   })
 
   it('explica falha ao consultar o andamento', async () => {

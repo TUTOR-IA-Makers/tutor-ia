@@ -1,0 +1,27 @@
+.body {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.reason {
+  font-weight: var(--weight-semibold);
+}
+
+.failure {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.stoppedAt {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.step {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+}
+
+.stoppedAt .bar {
+  background: var(--color-border);
+}

@@ -17,7 +17,7 @@ export async function createServices(env: ServicesEnv = import.meta.env): Promis
   if (resolveApiMode(env.VITE_PUBLIC_API_MODE, env.PROD ?? false) === 'mock') {
     // Loaded on demand so the fixtures stay out of the entry chunk of an http build.
     const { createMockServices } = await import('./mock/createMockServices')
-    return createMockServices()
+    return createMockServices({ interrupted: ['q-0142'] })
   }
   const baseUrl = env.VITE_PUBLIC_API_BASE_URL
   return createHttpServices(baseUrl ? { baseUrl } : {})

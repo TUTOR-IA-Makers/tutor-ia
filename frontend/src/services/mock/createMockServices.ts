@@ -22,13 +22,20 @@ export interface MockOptions {
   stepMs?: number
   now?: () => number
   seed?: () => Question[]
+  interrupted?: readonly string[]
 }
 
 interface Record {
   question: Question
   startedAt: number
   runId: string
+  stoppedAt?: number
 }
+
+const INTERRUPTED_STEPS = 2
+
+export const MOCK_INTERRUPTED_REASON =
+  'A geração foi interrompida porque o servidor reiniciou. Retome para continuar de onde parou, sem repetir as etapas já concluídas.'
 
 const SEEDED_PROGRESS = 2
 
@@ -51,15 +58,20 @@ export function createMockServices({
   stepMs = 1200,
   now = () => Date.now(),
   seed = seedQuestions,
+  interrupted = [],
 }: MockOptions = {}): Services {
   const store = new Map<string, Record>()
   let sequence = 144
 
   for (const question of seed()) {
+    const stopped = interrupted.includes(question.id)
     store.set(question.id, {
-      question,
+      question: stopped
+        ? { ...question, status: 'FALHOU_VERIFICACAO', failureReason: MOCK_INTERRUPTED_REASON }
+        : question,
       startedAt: now() - SEEDED_PROGRESS * stepMs,
       runId: `run-${question.id}`,
+      ...(stopped && { stoppedAt: INTERRUPTED_STEPS }),
     })
   }
 
@@ -91,7 +103,28 @@ export function createMockServices({
     return structuredClone(record.question)
   }
 
+  const progress = (id: string, record: Record): Generation => {
+    const { status, failureReason } = record.question
+    const elapsed = Math.floor((now() - record.startedAt) / stepMs)
+    const completedSteps =
+      record.stoppedAt ??
+      (status === 'GERANDO'
+        ? Math.min(elapsed, GENERATION_STEPS.length - 1)
+        : status === 'FALHOU_VERIFICACAO'
+          ? 3
+          : GENERATION_STEPS.length)
+    return {
+      questionId: id,
+      runId: record.runId,
+      status,
+      completedSteps,
+      failureReason,
+      resumable: record.stoppedAt !== undefined,
+    }
+  }
+
   const restart = (record: Record) => {
+    delete record.stoppedAt
     record.question = { ...record.question, status: 'GERANDO' }
     record.startedAt = now()
     record.runId = `run-${record.question.id}-${String(now())}`
@@ -129,23 +162,17 @@ export function createMockServices({
       },
       async generation(id, options) {
         await wait(options?.signal)
+        return progress(id, find(id))
+      },
+      async resume(id) {
+        await wait()
         const record = find(id)
-        const { status, failureReason } = record.question
-        const elapsed = Math.floor((now() - record.startedAt) / stepMs)
-        const completedSteps =
-          status === 'GERANDO'
-            ? Math.min(elapsed, GENERATION_STEPS.length - 1)
-            : status === 'FALHOU_VERIFICACAO'
-              ? 3
-              : GENERATION_STEPS.length
-        const generation: Generation = {
-          questionId: id,
-          runId: record.runId,
-          status,
-          completedSteps,
-          failureReason,
-        }
-        return generation
+        const { stoppedAt } = record
+        if (stoppedAt === undefined) throw conflict(record.question.status)
+        delete record.stoppedAt
+        record.startedAt = now() - stoppedAt * stepMs
+        record.question = { ...record.question, status: 'GERANDO', failureReason: null }
+        return progress(id, record)
       },
       async approve(id) {
         await wait()

@@ -72,6 +72,7 @@ export const generationDto = z.object({
   status,
   completed_steps: z.number(),
   failure_reason: z.nullable(z.string()),
+  job: z.optional(z.object({ resumable: z.boolean() })),
 })
 
 export const emptyDto = z.optional(z.unknown())

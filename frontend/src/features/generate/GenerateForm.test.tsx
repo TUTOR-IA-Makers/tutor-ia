@@ -189,18 +189,28 @@ describe('GenerateForm', () => {
     })
   })
 
-  it('mostra o motivo quando o servidor recusa', async () => {
-    const user = userEvent.setup()
-    renderForm(withQuestions({ create: () => Promise.reject(new HttpError(503, '')) }))
-    await user.selectOptions(
-      screen.getByRole('combobox', { name: /Conteúdo de programação/ }),
-      'vetores',
-    )
-    await user.click(chip('Estruturas obrigatórias', 'vetor'))
-    await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
-    await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
-    expect(await screen.findByText('Geração indisponível')).toBeInTheDocument()
-  })
+  it.each([
+    [new HttpError(429, '', 1800), 'Cota de gerações atingida', 'Tente de novo em 30 min.'],
+    [new HttpError(502, ''), 'Provedor de IA indisponível', 'Tente de novo em alguns minutos.'],
+    [new HttpError(503, ''), 'Geração indisponível', 'Avise a equipe do CodeExpert.'],
+    [new HttpError(401, ''), 'Sessão expirada', 'Entre de novo para continuar.'],
+  ])(
+    'mostra o motivo e o próximo passo quando o servidor recusa (%s)',
+    async (error, title, next) => {
+      const user = userEvent.setup()
+      renderForm(withQuestions({ create: () => Promise.reject(error) }))
+      await user.selectOptions(
+        screen.getByRole('combobox', { name: /Conteúdo de programação/ }),
+        'vetores',
+      )
+      await user.click(chip('Estruturas obrigatórias', 'vetor'))
+      await screen.findByRole('group', { name: 'Estruturas obrigatórias' })
+      await user.click(screen.getByRole('button', { name: 'Gerar questão' }))
+      const alert = await screen.findByRole('alert')
+      expect(alert).toHaveTextContent(title)
+      expect(alert).toHaveTextContent(next)
+    },
+  )
 
   it('não tem violações sérias de acessibilidade', async () => {
     const { container } = renderForm()

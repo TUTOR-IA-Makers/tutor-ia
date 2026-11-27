@@ -33,6 +33,7 @@ export interface QuestionsService {
   approve(id: string): Promise<Question>
   reject(id: string): Promise<Question>
   regenerate(id: string): Promise<{ id: string }>
+  resume(id: string): Promise<Generation>
   updateStatement(id: string, statement: Statement): Promise<Question>
   exportMoodleXml(ids: readonly string[]): Promise<ExportedFile>
 }

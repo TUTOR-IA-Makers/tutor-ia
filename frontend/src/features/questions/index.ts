@@ -4,6 +4,7 @@ export {
   useExportMoodleXml,
   useRegenerateQuestion,
   useRejectQuestion,
+  useResumeGeneration,
   useUpdateStatement,
 } from './mutations'
 export { GENERATION_POLL_MS, useGeneration, useQuestion, useQuestionList } from './queries'

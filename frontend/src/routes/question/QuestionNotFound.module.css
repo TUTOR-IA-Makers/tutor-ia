@@ -1,0 +1,29 @@
+.page {
+  display: grid;
+  gap: var(--space-4);
+  place-content: center;
+  justify-items: center;
+  min-height: calc(100dvh - var(--header-height) - var(--space-16) * 2);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.icon {
+  display: inline-grid;
+  place-items: center;
+  width: var(--space-16);
+  height: var(--space-16);
+  border-radius: var(--radius-round);
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: var(--text-3xl);
+}
+
+.description {
+  max-width: 32rem;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}

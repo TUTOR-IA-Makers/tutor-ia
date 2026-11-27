@@ -3,6 +3,8 @@ import { EMPTY_FILTERS } from '@/domain'
 import { CSRF_HEADER, CSRF_HEADER_VALUE, ResponseShapeError } from '@/lib/http'
 import { server } from '@/test/server'
 import { createHttpServices } from './createHttpServices'
+import { generationDto } from './dto'
+import { toGeneration } from './mappers'
 
 const summaryDto = {
   id: 'q-1',
@@ -56,6 +58,24 @@ function capture() {
       })
       if (url.pathname === '/api/v1/questions' && request.method === 'GET') {
         return HttpResponse.json({ items: [summaryDto] })
+      }
+      if (url.pathname.endsWith('/resume')) {
+        return HttpResponse.json(
+          {
+            question_id: 'q-1',
+            run_id: 'run-1',
+            status: 'GERANDO',
+            completed_steps: 2,
+            failure_reason: null,
+            job: {
+              state: 'EM_ANDAMENTO',
+              step: 'inputs',
+              resumable: false,
+              updated_at: '2026-11-23T12:00:00Z',
+            },
+          },
+          { status: 202 },
+        )
       }
       if (url.pathname.endsWith('/generation')) {
         return HttpResponse.json({
@@ -181,7 +201,15 @@ describe('createHttpServices', () => {
       status: 'GERANDO',
       completedSteps: 2,
       failureReason: null,
+      resumable: false,
     })
+  })
+
+  it('retoma a geração interrompida pelo POST /resume', async () => {
+    const calls = capture()
+    const generation = await services.questions.resume('q-1')
+    expect(calls[0]).toMatchObject({ method: 'POST', path: '/api/v1/questions/q-1/resume' })
+    expect(generation).toMatchObject({ status: 'GERANDO', completedSteps: 2, resumable: false })
   })
 
   it.each([
@@ -303,5 +331,19 @@ describe('createHttpServices', () => {
     )
     await createHttpServices({ baseUrl: '/api/v2', timeoutMs: 500 }).questions.list(EMPTY_FILTERS)
     expect(path).toBe('/api/v2/questions')
+  })
+})
+
+describe('toGeneration', () => {
+  it('lê do job se a geração interrompida pode ser retomada', () => {
+    const interrupted = generationDto.parse({
+      question_id: 'q-1',
+      run_id: 'run-1',
+      status: 'FALHOU_VERIFICACAO',
+      completed_steps: 2,
+      failure_reason: 'A geração foi interrompida porque o servidor reiniciou.',
+      job: { state: 'INTERROMPIDO', step: 'inputs', resumable: true, updated_at: 'x' },
+    })
+    expect(toGeneration(interrupted).resumable).toBe(true)
   })
 })

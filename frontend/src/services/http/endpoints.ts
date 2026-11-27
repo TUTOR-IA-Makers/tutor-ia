@@ -11,6 +11,7 @@ export const ENDPOINTS = {
   approve: (id: string) => `/questions/${segment(id)}/approve`,
   reject: (id: string) => `/questions/${segment(id)}/reject`,
   regenerate: (id: string) => `/questions/${segment(id)}/regenerate`,
+  resume: (id: string) => `/questions/${segment(id)}/resume`,
   statement: (id: string) => `/questions/${segment(id)}/statement`,
   moodleExport: '/exports/moodle',
   session: '/session',

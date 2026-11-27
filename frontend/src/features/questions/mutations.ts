@@ -9,8 +9,10 @@ function useOnError(id?: string) {
   const client = useQueryClient()
   const toast = useToast()
   return (error: unknown) => {
-    if (id && isHttpStatus(error, 409))
-      void client.invalidateQueries({ queryKey: questionKeys.detail(id) })
+    if (isHttpStatus(error, 409)) {
+      if (id) void client.invalidateQueries({ queryKey: questionKeys.detail(id) })
+      void client.invalidateQueries({ queryKey: questionKeys.lists() })
+    }
     const { title, message } = describeError(error)
     toast.show({ tone: 'danger', title, description: message })
   }
@@ -73,6 +75,26 @@ export function useRegenerateQuestion(id: string) {
       await client.invalidateQueries({ queryKey: questionKeys.detail(id) })
       void client.invalidateQueries({ queryKey: questionKeys.lists() })
       toast.show({ tone: 'info', title: 'Gerando a questão de novo' })
+    },
+    onError: useOnError(id),
+  })
+}
+
+export function useResumeGeneration(id: string) {
+  const { questions } = useServices()
+  const client = useQueryClient()
+  const toast = useToast()
+  return useMutation({
+    mutationFn: () => questions.resume(id),
+    onSuccess: async (generation) => {
+      client.setQueryData(questionKeys.generation(id), generation)
+      await client.invalidateQueries({ queryKey: questionKeys.detail(id) })
+      void client.invalidateQueries({ queryKey: questionKeys.lists() })
+      toast.show({
+        tone: 'info',
+        title: 'Geração retomada',
+        description: 'Ela continua da etapa em que parou.',
+      })
     },
     onError: useOnError(id),
   })
