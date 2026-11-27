@@ -128,6 +128,13 @@ class TestStructures:
         )
         assert constraints.can_has_repetition is True
 
+    def test_forbidding_one_function_structure_forbids_the_group(self) -> None:
+        # The prompt says "NÃO deve usar funções"; recursion must not slip through.
+        constraints = to_constraints(_draft(structures=_rules(forbidden=["funcao"])))
+        assert constraints.can_has_function is False
+        assert CStructure.RECURSION in constraints.forbidden
+        assert CStructure.PASS_BY_REFERENCE in constraints.forbidden
+
     def test_structures_without_a_flag_are_kept_but_leave_the_prompt_alone(self) -> None:
         # Before G2-1 these were dropped on the way to the pipeline. Now they are
         # stored for the scope check; the prompt still speaks only in flags.

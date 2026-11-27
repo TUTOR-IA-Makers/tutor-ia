@@ -43,7 +43,10 @@ Three facts constrained the choice:
 3. **A flag group the request does not mention gets its old default**: `if`
    and `else` allowed; loops, functions and arrays forbidden. The prompt has
    always asked for these defaults, so storing them keeps "what was asked" and
-   "what will be verified" the same.
+   "what will be verified" the same. For the same reason, **a group mentioned
+   only in `forbidden` is forbidden whole**: `forbidden: ["for"]` turns the
+   flag off, the prompt says "NÃO deve usar estruturas de repetição", so
+   `while` and `do-while` are stored as forbidden too.
 4. **The five booleans are still accepted** on input (requests, `meta.json`,
    the jsonb column) and translated: `true` adds the group to `allowed`, `false`
    to `forbidden`. They can be mixed with the lists; a contradiction is a 422.

@@ -160,8 +160,9 @@ class Constraints(BaseModel):
     solution's AST. `required` must appear, `forbidden` must not, `allowed` may.
 
     After validation every flag group is mentioned in some list: a group the
-    request left out gets its old default. That keeps what is stored equal to
-    what the prompt asked for.
+    request left out gets its old default, and a group with only forbidden
+    structures is forbidden whole. That keeps what is stored equal to what the
+    prompt asked for.
     """
 
     required: list[CStructure] = Field(default_factory=list)
@@ -198,6 +199,12 @@ class Constraints(BaseModel):
         for flag, group in FLAG_GROUPS.items():
             if not group & mentioned:
                 (allowed if FLAG_DEFAULTS[flag] else forbidden).update(group)
+            elif not group & (required | allowed):
+                # Only prohibitions in this group, so its flag is off and the
+                # prompt forbids the whole group. Store the unnamed siblings as
+                # forbidden too, or the scope check would accept a `while` the
+                # prompt told the model not to write because only `for` was named.
+                forbidden.update(group)
         self.required = _in_vocabulary_order(required)
         # Required already permits; listing it twice would only invite drift.
         self.allowed = _in_vocabulary_order(allowed - required)

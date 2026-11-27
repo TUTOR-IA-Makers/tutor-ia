@@ -98,7 +98,7 @@ Sempre responde `200`: ele informa o problema de configuração, não falha por 
 
 Os ids são os de [`GET /api/v1/structures`](#catalogo-de-estruturas-para-o-formulario) (`CStructure`, o vocabulário da [taxonomia](../product/taxonomy.md#vocabulario-fechado-de-estruturas-c)). Id desconhecido, ou o mesmo id em `forbidden` e em outra lista, é `422`.
 
-`{}` é um pedido válido. As listas guardadas em `meta.json` saem **normalizadas**: sem repetição, na ordem do vocabulário, e cada um dos cinco grupos abaixo que o pedido não citou recebe o seu padrão. Por isso `{}` guarda `if` e `else` em `allowed` e laços, funções, vetores e matrizes em `forbidden`: é o que o prompt pede ao modelo.
+`{}` é um pedido válido. As listas guardadas em `meta.json` saem **normalizadas**: sem repetição, na ordem do vocabulário, cada um dos cinco grupos abaixo que o pedido não citou recebe o seu padrão, e um grupo citado só com estruturas proibidas fica proibido inteiro (`forbidden: ["for"]` guarda também `while` e `do-while`, porque o prompt proíbe a repetição toda). Por isso `{}` guarda `if` e `else` em `allowed` e laços, funções, vetores e matrizes em `forbidden`: é o que o prompt pede ao modelo.
 
 | Grupo | Estruturas | Padrão |
 | --- | --- | --- |

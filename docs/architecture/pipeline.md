@@ -41,7 +41,7 @@ Cria a execução (a resposta traz o `run_id`) e gera o enunciado. As restriçõ
 | `can_has_matrix` (`vetor`, `matriz`) | `DEVE` / `NÃO deve usar vetores ou matrizes` |
 | `difficulty` | `A questão deve ser de nivel …` (conjunto fechado; valor fora dele é `422`) |
 
-Note que uma estrutura só **permitida** já vira `DEVE` no prompt. Estruturas fora dos cinco grupos (`goto`, `struct`…) ficam guardadas em `meta.json` e não aparecem no prompt — um prompt que cite cada lista é mudança em `prompts.py`, ainda não feita ([ADR-0020](../adr/0020-named-structure-constraints.md)).
+Note que uma estrutura só **permitida** já vira `DEVE` no prompt. No sentido oposto, um grupo citado só em `forbidden` é guardado proibido inteiro, porque é isso que a linha `NÃO deve usar …` pede. Estruturas fora dos cinco grupos (`goto`, `struct`…) ficam guardadas em `meta.json` e não aparecem no prompt — um prompt que cite cada lista é mudança em `prompts.py`, ainda não feita ([ADR-0020](../adr/0020-named-structure-constraints.md)).
 
 O prompt pede blocos `[Título]`, `[Descrição]`, `[Entradas]`, `[Saídas]`, sem exemplos, sem markdown e sem acentos (o texto acaba em arquivos lidos por código C). `parse_statement` abre um bloco a cada linha `[…]`; o título é a primeira linha não vazia.
 

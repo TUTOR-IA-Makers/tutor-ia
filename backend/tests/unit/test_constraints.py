@@ -61,6 +61,19 @@ class TestDefaults:
         assert CStructure.FOR not in constraints.forbidden
         assert constraints.can_has_repetition is True
 
+    def test_forbidding_part_of_a_group_forbids_the_unnamed_rest(self) -> None:
+        # The prompt says "NÃO deve usar estruturas de repetição" for this request,
+        # so `while` and `do-while` must be stored as forbidden too.
+        constraints = Constraints(forbidden=[CStructure.FOR])
+        assert constraints.can_has_repetition is False
+        assert FLAG_GROUPS["can_has_repetition"] <= set(constraints.forbidden)
+
+    def test_a_partial_prohibition_leaves_named_siblings_alone(self) -> None:
+        # A sibling that is required or allowed turns the flag on: nothing to fill.
+        constraints = Constraints(required=[CStructure.FOR], forbidden=[CStructure.WHILE])
+        assert constraints.forbidden.count(CStructure.DO_WHILE) == 0
+        assert CStructure.DO_WHILE not in constraints.allowed
+
 
 class TestLists:
     def test_same_structure_forbidden_and_required_is_rejected(self) -> None:
