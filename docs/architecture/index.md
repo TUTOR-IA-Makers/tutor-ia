@@ -133,7 +133,7 @@ var/runs/20260918T221305Z-1a2b3c4d/
 {
   "run_id": "20260918T221305Z-1a2b3c4d",
   "created_at": "2026-09-18T22:13:05.412Z",
-  "constraints": { "can_has_if": true, "difficulty": "facil", "...": "..." },
+  "constraints": { "required": [], "allowed": ["if", "else", "for", "while", "do-while"], "forbidden": ["vetor", "matriz", "..."], "difficulty": "facil", "axis": null },
   "input_quantity": 5,
   "steps": [
     { "step": "statement", "prompt_version": "2026-09-18.1", "model": "gpt-4o-mini", "finished_at": "..." },

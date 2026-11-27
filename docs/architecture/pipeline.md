@@ -29,19 +29,19 @@ flowchart TD
 
 ## 1 · Enunciado
 
-Cria a execução (a resposta traz o `run_id`) e gera o enunciado. As restrições viram linhas de requisito no prompt, em `describe_constraints()`:
+Cria a execução (a resposta traz o `run_id`) e gera o enunciado. As restrições são três listas de estruturas (`required`, `allowed`, `forbidden`, ver [API](../reference/api.md#post-gen_statement)), mas o prompt ainda fala em cinco grupos. `Constraints` (`domain.py`) deriva de cada grupo uma flag — ligada se alguma estrutura do grupo for pedida ou permitida — e `describe_constraints()` transforma as flags em linhas de requisito:
 
-| Campo | Linha no prompt |
+| Flag (grupo) | Linha no prompt |
 | --- | --- |
-| `can_has_if: false` | `NÃO deve usar estruturas condicionais (if)` |
-| `can_has_if: true`, `can_has_else: false` | `DEVE usar if mas NÃO deve usar else` |
-| `can_has_if: true`, `can_has_else: true` | `DEVE usar estruturas condicionais completas (if e else)` |
-| `can_has_repetition` | `DEVE` / `NÃO deve usar estruturas de repetição` |
-| `can_has_function` | `DEVE` / `NÃO deve usar funções` |
-| `can_has_matrix` | `DEVE` / `NÃO deve usar vetores ou matrizes` |
+| `can_has_if` desligada (`if`) | `NÃO deve usar estruturas condicionais (if)` |
+| `can_has_if` ligada, `can_has_else` desligada (`else`) | `DEVE usar if mas NÃO deve usar else` |
+| `can_has_if` e `can_has_else` ligadas | `DEVE usar estruturas condicionais completas (if e else)` |
+| `can_has_repetition` (`for`, `while`, `do-while`) | `DEVE` / `NÃO deve usar estruturas de repetição` |
+| `can_has_function` (`funcao`, `recursao`, `passagem por referencia`) | `DEVE` / `NÃO deve usar funções` |
+| `can_has_matrix` (`vetor`, `matriz`) | `DEVE` / `NÃO deve usar vetores ou matrizes` |
 | `difficulty` | `A questão deve ser de nivel …` (conjunto fechado; valor fora dele é `422`) |
 
-Note que `true` **exige** a estrutura, não só permite.
+Note que uma estrutura só **permitida** já vira `DEVE` no prompt. No sentido oposto, um grupo citado só em `forbidden` é guardado proibido inteiro, porque é isso que a linha `NÃO deve usar …` pede. Estruturas fora dos cinco grupos (`goto`, `struct`…) ficam guardadas em `meta.json` e não aparecem no prompt — um prompt que cite cada lista é mudança em `prompts.py`, ainda não feita ([ADR-0020](../adr/0020-named-structure-constraints.md)).
 
 O prompt pede blocos `[Título]`, `[Descrição]`, `[Entradas]`, `[Saídas]`, sem exemplos, sem markdown e sem acentos (o texto acaba em arquivos lidos por código C). `parse_statement` abre um bloco a cada linha `[…]`; o título é a primeira linha não vazia.
 

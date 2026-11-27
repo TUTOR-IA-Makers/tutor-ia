@@ -9,7 +9,8 @@ from codeexpert.api.drafts import (
     difficulty_from_rating,
     to_constraints,
 )
-from codeexpert.domain import Constraints, ContentAxis, Difficulty
+from codeexpert.domain import Constraints, ContentAxis, CStructure, Difficulty
+from codeexpert.generation.prompts import build_statement_prompt
 
 
 def _draft(**overrides: object) -> QuestionDraft:
@@ -127,12 +128,31 @@ class TestStructures:
         )
         assert constraints.can_has_repetition is True
 
-    def test_structures_without_a_flag_change_nothing(self) -> None:
+    def test_forbidding_one_function_structure_forbids_the_group(self) -> None:
+        # The prompt says "NÃO deve usar funções"; recursion must not slip through.
+        constraints = to_constraints(_draft(structures=_rules(forbidden=["funcao"])))
+        assert constraints.can_has_function is False
+        assert CStructure.RECURSION in constraints.forbidden
+        assert CStructure.PASS_BY_REFERENCE in constraints.forbidden
+
+    def test_structures_without_a_flag_are_kept_but_leave_the_prompt_alone(self) -> None:
+        # Before G2-1 these were dropped on the way to the pipeline. Now they are
+        # stored for the scope check; the prompt still speaks only in flags.
         plain = to_constraints(_draft(structures=_rules()))
         with_struct = to_constraints(
             _draft(structures=_rules(required=["struct"], forbidden=["goto"]))
         )
-        assert with_struct == plain
+        assert CStructure.STRUCT in with_struct.required
+        assert CStructure.GOTO in with_struct.forbidden
+        assert build_statement_prompt(with_struct) == build_statement_prompt(plain)
+
+    def test_the_lists_reach_the_constraints(self) -> None:
+        constraints = to_constraints(
+            _draft(structures=_rules(required=["while"], allowed=["vetor"], forbidden=["goto"]))
+        )
+        assert constraints.required == [CStructure.WHILE]
+        assert CStructure.ARRAY_1D in constraints.allowed
+        assert CStructure.GOTO in constraints.forbidden
 
     def test_same_structure_forbidden_and_required_is_rejected(self) -> None:
         with pytest.raises(ValidationError, match="forbidden and also"):

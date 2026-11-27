@@ -59,13 +59,13 @@ Todos <span class="ce-badge ce-status--planned">Planejados</span>, menos o G1-5,
 
 | Hoje | Mudança planejada | Estado esperado |
 | --- | --- | --- |
-| Cinco booleanos (`can_has_if`…). O prompt pede ao modelo que respeite; **nada verifica** | **G2-1** listas nomeadas `permitidas`, `proibidas`, `obrigatorias`, com vocabulário compartilhado com a taxonomia (S3) | Restrições expressivas e verificáveis por AST; os booleanos continuam aceitos ou a quebra é documentada |
+| Cinco booleanos (`can_has_if`…). O prompt pede ao modelo que respeite; **nada verifica** | **G2-1** listas nomeadas `permitidas`, `proibidas`, `obrigatorias`, com vocabulário compartilhado com a taxonomia (S3) <span class="ce-badge ce-status--done">Implementado</span> como `required`/`allowed`/`forbidden` ([ADR-0020](../adr/0020-named-structure-constraints.md)) | Restrições expressivas e verificáveis por AST; os booleanos continuam aceitos ou a quebra é documentada |
 | — | **G2-2** etapa nova entre `gen_code` e `gen_inputs`: `tree-sitter-c` detecta as estruturas usadas em `solution.c` (S3) | Veredito (detectado × pedido) persistido e exposto. Zero falsos positivos com `for` em comentário, string ou identificador |
 | — | **G2-3** violação dispara nova geração, até N vezes (padrão 2) (S3) | Esgotadas as tentativas: estado `FALHOU_VERIFICACAO`, nunca `GERADA` |
 | Entradas são strings; a categoria pedida no prompt é descartada | **G2-5** `gen_inputs` devolve `{entrada, categoria}` (S2, P1) | Categoria alimenta o G1-4 |
 | Sem tokens nem custo | **G2-4** `usage` por etapa, custo em reais, `GET /metrics` (P1, sem sprint) | Custo médio por questão gerada e por aprovada |
 
-Todos <span class="ce-badge ce-status--planned">Planejados</span>. Plano B do G2-3, se o G2-2 estourar: em vez de regerar, mostrar a violação na tela de revisão.
+Todos <span class="ce-badge ce-status--planned">Planejados</span>, menos o G2-1. Plano B do G2-3, se o G2-2 estourar: em vez de regerar, mostrar a violação na tela de revisão.
 
 ### Revisão e aprovação humana {#revisao-e-aprovacao}
 

@@ -5,14 +5,19 @@ three lists of structures (`frontend/src/services/http/mappers.ts`, `fromDraft`)
 — while the pipeline takes `Constraints`. The translation is a pure function so
 it can be tested without a server, and so the rules live in one place.
 
-The mapping is lossy: ten contents become four axes, a rating range becomes one
-level, and most structures have no flag. That is why the route also stores the
-draft itself.
+The mapping is lossy: ten contents become four axes and a rating range becomes
+one level. That is why the route also stores the draft itself.
 """
 
 from pydantic import BaseModel, Field, model_validator
 
-from codeexpert.domain import Constraints, ContentAxis, CStructure, Difficulty
+from codeexpert.domain import (
+    Constraints,
+    ContentAxis,
+    CStructure,
+    Difficulty,
+    check_exclusive,
+)
 
 RATING_MIN = 500
 RATING_MAX = 3500
@@ -41,19 +46,6 @@ DIFFICULTY_BANDS: list[tuple[int, Difficulty]] = [
     (RATING_MAX, Difficulty.MUITO_DIFICIL),
 ]
 
-# Each `Constraints` flag and the structures it stands for. The prompt can only
-# say "use" or "do not use" per flag, so a flag covers a group.
-FLAG_GROUPS: dict[str, frozenset[CStructure]] = {
-    "can_has_if": frozenset({CStructure.IF}),
-    "can_has_else": frozenset({CStructure.ELSE}),
-    "can_has_repetition": frozenset({CStructure.FOR, CStructure.WHILE, CStructure.DO_WHILE}),
-    "can_has_function": frozenset(
-        {CStructure.FUNCTION, CStructure.RECURSION, CStructure.PASS_BY_REFERENCE}
-    ),
-    # The prompt line for this flag reads "vetores ou matrizes".
-    "can_has_matrix": frozenset({CStructure.ARRAY_1D, CStructure.ARRAY_2D}),
-}
-
 
 class StructureRules(BaseModel):
     required: list[CStructure] = Field(default_factory=list)
@@ -62,12 +54,7 @@ class StructureRules(BaseModel):
 
     @model_validator(mode="after")
     def _forbidden_is_exclusive(self) -> "StructureRules":
-        clash = set(self.forbidden) & (set(self.required) | set(self.allowed))
-        if clash:
-            names = ", ".join(sorted(clash))
-            raise ValueError(
-                f"A structure cannot be forbidden and also required or allowed: {names}."
-            )
+        check_exclusive(self.required, self.allowed, self.forbidden)
         return self
 
 
@@ -97,25 +84,18 @@ def difficulty_from_rating(rating: int) -> Difficulty:
 
 
 def to_constraints(draft: QuestionDraft) -> Constraints:
-    """Translate the form into what the statement prompt is built from.
+    """Translate the form into what the pipeline runs with.
 
-    Within a group, asking for or allowing any structure turns the flag on, even
-    if another one of the group is forbidden: the solution must be able to use
-    what was asked for. Only then does a prohibition turn it off. A group the
-    teacher did not mention keeps the `Constraints` default.
+    The three lists pass through unchanged; `Constraints` fills in the groups the
+    teacher did not mention (see its docstring).
 
     Difficulty takes the band of `difficulty_max`. Provisional: requiring
     `min == max` would reject the form's own default range. See issue #38.
     """
-    wanted = set(draft.structures.required) | set(draft.structures.allowed)
-    forbidden = set(draft.structures.forbidden)
-    fields: dict[str, object] = {
-        "difficulty": difficulty_from_rating(draft.difficulty_max),
-        "axis": CONTENT_AXIS[draft.content_id],
-    }
-    for flag, group in FLAG_GROUPS.items():
-        if group & wanted:
-            fields[flag] = True
-        elif group & forbidden:
-            fields[flag] = False
-    return Constraints.model_validate(fields)
+    return Constraints(
+        required=draft.structures.required,
+        allowed=draft.structures.allowed,
+        forbidden=draft.structures.forbidden,
+        difficulty=difficulty_from_rating(draft.difficulty_max),
+        axis=CONTENT_AXIS[draft.content_id],
+    )

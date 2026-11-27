@@ -53,7 +53,7 @@ ls var/runs/ | tail -3                     # execuções mais recentes
 | A solução usa estrutura proibida | Nada verifica as restrições (G2, planejado) | Regere, ou edite a solução e rode `/gen_testcases` |
 | Nenhuma submissão passa no Moodle, nem a resposta | Solução não determinística (`rand()`, `time(NULL)`) ou saídas vazias | Procure `rand(`, `srand(` ou `time(NULL)` em `solution.c`; descarte ou reescreva |
 | Enunciado com título estranho | O modelo ignorou o formato em blocos | Edite `statement.json` ou regere |
-| A dificuldade parece ignorada | `difficulty` só acrescenta uma linha ao prompt | Combine restrições (`can_has_function` + `can_has_matrix`) para exercícios mais difíceis |
+| A dificuldade parece ignorada | `difficulty` só acrescenta uma linha ao prompt | Combine restrições (`funcao` e `vetor` em `required` ou `allowed`) para exercícios mais difíceis |
 | Enunciado e solução falam de coisas diferentes | Um arquivo intermediário foi editado e as etapas seguintes não foram refeitas | Refaça as etapas a partir da editada |
 
 ## Moodle

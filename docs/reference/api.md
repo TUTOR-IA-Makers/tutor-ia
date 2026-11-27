@@ -89,16 +89,29 @@ Sempre responde `200`: ele informa o problema de configuração, não falha por 
 
 | Campo | Tipo | Padrão | Efeito |
 | --- | --- | --- | --- |
-| `can_has_if` | `bool` | `true` | `false` proíbe condicionais |
-| `can_has_else` | `bool` | `true` | Só vale com `can_has_if: true`; `false` pede `if` sem `else` |
-| `can_has_repetition` | `bool` | `false` | `true` **exige** `for`, `while` ou `do while` |
-| `can_has_function` | `bool` | `false` | `true` **exige** funções |
-| `can_has_matrix` | `bool` | `false` | `true` **exige** vetores ou matrizes |
+| `required` | lista de ids | `[]` | Estruturas que a solução **deve** usar |
+| `allowed` | lista de ids | `[]` | Estruturas que a solução **pode** usar |
+| `forbidden` | lista de ids | `[]` | Estruturas que a solução **não pode** usar |
 | `difficulty` | enum | `"muito facil"` | `muito facil`, `facil`, `medio`, `dificil`, `muito dificil` |
 | `axis` | enum ou `null` | `null` | Classificação opcional: `fundamentos`, `controle de fluxo`, `estruturas de dados e ponteiros`, `modularizacao`. É armazenada; não altera o prompt |
 | `run_id` | `string?` | `null` | Reusa uma execução existente e sobrescreve o enunciado dela |
 
-`{}` é um pedido válido. As restrições são **pedidas** ao modelo, não verificadas.
+Os ids são os de [`GET /api/v1/structures`](#catalogo-de-estruturas-para-o-formulario) (`CStructure`, o vocabulário da [taxonomia](../product/taxonomy.md#vocabulario-fechado-de-estruturas-c)). Id desconhecido, ou o mesmo id em `forbidden` e em outra lista, é `422`.
+
+`{}` é um pedido válido. As listas guardadas em `meta.json` saem **normalizadas**: sem repetição, na ordem do vocabulário, cada um dos cinco grupos abaixo que o pedido não citou recebe o seu padrão, e um grupo citado só com estruturas proibidas fica proibido inteiro (`forbidden: ["for"]` guarda também `while` e `do-while`, porque o prompt proíbe a repetição toda). Por isso `{}` guarda `if` e `else` em `allowed` e laços, funções, vetores e matrizes em `forbidden`: é o que o prompt pede ao modelo.
+
+| Grupo | Estruturas | Padrão |
+| --- | --- | --- |
+| condicional | `if` | permitido |
+| senão | `else` | permitido |
+| repetição | `for`, `while`, `do-while` | proibido |
+| funções | `funcao`, `recursao`, `passagem por referencia` | proibido |
+| vetores ou matrizes | `vetor`, `matriz` | proibido |
+
+O prompt ainda fala por grupo: pedir ou permitir qualquer estrutura do grupo vira `DEVE usar …`; um grupo só com proibidas vira `NÃO deve usar …` (ver [Pipeline](../architecture/pipeline.md#1-enunciado)). As demais estruturas (`goto`, `struct`, `ponteiro`…) são guardadas, mas **ainda não chegam ao prompt**. As restrições são **pedidas** ao modelo, não verificadas — a verificação por AST é o G2-2, <span class="ce-badge ce-status--planned">Planejado</span>.
+
+!!! info "Os cinco booleanos antigos continuam aceitos"
+    `can_has_if`, `can_has_else`, `can_has_repetition`, `can_has_function` e `can_has_matrix` ainda são aceitos aqui e em `statement_request` de `/create_question`, e execuções antigas com eles em `meta.json` continuam abrindo. Cada um é traduzido para o seu grupo: `true` → `allowed`, `false` → `forbidden`. Podem vir junto com as listas; contradição é `422`. Não aparecem no OpenAPI. Ver [ADR-0020](../adr/0020-named-structure-constraints.md).
 
 ```json title="200"
 { "run_id": "20260918T221305Z-1a2b3c4d", "name": "Soma de dois numeros", "statement": "Soma de dois numeros\n\nLeia dois..." }
@@ -291,10 +304,10 @@ O corpo é validado e traduzido em restrições (`api/drafts.py`) antes de qualq
 | `content_id` | Um dos dez conteúdos do formulário (`frontend/src/domain/contents.ts`) | `axis`: `entrada-saida` → fundamentos; `condicionais`, `repeticao` → controle de fluxo; `vetores`, `matrizes`, `strings`, `ponteiros`, `structs` → estruturas de dados e ponteiros; `funcoes`, `recursao` → modularização |
 | `difficulty_min`, `difficulty_max` | Inteiros de 500 a 3500, `min ≤ max` | `difficulty`: a faixa de `difficulty_max` (até 950 muito fácil, 1350 fácil, 1850 médio, 2350 difícil, acima disso muito difícil) |
 | `test_case_count` | 1 a 20 | Número de entradas pedidas ao modelo |
-| `structures` | Ids de `GET /api/v1/structures`; um id não pode estar em `forbidden` e em outra lista | Flags de `/gen_statement`, por grupo: `if`; `else`; `for`/`while`/`do-while` → repetição; `funcao`/`recursao`/`passagem por referencia` → funções; `vetor`/`matriz` → vetores ou matrizes. Pedir ou permitir qualquer estrutura do grupo liga a flag; senão, proibir alguma desliga; grupo não citado fica no padrão |
+| `structures` | Ids de `GET /api/v1/structures`; um id não pode estar em `forbidden` e em outra lista | As mesmas três listas de [`/gen_statement`](#post-gen_statement), sem perda, com os grupos não citados no padrão |
 | `test_case_hints` (até 1000), `context` (até 300) | Opcionais | Guardados em `draft.json`. **Ainda não chegam ao prompt** |
 
-Estruturas sem flag (`switch`, `struct`, `ponteiro`…) também são guardadas e não chegam ao prompt. Usar a faixa de `difficulty_max` é provisório, à espera da decisão da equipe (#38).
+Estruturas fora dos cinco grupos (`switch`, `struct`, `ponteiro`…) chegam às restrições da execução, mas não ao prompt. Usar a faixa de `difficulty_max` é provisório, à espera da decisão da equipe (#38).
 
 Erros: `422` (corpo inválido; `detail` é uma lista). Nada é criado nesse caso. Uma falha **durante** a geração não volta nesta resposta: aparece em `/generation`.
 
