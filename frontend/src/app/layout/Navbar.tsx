@@ -11,7 +11,7 @@ export function Navbar() {
       <div className={styles.bar}>
         <Link to="/biblioteca" className={styles.brand}>
           <img src={logo} alt="" width={38} height={24} className={styles.logo} />
-          <span>CodeExpert</span>
+          <span>Milani</span>
         </Link>
         <nav aria-label="Principal" className={styles.nav}>
           <ul className={styles.list}>

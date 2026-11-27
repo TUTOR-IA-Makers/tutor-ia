@@ -13,7 +13,7 @@ const QUESTIONS = [
   },
   {
     id: 'substitui-moodle',
-    question: 'O CodeExpert substitui o Moodle?',
+    question: 'O Milani substitui o Moodle?',
     answer:
       'Não. Ele prepara as questões e entrega um arquivo para importar no Moodle. Turmas, questionários, correção e notas continuam no Moodle.',
   },
@@ -33,13 +33,13 @@ const QUESTIONS = [
     id: 'exportacao',
     question: 'Como funciona a exportação?',
     answer:
-      'O CodeExpert gera um arquivo XML no formato Moodle XML com perguntas do tipo CodeRunner. No curso, você abre o Banco de questões, escolhe Importar e envia o arquivo. O curso precisa ter o plugin CodeRunner instalado.',
+      'O Milani gera um arquivo XML no formato Moodle XML com perguntas do tipo CodeRunner. No curso, você abre o Banco de questões, escolhe Importar e envia o arquivo. O curso precisa ter o plugin CodeRunner instalado.',
   },
   {
     id: 'correcao',
-    question: 'O CodeExpert corrige respostas dos alunos?',
+    question: 'O Milani corrige respostas dos alunos?',
     answer:
-      'Não. Quem corrige o código dos alunos é o CodeRunner, dentro do Moodle, usando os casos de teste que o CodeExpert preparou. A nota é definida por você.',
+      'Não. Quem corrige o código dos alunos é o CodeRunner, dentro do Moodle, usando os casos de teste que o Milani preparou. A nota é definida por você.',
   },
   {
     id: 'acesso',

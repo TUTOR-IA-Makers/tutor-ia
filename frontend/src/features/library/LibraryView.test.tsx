@@ -107,13 +107,13 @@ describe('LibraryView', () => {
     await user.click(within(bar).getByRole('button', { name: 'Exportar XML' }))
     const dialog = screen.getByRole('dialog', { name: 'Exportar questões' })
     expect(within(dialog).getByText('Maior de três números')).toBeInTheDocument()
-    expect(within(dialog).getByText('questoes_codeexpert.xml')).toBeInTheDocument()
+    expect(within(dialog).getByText('questoes_milani.xml')).toBeInTheDocument()
 
     await user.click(within(dialog).getByRole('button', { name: 'Baixar XML' }))
     await waitFor(() => {
       expect(save).toHaveBeenCalledOnce()
     })
-    expect(save.mock.calls[0]?.[0].filename).toBe('questoes_codeexpert.xml')
+    expect(save.mock.calls[0]?.[0].filename).toBe('questoes_milani.xml')
     expect(within(dialog).getByText('XML exportado')).toBeInTheDocument()
 
     await user.click(within(dialog).getByRole('button', { name: 'Voltar à biblioteca' }))

@@ -20,7 +20,7 @@ export function ClosingCall() {
         </div>
         <div className={styles.actions}>
           <ExternalButtonLink href={ACCESS_URL} size="lg" icon={ArrowRight} location="final">
-            Solicitar acesso ao CodeExpert
+            Solicitar acesso ao Milani
           </ExternalButtonLink>
           <a href={DOCS_URL} className={styles.link}>
             Ler a documentação

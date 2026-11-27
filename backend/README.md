@@ -1,4 +1,4 @@
-# Backend — CodeExpert API
+# Backend — Milani API
 
 FastAPI service that generates C exercises and exports them as Moodle CodeRunner
 XML. Run everything below from the repository root through `make`; the commands

@@ -1,4 +1,4 @@
-# Front-end do CodeExpert
+# Front-end do Milani
 
 SPA em React 19 + TypeScript estrito, empacotada pelo Vite. Gera arquivos estáticos que o FastAPI serve na mesma imagem e na mesma origem da API: o `backend/Dockerfile` roda o build num estágio próprio e copia só o `dist/` ([Rodar com Docker](../docs/guides/docker.md)). Não existe servidor Node em produção.
 

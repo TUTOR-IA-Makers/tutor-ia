@@ -24,7 +24,7 @@ describe('LandingPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Para professores de Algoritmos e Programação')).toBeInTheDocument()
     expect(screen.getByText(/Questões de C testadas por execução/)).toBeInTheDocument()
-    expect(document.title).toBe('CodeExpert')
+    expect(document.title).toBe('Milani')
   })
 
   it('mostra o problema, o fluxo e a prova de execução', () => {
@@ -36,14 +36,12 @@ describe('LandingPage', () => {
     ).toBeInTheDocument()
   })
 
-  it('divide o que o CodeExpert prepara do que fica com o professor', () => {
+  it('divide o que o Milani prepara do que fica com o professor', () => {
     renderInRouter(<LandingPage />)
     const scope = screen.getByRole('region', {
       name: 'Uma ferramenta para preparar suas questões. O controle continua com você.',
     })
-    expect(
-      within(scope).getByRole('heading', { level: 3, name: 'O CodeExpert prepara' }),
-    ).toBeVisible()
+    expect(within(scope).getByRole('heading', { level: 3, name: 'O Milani prepara' })).toBeVisible()
     expect(
       within(scope).getByRole('heading', { level: 3, name: 'Você mantém o controle sobre' }),
     ).toBeVisible()
@@ -82,11 +80,11 @@ describe('LandingPage', () => {
     renderInRouter(<LandingPage />)
     for (const question of [
       'Preciso saber programar em C para usar?',
-      'O CodeExpert substitui o Moodle?',
+      'O Milani substitui o Moodle?',
       'As soluções são realmente executadas?',
       'Posso revisar as questões?',
       'Como funciona a exportação?',
-      'O CodeExpert corrige respostas dos alunos?',
+      'O Milani corrige respostas dos alunos?',
       'Como solicito acesso?',
     ]) {
       expect(screen.getByText(question)).toBeInTheDocument()
@@ -106,7 +104,7 @@ describe('LandingPage', () => {
     const events = collectEvents()
     const user = userEvent.setup()
     renderInRouter(<LandingPage />)
-    const [heroCta] = screen.getAllByRole('link', { name: /Solicitar acesso ao CodeExpert/ })
+    const [heroCta] = screen.getAllByRole('link', { name: /Solicitar acesso ao Milani/ })
     if (!heroCta) throw new Error('CTA do hero não encontrado')
     await user.click(heroCta)
     await user.click(screen.getByText('Posso revisar as questões?'))

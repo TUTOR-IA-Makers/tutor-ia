@@ -40,7 +40,7 @@ export const GENERATION_STEPS = [
     headline: 'Preparando a exportação',
     description: 'Estamos montando a questão no formato do Moodle.',
     recovery:
-      'A questão foi verificada, mas o arquivo do Moodle não foi montado. Gere de novo. Se repetir, avise a equipe do CodeExpert.',
+      'A questão foi verificada, mas o arquivo do Moodle não foi montado. Gere de novo. Se repetir, avise a equipe do Milani.',
   },
 ] as const
 

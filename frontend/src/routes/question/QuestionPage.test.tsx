@@ -15,7 +15,7 @@ describe('QuestionPage', () => {
   it('mostra o acompanhamento enquanto a questão é gerada', async () => {
     renderPage('q-0143')
     expect(await screen.findByRole('heading', { name: 'Acompanhar geração' })).toBeInTheDocument()
-    expect(document.title).toBe('Acompanhar geração · CodeExpert')
+    expect(document.title).toBe('Acompanhar geração · Milani')
   })
 
   it('retoma uma geração interrompida e volta a acompanhar as etapas', async () => {
@@ -45,7 +45,7 @@ describe('QuestionPage', () => {
     expect(
       await screen.findByRole('heading', { level: 1, name: 'Ano bissexto' }),
     ).toBeInTheDocument()
-    expect(document.title).toBe('Ano bissexto · CodeExpert')
+    expect(document.title).toBe('Ano bissexto · Milani')
   })
 
   it('explica quando a questão não existe', async () => {
@@ -60,7 +60,7 @@ describe('QuestionPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByText(/Volte à biblioteca e abra a questão de novo/)).toBeInTheDocument()
     expect(document.body).not.toHaveTextContent('not found')
-    expect(document.title).toBe('Questão não encontrada · CodeExpert')
+    expect(document.title).toBe('Questão não encontrada · Milani')
     expect(screen.queryByRole('button')).toBeNull()
     expect(screen.getAllByRole('link').map((link) => link.textContent)).toEqual([
       'Voltar à biblioteca',

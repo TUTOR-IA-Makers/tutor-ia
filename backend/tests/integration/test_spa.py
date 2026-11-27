@@ -13,7 +13,7 @@ from codeexpert.api.app import create_app
 from codeexpert.errors import ConfigurationError
 from codeexpert.settings import reset_settings_cache
 
-INDEX = "<!doctype html><title>CodeExpert</title><div id=root></div>"
+INDEX = "<!doctype html><title>Milani</title><div id=root></div>"
 
 
 @pytest.fixture
@@ -88,7 +88,7 @@ def test_api_routes_still_answer_first(spa_client) -> None:
     health = spa_client.get("/health")
     assert health.status_code == 200
     assert health.json()["status"] == "ok"
-    assert spa_client.get("/openapi.json").json()["info"]["title"] == "CodeExpert"
+    assert spa_client.get("/openapi.json").json()["info"]["title"] == "Milani"
     assert spa_client.get("/docs").status_code == 200
 
 

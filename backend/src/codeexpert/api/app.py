@@ -51,9 +51,7 @@ async def _lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(
-        title="CodeExpert", version=__version__, description=DESCRIPTION, lifespan=_lifespan
-    )
+    app = FastAPI(title="Milani", version=__version__, description=DESCRIPTION, lifespan=_lifespan)
     register_error_handlers(app)
     # Per app, not per module: each test's app starts with no failed attempts.
     app.state.auth_limits = AuthLimits()

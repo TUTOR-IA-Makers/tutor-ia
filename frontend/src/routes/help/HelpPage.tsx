@@ -7,7 +7,7 @@ import { useDocumentTitle } from '@/lib/dom'
 import styles from './HelpPage.module.css'
 
 const STATUS_MEANING: Record<(typeof QUESTION_STATUSES)[number], string> = {
-  GERANDO: 'O CodeExpert está escrevendo e verificando a questão. Você pode navegar enquanto isso.',
+  GERANDO: 'O Milani está escrevendo e verificando a questão. Você pode navegar enquanto isso.',
   GERADA: 'A questão passou na verificação técnica e espera a sua revisão.',
   FALHOU_VERIFICACAO: 'A solução não respeitou o que foi pedido. Veja o motivo e gere de novo.',
   APROVADA: 'Você aprovou a questão. Ela pode ser exportada para o Moodle.',

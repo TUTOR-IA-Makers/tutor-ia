@@ -136,7 +136,7 @@ export function ScrollStory() {
         <div className={styles.stickyColumn}>
           <div className={styles.window}>
             <div className={styles.titlebar}>
-              <span className={styles.appName}>CodeExpert</span>
+              <span className={styles.appName}>Milani</span>
               <span className={styles.screen}>Exemplo · {question.title}</span>
             </div>
             <div className={styles.panel}>

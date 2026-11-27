@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-export const APP_NAME = 'CodeExpert'
+export const APP_NAME = 'Milani'
 
 export function formatTitle(page?: string): string {
   return page ? `${page} · ${APP_NAME}` : APP_NAME

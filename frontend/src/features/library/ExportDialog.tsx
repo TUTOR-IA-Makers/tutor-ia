@@ -7,7 +7,7 @@ import { MoodleImportSteps } from './MoodleImportSteps'
 import { selectionLabel } from './selectionLabel'
 import styles from './ExportDialog.module.css'
 
-export const EXPORT_FILENAME = 'questoes_codeexpert.xml'
+export const EXPORT_FILENAME = 'questoes_milani.xml'
 
 export interface ExportDialogProps {
   open: boolean

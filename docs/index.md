@@ -8,7 +8,7 @@ hide:
 
 <span class="ce-hero__eyebrow">Protótipo · EPIC-017 · Sprint 0 de 5</span>
 
-# CodeExpert
+# Milani
 
 <p class="ce-hero__sub">
 Serviço HTTP que gera exercícios de programação em C — enunciado, solução de referência e casos de teste — e exporta como XML para o Moodle CodeRunner. As saídas esperadas vêm da execução real da solução, nunca de um modelo.
@@ -22,7 +22,7 @@ Serviço HTTP que gera exercícios de programação em C — enunciado, soluçã
 
 ## O que é
 
-Hoje o CodeExpert é uma API FastAPI sem interface, sem banco de dados e sem autenticação, que roda na máquina de quem desenvolve. Um pedido descreve as restrições pedagógicas do exercício (pode usar `if`? repetição? funções? vetores? qual o nível?) e o serviço:
+Hoje o Milani é uma API FastAPI sem interface, sem banco de dados e sem autenticação, que roda na máquina de quem desenvolve. Um pedido descreve as restrições pedagógicas do exercício (pode usar `if`? repetição? funções? vetores? qual o nível?) e o serviço:
 
 1. pede a um modelo de linguagem o enunciado, a solução em C e as entradas de teste;
 2. compila a solução com `gcc` e executa com cada entrada — o `stdout` real vira a saída esperada;

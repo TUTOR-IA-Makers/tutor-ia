@@ -45,7 +45,7 @@ test('gerar, acompanhar, revisar, aprovar e exportar', async ({ page }) => {
   await expect(dialog).toBeVisible()
   const download = page.waitForEvent('download')
   await dialog.getByRole('button', { name: 'Baixar XML' }).click()
-  expect((await download).suggestedFilename()).toBe('questoes_codeexpert.xml')
+  expect((await download).suggestedFilename()).toBe('questoes_milani.xml')
   await expect(dialog.getByText('XML exportado')).toBeVisible()
   await page.keyboard.press('Escape')
   await expect(dialog).toBeHidden()

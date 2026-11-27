@@ -29,7 +29,7 @@ export function Hero() {
               icon={ArrowRight}
               location="hero"
             >
-              Solicitar acesso ao CodeExpert
+              Solicitar acesso ao Milani
             </ExternalButtonLink>
 
             <a

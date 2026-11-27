@@ -8,10 +8,10 @@ import styles from './AuthBrandPanel.module.css'
 // teal reaches only 1.94:1 against the blue.
 export function AuthBrandPanel() {
   return (
-    <aside className={styles.panel} aria-label="Sobre o CodeExpert">
+    <aside className={styles.panel} aria-label="Sobre o Milani">
       <Link to="/" className={styles.brand}>
         <img src={logoMono} alt="" width={38} height={24} className={styles.logo} />
-        <span>CodeExpert</span>
+        <span>Milani</span>
         <span className="visually-hidden">, voltar à página inicial</span>
       </Link>
 

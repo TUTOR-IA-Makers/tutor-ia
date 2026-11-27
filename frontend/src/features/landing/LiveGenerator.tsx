@@ -199,7 +199,7 @@ export function LiveGenerator() {
   return (
     <div className={styles.window}>
       <div className={styles.titlebar}>
-        <span className={styles.appName}>CodeExpert</span>
+        <span className={styles.appName}>Milani</span>
         <span className={styles.screen}>Gerar questão · demonstração</span>
       </div>
 

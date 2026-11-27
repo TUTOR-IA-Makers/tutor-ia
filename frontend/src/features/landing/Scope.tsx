@@ -30,11 +30,11 @@ export function Scope() {
         id="escopo-titulo"
         eyebrow="Escopo"
         title="Uma ferramenta para preparar suas questões. O controle continua com você."
-        lead="O CodeExpert não corrige respostas de alunos e não atribui notas: isso continua no Moodle e com você."
+        lead="O Milani não corrige respostas de alunos e não atribui notas: isso continua no Moodle e com você."
       />
       <div ref={ref} className={styles.columns}>
         <div className={cx(styles.column, styles.prepares, revealed && styles.revealed)}>
-          <h3 className={styles.columnTitle}>O CodeExpert prepara</h3>
+          <h3 className={styles.columnTitle}>O Milani prepara</h3>
           <ul className={styles.list}>
             {PREPARES.map((item) => (
               <li key={item} className={styles.item}>

@@ -488,7 +488,7 @@ A edição do enunciado na tela de revisão. O título não muda; as três parte
 
 ### `POST /api/v1/exports/moodle` {#post-api-v1-export}
 
-Um arquivo XML do Moodle CodeRunner com as questões escolhidas, na própria resposta (`Content-Type: application/xml`, `Content-Disposition: attachment; filename="questoes_codeexpert.xml"`). Nada é gravado em disco.
+Um arquivo XML do Moodle CodeRunner com as questões escolhidas, na própria resposta (`Content-Type: application/xml`, `Content-Disposition: attachment; filename="questoes_milani.xml"`). Nada é gravado em disco.
 
 ```json title="Corpo"
 { "question_ids": ["20261105T142233Z-1a2b3c4d", "20261105T150010Z-5e6f7a8b"] }

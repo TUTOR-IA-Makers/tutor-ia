@@ -138,7 +138,7 @@ describe('createMockServices', () => {
   it('exporta XML só de questões aprovadas', async () => {
     const { questions } = setup()
     const file = await questions.exportMoodleXml(['q-0138', 'q-0139'])
-    expect(file.filename).toBe('questoes_codeexpert.xml')
+    expect(file.filename).toBe('questoes_milani.xml')
     const xml = await file.blob.text()
     expect(xml).toContain('Maior de três números')
     expect(xml).toContain('Cálculo de média ponderada')

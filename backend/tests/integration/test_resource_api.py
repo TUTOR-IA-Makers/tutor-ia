@@ -411,7 +411,7 @@ class TestReviewActions:
 
         assert response.status_code == 200
         assert response.headers["content-type"].startswith("application/xml")
-        assert 'filename="questoes_codeexpert.xml"' in response.headers["content-disposition"]
+        assert 'filename="questoes_milani.xml"' in response.headers["content-disposition"]
         assert response.text.count('<question type="coderunner"') == 2
         assert "Soma de dois numeros" in response.text
 

@@ -1,6 +1,6 @@
 # Pedir acesso
 
-<p class="lead">Como um professor pede para usar o CodeExpert durante o piloto: para quem é, o que mandar e o que acontece depois. É a página para onde aponta o botão "Pedir acesso" da landing page.</p>
+<p class="lead">Como um professor pede para usar o Milani durante o piloto: para quem é, o que mandar e o que acontece depois. É a página para onde aponta o botão "Pedir acesso" da landing page.</p>
 
 <span class="ce-badge ce-status--wip">Em desenvolvimento</span> Durante o piloto, o acesso é liberado à mão pela equipe do projeto. O acesso por código de convite é a história G8-1, <span class="ce-badge ce-status--planned">Planejado</span> ([Roadmap](../product/roadmap.md)).
 
@@ -8,7 +8,7 @@
 
 Professores de Algoritmos e Programação de Computadores que usam o Aprender3 (Moodle) com o plugin CodeRunner e querem gerar questões de programação em C para as suas turmas.
 
-O CodeExpert prepara as questões. Ele não corrige o código dos alunos e não dá nota: a correção continua com o CodeRunner, dentro do Moodle.
+O Milani prepara as questões. Ele não corrige o código dos alunos e não dá nota: a correção continua com o CodeRunner, dentro do Moodle.
 
 ## Como pedir
 

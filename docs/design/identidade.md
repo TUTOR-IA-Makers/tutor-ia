@@ -1,14 +1,14 @@
 # Identidade visual e princípios de UX
 
-<p class="lead">Como o CodeExpert se apresenta para o professor: nome, logo, cores, tipografia, espaçamento, movimento e os princípios de experiência que guiam as telas. Os valores oficiais vivem em <code>frontend/src/styles/tokens.css</code>; esta página mostra e justifica esses valores. Se as duas divergirem, o arquivo de tokens vale e esta página é corrigida no mesmo PR.</p>
+<p class="lead">Como o Milani se apresenta para o professor: nome, logo, cores, tipografia, espaçamento, movimento e os princípios de experiência que guiam as telas. Os valores oficiais vivem em <code>frontend/src/styles/tokens.css</code>; esta página mostra e justifica esses valores. Se as duas divergirem, o arquivo de tokens vale e esta página é corrigida no mesmo PR.</p>
 
 <span class="ce-badge ce-status--done">Implementado</span> Tokens, fontes, logo vetorizada e as telas da seção 12, com dados simulados. A integração com a API real está <span class="ce-badge ce-status--planned">Planejada</span> ([Roadmap](../product/roadmap.md)).
 
-<div class="ce-id-hero"><div class="ce-id-hero__logo"><img src="../marca/logo.svg" alt="Logo do CodeExpert">CodeExpert</div><div><div class="ce-id-strip"><span style="background:#243C8C;flex:30"></span><span style="background:#1B2F6E;flex:8"></span><span style="background:#E8ECF7;flex:8"></span><span style="background:#1B7A70;flex:24"></span><span style="background:#12635A;flex:8"></span><span style="background:#E3F2EF;flex:8"></span><span style="background:#F5F7FA;flex:6"></span><span style="background:#14161A;flex:8"></span></div><p class="ce-id-hero__caption">Proporção aproximada de uso: azul domina a navegação, verde-azulado marca o que foi concluído, o resto é base neutra.</p></div></div>
+<div class="ce-id-hero"><div class="ce-id-hero__logo"><img src="../marca/logo.svg" alt="Logo do Milani">Milani</div><div><div class="ce-id-strip"><span style="background:#243C8C;flex:30"></span><span style="background:#1B2F6E;flex:8"></span><span style="background:#E8ECF7;flex:8"></span><span style="background:#1B7A70;flex:24"></span><span style="background:#12635A;flex:8"></span><span style="background:#E3F2EF;flex:8"></span><span style="background:#F5F7FA;flex:6"></span><span style="background:#14161A;flex:8"></span></div><p class="ce-id-hero__caption">Proporção aproximada de uso: azul domina a navegação, verde-azulado marca o que foi concluído, o resto é base neutra.</p></div></div>
 
 ## 1. Propósito e público
 
-**O produto em uma frase:** o CodeExpert gera exercícios de programação em C com enunciado, solução e casos de teste verificados por execução real, prontos para importar no Aprender3 (Moodle).
+**O produto em uma frase:** o Milani gera exercícios de programação em C com enunciado, solução e casos de teste verificados por execução real, prontos para importar no Aprender3 (Moodle).
 
 **Público principal:** professores de Algoritmos e Programação de Computadores que já usam o Aprender3 todo semestre e não querem abrir terminal.
 
@@ -36,12 +36,12 @@
 
 | Item | Valor |
 |---|---|
-| Nome oficial | **CodeExpert** |
+| Nome oficial | **Milani** |
 | Grafia correta | uma palavra, só o M maiúsculo |
 | Grafias proibidas | MILANI (fora de siglas e logos), milani em texto corrido |
 | Onde aparece | README, este site, `<title>` das páginas, logo, landing, slides de sprint |
 
-**Por que este nome:** o produto se chamava CodeExpert até novembro de 2026 e passou a se chamar CodeExpert (decisão D1). A troca também afasta a colisão com a plataforma "Code Expert" da ETH Zurich.
+**Por que este nome:** o produto se chamava CodeExpert até novembro de 2026 e passou a se chamar Milani (decisão D1). A troca também afasta a colisão com a plataforma "Code Expert" da ETH Zurich.
 
 !!! note "O nome técnico continua `codeexpert`"
     A troca valeu para tudo o que o professor lê. O pacote Python `codeexpert`, o prefixo `CODEEXPERT_` das variáveis de ambiente, o cabeçalho `X-Requested-With: codeexpert-web`, a classe `CodeExpertError` e os caminhos do deploy mantêm o nome antigo até uma issue própria fazer a troca técnica.
@@ -72,7 +72,7 @@ A logo foi vetorizada a partir da imagem de referência, com as cores exatas da 
 
 | Regra | Valor |
 |---|---|
-| Composição no cabeçalho | símbolo à esquerda + "CodeExpert" em Source Sans 3, peso 600, cor `--color-text` |
+| Composição no cabeçalho | símbolo à esquerda + "Milani" em Source Sans 3, peso 600, cor `--color-text` |
 | Área de respiro | no mínimo a altura do círculo em volta do símbolo |
 | Tamanho mínimo | 24px de altura na tela; 16px apenas para o favicon |
 | Fundos permitidos | branco, `--color-page` e, na versão monocromática branca, `--color-primary` ou `--color-footer` |
@@ -290,9 +290,9 @@ Escala de 4px. Todo espaçamento da interface usa um destes tokens. `--space-16`
 
 ### 9.1 Referência de usabilidade: Aprender3
 
-O CodeExpert reaproveita a **posição dos elementos e a forma de navegar** do Aprender3, não o visual. Objetivo: curva de aprendizado próxima de zero.
+O Milani reaproveita a **posição dos elementos e a forma de navegar** do Aprender3, não o visual. Objetivo: curva de aprendizado próxima de zero.
 
-| Padrão do Aprender3 | Equivalente no CodeExpert |
+| Padrão do Aprender3 | Equivalente no Milani |
 |---|---|
 | Navegação no topo: Página inicial, Painel, Meus cursos | Biblioteca, Gerar questão, Ajuda |
 | Avatar e nome no canto direito do topo | nome, departamento e avatar do professor, com menu da conta |
@@ -439,13 +439,13 @@ Teste com leitor de tela e com professor de fora da equipe continuam <span class
 
 ## 13. Registro de decisões
 
-??? note "D1: Nome do produto: CodeExpert"
+??? note "D1: Nome do produto: Milani"
     | Campo | Valor |
     |---|---|
     | Contexto | o critério de G5-1 exige um nome usado em todo lugar; o produto nasceu como CodeExpert, nome que colide com "Code Expert" (ETH Zurich) |
     | Alternativas | manter CodeExpert; Tutor IA |
-    | Decisão | CodeExpert, em novembro de 2026, só na marca; os identificadores técnicos mudam depois |
-    | Consequências | telas, título das abas, nome do arquivo exportado, docs e READMEs dizem CodeExpert; código e deploy ainda dizem `codeexpert` |
+    | Decisão | Milani, em novembro de 2026, só na marca; os identificadores técnicos mudam depois |
+    | Consequências | telas, título das abas, nome do arquivo exportado, docs e READMEs dizem Milani; código e deploy ainda dizem `codeexpert` |
 
 ??? note "D2: Paleta derivada da logo, próxima da UnB e do Aprender3"
     | Campo | Valor |

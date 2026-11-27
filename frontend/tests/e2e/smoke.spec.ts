@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 test('abre na landing pública com pedido de acesso e documentação', async ({ page }) => {
   await page.goto('/')
-  await expect(page).toHaveTitle('CodeExpert')
+  await expect(page).toHaveTitle('Milani')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Menos tempo criando questões. Mais tempo ensinando.',
   )
@@ -16,7 +16,7 @@ test('abre na landing pública com pedido de acesso e documentação', async ({ 
 
 test('abre na biblioteca com a navbar padrão', async ({ page }) => {
   await page.goto('/biblioteca')
-  await expect(page).toHaveTitle('Biblioteca de questões · CodeExpert')
+  await expect(page).toHaveTitle('Biblioteca de questões · Milani')
   const nav = page.getByRole('navigation', { name: 'Principal' })
   await expect(nav.getByRole('link', { name: 'Biblioteca' })).toHaveAttribute(
     'aria-current',

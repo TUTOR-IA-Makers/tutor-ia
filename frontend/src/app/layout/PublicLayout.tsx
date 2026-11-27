@@ -16,7 +16,7 @@ export function PublicLayout() {
         <div className={styles.bar}>
           <Link to="/" className={styles.brand}>
             <img src={logo} alt="" width={38} height={24} className={styles.logo} />
-            <span className={styles.brandName}>CodeExpert</span>
+            <span className={styles.brandName}>Milani</span>
           </Link>
           <nav aria-label="Seções da página" className={styles.nav}>
             <ul className={styles.list}>
@@ -54,7 +54,7 @@ export function PublicLayout() {
         <div className={styles.footerInner}>
           <p className={styles.footerBrand}>
             <img src={logoMono} alt="" width={38} height={24} className={styles.logo} />
-            <span>CodeExpert</span>
+            <span>Milani</span>
           </p>
           <ul className={styles.footerLinks}>
             <li>

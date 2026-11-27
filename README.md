@@ -1,4 +1,4 @@
-# CodeExpert
+# Milani
 
 Serviço FastAPI que gera exercícios de programação em C — enunciado, solução de
 referência, entradas e casos de teste — e exporta como XML para o Moodle

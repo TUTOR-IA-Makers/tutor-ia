@@ -192,7 +192,7 @@ describe('GenerateForm', () => {
   it.each([
     [new HttpError(429, '', 1800), 'Cota de gerações atingida', 'Tente de novo em 30 min.'],
     [new HttpError(502, ''), 'Provedor de IA indisponível', 'Tente de novo em alguns minutos.'],
-    [new HttpError(503, ''), 'Geração indisponível', 'Avise a equipe do CodeExpert.'],
+    [new HttpError(503, ''), 'Geração indisponível', 'Avise a equipe do Milani.'],
     [new HttpError(401, ''), 'Sessão expirada', 'Entre de novo para continuar.'],
   ])(
     'mostra o motivo e o próximo passo quando o servidor recusa (%s)',

@@ -56,20 +56,20 @@ const BY_STATUS: Record<number, Known> = {
   503: {
     title: 'Geração indisponível',
     reason: 'A geração de questões está desligada no servidor.',
-    next: 'A biblioteca continua funcionando. Avise a equipe do CodeExpert.',
+    next: 'A biblioteca continua funcionando. Avise a equipe do Milani.',
   },
 }
 
 const SERVER_ERROR: Known = {
   title: 'Erro no servidor',
   reason: 'O servidor teve um problema.',
-  next: 'Tente de novo em instantes. Se continuar, avise a equipe do CodeExpert.',
+  next: 'Tente de novo em instantes. Se continuar, avise a equipe do Milani.',
 }
 
 const UNKNOWN_ERROR: Known = {
   title: 'Algo deu errado',
   reason: 'A ação não foi concluída.',
-  next: 'Tente de novo. Se continuar, avise a equipe do CodeExpert.',
+  next: 'Tente de novo. Se continuar, avise a equipe do Milani.',
 }
 
 function join(reason: string, next: string): string {
@@ -115,7 +115,7 @@ export function describeError(error: unknown): ErrorDescription {
       title: 'Resposta inesperada',
       message: join(
         'O servidor respondeu em um formato que esta tela não reconhece.',
-        'Recarregue a página. Se continuar, avise a equipe do CodeExpert.',
+        'Recarregue a página. Se continuar, avise a equipe do Milani.',
       ),
       sessionExpired: false,
     }

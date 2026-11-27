@@ -27,18 +27,18 @@ describe('rotas da aplicação', () => {
     const { router } = renderRoutes(routes, '/')
     await user.click(await screen.findByRole('link', { name: 'Entrar' }))
     expect(
-      await screen.findByRole('heading', { level: 1, name: 'Entrar no CodeExpert' }),
+      await screen.findByRole('heading', { level: 1, name: 'Entrar no Milani' }),
     ).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/entrar')
   })
 
   it.each([
-    ['/entrar', 'Entrar no CodeExpert', 'Entrar'],
+    ['/entrar', 'Entrar no Milani', 'Entrar'],
     ['/criar-conta', 'Criar sua conta', 'Criar conta'],
   ])('%s abre em tela dividida, sem a navbar do app', async (path, heading, title) => {
     renderRoutes(routes, path)
     expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
-    expect(screen.getByRole('complementary', { name: 'Sobre o CodeExpert' })).toBeInTheDocument()
+    expect(screen.getByRole('complementary', { name: 'Sobre o Milani' })).toBeInTheDocument()
     expect(screen.queryByRole('navigation', { name: 'Principal' })).toBeNull()
     expect(screen.getByRole('main')).toHaveAttribute('id', MAIN_CONTENT_ID)
     await waitFor(() => {

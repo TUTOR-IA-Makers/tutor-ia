@@ -1,4 +1,4 @@
-# CodeExpert — onboarding
+# Milani — onboarding
 
 **The onboarding lives in the documentation now:
 [`docs/onboarding/index.md`](docs/onboarding/index.md)** — published at

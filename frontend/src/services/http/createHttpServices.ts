@@ -61,7 +61,7 @@ export function createHttpServices({
           await api.patch(ENDPOINTS.statement(id), questionDto, { body: fromStatement(statement) }),
         ),
       exportMoodleXml: (ids) =>
-        api.download(ENDPOINTS.moodleExport, 'questoes_codeexpert.xml', {
+        api.download(ENDPOINTS.moodleExport, 'questoes_milani.xml', {
           method: 'POST',
           body: { question_ids: ids },
         }),

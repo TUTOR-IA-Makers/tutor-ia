@@ -8,7 +8,7 @@ import { SignupForm } from './SignupForm'
 import { SocialButtons } from './SocialButtons'
 
 const TITLE: Record<AuthMode, string> = {
-  login: 'Entrar no CodeExpert',
+  login: 'Entrar no Milani',
   signup: 'Criar sua conta',
 }
 
