@@ -14,7 +14,6 @@ export function SelectionBar({ count, onExport, onClear }: SelectionBarProps) {
     <div className={styles.bar} role="region" aria-label="Questões selecionadas">
       <p className={styles.text}>
         <strong>{selectionLabel(count)}</strong>
-        <span className={styles.hint}>Prontas para o Moodle / Aprender3</span>
       </p>
       <div className={styles.actions}>
         <Button variant="ghost" onClick={onClear}>

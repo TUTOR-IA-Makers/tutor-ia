@@ -36,7 +36,6 @@ export function ExportDialog({ open, questions, onClose }: ExportDialogProps) {
       onClose={close}
       icon={Download}
       title="Exportar questões"
-      description="Baixe as questões aprovadas para importar no Moodle / Aprender3."
       footer={<Button onClick={close}>Voltar à biblioteca</Button>}
     >
       <Callout tone="info" icon={Check} title={selectionLabel(questions.length)}>

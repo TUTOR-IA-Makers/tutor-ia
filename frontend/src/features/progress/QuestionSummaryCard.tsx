@@ -1,6 +1,5 @@
 import { DescriptionList, Panel } from '@/components/ui'
 import { contentLabel, describeDifficulty, formatRating, type QuestionSummary } from '@/domain'
-import styles from './QuestionSummaryCard.module.css'
 
 export interface QuestionSummaryCardProps {
   question: QuestionSummary
@@ -8,7 +7,7 @@ export interface QuestionSummaryCardProps {
 
 export function QuestionSummaryCard({ question }: QuestionSummaryCardProps) {
   return (
-    <Panel tone="accent" title={question.title} description="Sua questão">
+    <Panel tone="accent" title={question.title}>
       <DescriptionList
         items={[
           { term: 'Conteúdo', value: contentLabel(question.contentId) },
@@ -19,9 +18,6 @@ export function QuestionSummaryCard({ question }: QuestionSummaryCardProps) {
           { term: 'Casos de teste', value: question.testCaseCount },
         ]}
       />
-      <p className={styles.note}>
-        Após a geração, você poderá revisar o enunciado, a solução e os testes.
-      </p>
     </Panel>
   )
 }

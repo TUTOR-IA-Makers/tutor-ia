@@ -95,11 +95,7 @@ export function GenerateForm({ defaultValues = DEFAULT_VALUES }: GenerateFormPro
               />
             )}
           />
-          <Field
-            label="Quantidade de casos de teste"
-            hint="Recomendado entre 4 e 8 casos para uma cobertura adequada."
-            error={errors.testCaseCount?.message}
-          >
+          <Field label="Quantidade de casos de teste" error={errors.testCaseCount?.message}>
             {(fieldProps) => (
               <Controller
                 control={control}
@@ -119,12 +115,7 @@ export function GenerateForm({ defaultValues = DEFAULT_VALUES }: GenerateFormPro
               />
             )}
           </Field>
-          <Field
-            label="Casos de teste específicos"
-            optional
-            hint='Descreva entradas ou situações que precisam aparecer, como "ano 1900" ou "vetor vazio". O texto vai junto com o pedido de geração.'
-            error={errors.testCaseHints?.message}
-          >
+          <Field label="Casos de teste específicos" optional error={errors.testCaseHints?.message}>
             {(field) => (
               <Controller
                 control={control}
@@ -141,12 +132,7 @@ export function GenerateForm({ defaultValues = DEFAULT_VALUES }: GenerateFormPro
               />
             )}
           </Field>
-          <Field
-            label="Contexto do exercício"
-            optional
-            hint="Ajuda a dar um tema ao enunciado."
-            error={errors.context?.message}
-          >
+          <Field label="Contexto do exercício" optional error={errors.context?.message}>
             {(field) => (
               <Controller
                 control={control}

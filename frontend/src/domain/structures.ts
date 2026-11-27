@@ -38,22 +38,18 @@ export interface StructureOption {
 export const STRUCTURE_GROUPS: readonly {
   kind: StructureRuleKind
   title: string
-  hint: string
 }[] = [
   {
     kind: 'required',
     title: 'Estruturas obrigatórias',
-    hint: 'Todas as selecionadas precisam aparecer na solução.',
   },
   {
     kind: 'allowed',
     title: 'Estruturas permitidas',
-    hint: 'O aluno pode usar, mas não é obrigado.',
   },
   {
     kind: 'forbidden',
     title: 'Estruturas proibidas',
-    hint: 'A solução não pode usar as estruturas selecionadas.',
   },
 ]
 

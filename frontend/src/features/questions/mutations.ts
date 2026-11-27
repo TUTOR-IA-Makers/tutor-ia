@@ -44,7 +44,6 @@ export function useApproveQuestion(id: string) {
       toast.show({
         tone: 'success',
         title: 'Questão aprovada',
-        description: 'Ela já pode ser exportada pela biblioteca.',
       })
     },
     onError: useOnError(id),
@@ -95,7 +94,6 @@ export function useResumeGeneration(id: string) {
       toast.show({
         tone: 'info',
         title: 'Geração retomada',
-        description: 'Ela continua da etapa em que parou.',
       })
     },
     onError: useOnError(id),

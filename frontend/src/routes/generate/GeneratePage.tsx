@@ -7,10 +7,7 @@ export function GeneratePage() {
   useDocumentTitle('Configurar nova questão')
   return (
     <div className={styles.page}>
-      <PageHeader
-        title="Configurar nova questão"
-        description="Escolha o conteúdo e as regras do exercício."
-      />
+      <PageHeader title="Configurar nova questão" />
       <GenerateForm />
     </div>
   )

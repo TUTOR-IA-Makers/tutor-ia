@@ -7,15 +7,9 @@ import type { AuthMode } from './messages'
 import { SignupForm } from './SignupForm'
 import { SocialButtons } from './SocialButtons'
 
-const COPY: Record<AuthMode, { title: string; lead: string }> = {
-  login: {
-    title: 'Entrar no CodeExpert',
-    lead: 'Continue de onde parou: sua biblioteca de questões está esperando.',
-  },
-  signup: {
-    title: 'Criar sua conta',
-    lead: 'O cadastro pede um código de convite enviado por quem libera o acesso.',
-  },
+const TITLE: Record<AuthMode, string> = {
+  login: 'Entrar no CodeExpert',
+  signup: 'Criar sua conta',
 }
 
 const tabClass = ({ isActive }: { isActive: boolean }) => cx(styles.tab, isActive && styles.active)
@@ -25,7 +19,7 @@ export interface AuthFormProps {
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const { title, lead } = COPY[mode]
+  const title = TITLE[mode]
 
   return (
     <div className={styles.card}>
@@ -40,10 +34,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
       {/* The key remounts the panel: switching clears the other form and replays the fade. */}
       <div key={mode} className={styles.panel}>
-        <header className={styles.heading}>
-          <h1 className={styles.title}>{title}</h1>
-          <p className={styles.lead}>{lead}</p>
-        </header>
+        <h1 className={styles.title}>{title}</h1>
 
         <SocialButtons />
 

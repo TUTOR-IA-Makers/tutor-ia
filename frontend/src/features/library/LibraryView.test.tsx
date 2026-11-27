@@ -78,7 +78,6 @@ describe('LibraryView', () => {
       '/gerar',
     )
     expect(screen.getByRole('heading', { name: 'Sua biblioteca está vazia' })).toBeInTheDocument()
-    expect(screen.getByText(/Gere a primeira questão/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Limpar filtros' })).toBeNull()
   })
 

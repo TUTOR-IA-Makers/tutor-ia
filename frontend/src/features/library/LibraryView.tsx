@@ -28,7 +28,6 @@ export function LibraryView() {
     <div className={styles.page}>
       <PageHeader
         title="Biblioteca de questões"
-        description="Organize e revise seus exercícios de programação em C."
         actions={
           <LinkButton to="/gerar" variant="primary" size="lg" icon={Plus}>
             Gerar questão
@@ -92,7 +91,6 @@ function LibraryContent({
       <EmptyState
         icon={SearchX}
         title="Nenhuma questão com esses filtros"
-        description="Tente outro termo de busca ou limpe os filtros."
         action={<Button onClick={onClearFilters}>Limpar filtros</Button>}
       />
     )
@@ -102,7 +100,6 @@ function LibraryContent({
       <EmptyState
         icon={FilePlus2}
         title="Sua biblioteca está vazia"
-        description="Gere a primeira questão. Ela aparece aqui para revisão assim que ficar pronta."
         action={
           <LinkButton to="/gerar" variant="primary" icon={Plus}>
             Gerar primeira questão

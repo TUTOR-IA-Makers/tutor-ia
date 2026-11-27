@@ -33,10 +33,7 @@ export function StructuresPanel({ options, value, onChange, error }: StructuresP
     (id) => !known.has(id),
   )
   return (
-    <Panel
-      title="Estruturas em C"
-      description="Defina o que a solução precisa usar, pode usar ou não pode usar."
-    >
+    <Panel title="Estruturas em C">
       {hasUnknown && (
         <Callout tone="danger" title="Seleções desatualizadas">
           Algumas estruturas selecionadas não existem mais no catálogo.
@@ -61,7 +58,6 @@ export function StructuresPanel({ options, value, onChange, error }: StructuresP
               <Icon icon={icon} />
               {group.title}
             </legend>
-            <p className={styles.hint}>{group.hint}</p>
             <div className={styles.chips}>
               {options.map(({ id, label }) => {
                 const blocker = blockedBy(group.kind, id, value)
@@ -84,14 +80,18 @@ export function StructuresPanel({ options, value, onChange, error }: StructuresP
           </fieldset>
         )
       })}
+      {/* A blocked chip points here, so the rule is read out even while no
+          error is on screen. */}
       <div id={ruleId}>
-        <Callout
-          tone={error ? 'danger' : 'neutral'}
-          title="Regra de consistência"
-          role={error ? 'alert' : undefined}
-        >
-          {error ?? 'Uma estrutura proibida não pode ser obrigatória nem permitida.'}
-        </Callout>
+        {error ? (
+          <Callout tone="danger" title="Regra de consistência" role="alert">
+            {error}
+          </Callout>
+        ) : (
+          <span className="visually-hidden">
+            Uma estrutura proibida não pode ser obrigatória nem permitida.
+          </span>
+        )}
       </div>
     </Panel>
   )

@@ -21,11 +21,7 @@ const valueText = (rating: number) => `${String(rating)}, ${bandOf(rating).label
 
 export function DifficultyField({ value, onChange, error }: DifficultyFieldProps) {
   return (
-    <FieldGroup
-      legend="Dificuldade"
-      hint={`Intervalo de rating no estilo Codeforces, de ${String(RATING_MIN)} a ${String(RATING_MAX)}, em passos de ${String(RATING_STEP)}.`}
-      error={error}
-    >
+    <FieldGroup legend="Dificuldade" error={error}>
       {(describedById) => (
         <div className={styles.field}>
           <p className={styles.summary} aria-live="polite">

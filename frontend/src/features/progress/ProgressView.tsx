@@ -1,10 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, Info } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import {
   DescriptionList,
   Disclosure,
-  Icon,
   LinkButton,
   LoadingState,
   PageHeader,
@@ -23,7 +22,6 @@ import styles from './ProgressView.module.css'
 const GENERATED_TOAST = {
   tone: 'success',
   title: 'Questão gerada',
-  description: 'Revise antes de aprovar.',
 } as const
 
 function failedToast(stepLabel: string, resumable: boolean) {
@@ -31,13 +29,11 @@ function failedToast(stepLabel: string, resumable: boolean) {
     return {
       tone: 'info',
       title: `A geração foi interrompida em: ${stepLabel}`,
-      description: 'Retome para continuar de onde parou.',
     } as const
   }
   return {
     tone: 'danger',
     title: `A geração parou em: ${stepLabel}`,
-    description: 'Veja o motivo e gere de novo.',
   } as const
 }
 
@@ -64,7 +60,7 @@ export function ProgressView({ question }: ProgressViewProps) {
 
   return (
     <div className={styles.page}>
-      <PageHeader title="Acompanhar geração" description="Veja o andamento da sua nova questão." />
+      <PageHeader title="Acompanhar geração" />
       {generation.isPending && <LoadingState label="Consultando o andamento" />}
       {generation.isError && (
         <RequestErrorState error={generation.error} onRetry={() => void generation.refetch()} />
@@ -96,9 +92,6 @@ export function ProgressView({ question }: ProgressViewProps) {
                   ]}
                 />
               </Disclosure>
-              <p className={styles.note}>
-                <Icon icon={Info} />A geração continua enquanto você navega.
-              </p>
             </div>
             <div className={styles.actions}>
               {stopped && resumable && <ResumeGenerationButton questionId={question.id} />}

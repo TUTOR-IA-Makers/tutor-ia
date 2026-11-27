@@ -20,11 +20,6 @@
   align-items: baseline;
 }
 
-.hint {
-  color: var(--color-accent-text);
-  font-size: var(--text-sm);
-}
-
 .actions {
   display: flex;
   flex-wrap: wrap;

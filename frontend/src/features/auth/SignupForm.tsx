@@ -7,13 +7,7 @@ import { cx } from '@/lib/cx'
 import { AuthFeedback } from './AuthFeedback'
 import styles from './AuthForm.module.css'
 import { PasswordInput } from './PasswordInput'
-import {
-  PASSWORD_MIN,
-  passwordRequirements,
-  SIGNUP_DEFAULTS,
-  signupSchema,
-  type SignupValues,
-} from './schema'
+import { passwordRequirements, SIGNUP_DEFAULTS, signupSchema, type SignupValues } from './schema'
 import { useSignup } from './useAuthSubmit'
 
 export function SignupForm() {
@@ -56,12 +50,7 @@ export function SignupForm() {
       </Field>
 
       <div className={styles.group}>
-        <Field
-          label="Senha"
-          required
-          hint={`Pelo menos ${String(PASSWORD_MIN)} caracteres, diferente do seu e-mail.`}
-          error={errors.password?.message}
-        >
+        <Field label="Senha" required error={errors.password?.message}>
           {(field) => (
             <PasswordInput {...field} {...register('password')} autoComplete="new-password" />
           )}

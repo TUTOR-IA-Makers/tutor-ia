@@ -32,10 +32,7 @@ export function HelpPage() {
   useDocumentTitle('Ajuda')
   return (
     <div className={styles.page}>
-      <PageHeader
-        title="Ajuda"
-        description="Como usar o CodeExpert, do pedido à importação no Moodle."
-      />
+      <PageHeader title="Ajuda" />
       <div className={styles.grid}>
         <Panel title="Como gerar uma questão">
           <ol className={styles.steps}>
