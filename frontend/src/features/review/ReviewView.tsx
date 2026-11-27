@@ -22,8 +22,8 @@ export function ReviewView({ question }: ReviewViewProps) {
     <div className={styles.page}>
       <PageHeader
         before={<BackLink to="/biblioteca">Voltar à biblioteca</BackLink>}
-        title="Revisar questão"
-        subtitle={question.title}
+        eyebrow="Revisar questão"
+        title={question.title}
         meta={<QuestionTags question={question} tone="primary" showCode />}
       />
       <div className={styles.layout}>

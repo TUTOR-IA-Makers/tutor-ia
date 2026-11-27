@@ -90,11 +90,16 @@ export function fromStatement(statement: Statement) {
   return statement
 }
 
+// MAX_PAGE_SIZE in backend/src/codeexpert/api/library.py.
+export const LIBRARY_PAGE_SIZE = 100
+
 export function toQuery(filters: LibraryFilters): Query {
   return {
     q: filters.search.trim(),
     content: filters.contentId,
     difficulty: filters.difficulty,
     status: filters.status,
+    // The screen has no pages yet; ask for the server's largest page.
+    page_size: LIBRARY_PAGE_SIZE,
   }
 }

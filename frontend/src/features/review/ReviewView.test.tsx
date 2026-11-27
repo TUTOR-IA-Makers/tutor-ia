@@ -25,9 +25,8 @@ function renderReview(question: Question, path = '/questoes/x', services = withQ
 describe('ReviewView', () => {
   it('abre na aba de enunciado e solução, com código em editor escuro', () => {
     renderReview(seed('q-0142'))
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Revisar questãoAno bissexto',
-    )
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^Ano bissexto$/)
+    expect(screen.getByText('Revisar questão')).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Enunciado e solução' })).toHaveAttribute(
       'aria-selected',
       'true',
@@ -101,7 +100,7 @@ describe('ReviewView', () => {
 
   it('mostra em qual etapa falhou, a causa e o que fazer, e oferece gerar de novo', async () => {
     const user = userEvent.setup()
-    const { services } = renderReview(seed('q-0141'))
+    const { services, router } = renderReview(seed('q-0141'))
     const regenerate = vi.spyOn(services.questions, 'regenerate')
     expect(screen.getByText('Buscando a etapa em que a geração parou')).toHaveAttribute(
       'role',
@@ -115,6 +114,9 @@ describe('ReviewView', () => {
     await user.click(screen.getByRole('button', { name: 'Gerar de novo' }))
     expect(regenerate).toHaveBeenCalledWith('q-0141')
     expect(await screen.findByText('Gerando a questão de novo')).toBeInTheDocument()
+    const created = (await regenerate.mock.results[0]?.value) as { id: string }
+    expect(router.state.location.pathname).toBe(`/questoes/${created.id}`)
+    expect(created.id).not.toBe('q-0141')
   })
 
   it('sem a etapa da falha, ainda avisa que a questão falhou', async () => {

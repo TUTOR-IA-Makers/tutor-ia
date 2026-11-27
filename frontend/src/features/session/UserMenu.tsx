@@ -65,7 +65,7 @@ export function UserMenu() {
       >
         <span className={styles.identity}>
           <span className={styles.name}>{teacher.name}</span>
-          <span className={styles.department}>{teacher.department}</span>
+          {teacher.department && <span className={styles.department}>{teacher.department}</span>}
         </span>
         <Avatar initials={initials(teacher.name)} />
         <Icon icon={ChevronDown} />

@@ -105,26 +105,31 @@ describe('createMockServices', () => {
     await expect(questions.reject('q-0141')).rejects.toMatchObject({ status: 409 })
   })
 
-  it('regenera uma questão que falhou', async () => {
+  it('gerar de novo cria outra questão e deixa a antiga como estava', async () => {
     const { clock, questions } = setup()
-    await questions.regenerate('q-0141')
-    const restarted = await questions.get('q-0141')
+    const { id } = await questions.regenerate('q-0141')
+    expect(id).not.toBe('q-0141')
+    expect((await questions.get('q-0141')).status).toBe('FALHOU_VERIFICACAO')
+    const restarted = await questions.get(id)
     expect(restarted.status).toBe('GERANDO')
     expect(restarted.failureReason).toBeNull()
     clock.now += 5 * STEP
-    expect((await questions.get('q-0141')).status).toBe('GERADA')
+    expect((await questions.get(id)).status).toBe('GERADA')
     await expect(questions.regenerate('q-0138')).rejects.toMatchObject({ status: 409 })
   })
 
-  it('editar o enunciado de uma aprovada devolve a questão para revisão', async () => {
+  it('edita o enunciado só enquanto a questão aguarda revisão', async () => {
     const { questions } = setup()
-    const before = await questions.get('q-0138')
-    const updated = await questions.updateStatement('q-0138', {
+    const before = await questions.get('q-0142')
+    const updated = await questions.updateStatement('q-0142', {
       ...before.statement,
       text: 'Novo texto',
     })
     expect(updated.statement.text).toBe('Novo texto')
     expect(updated.status).toBe('GERADA')
+    await expect(questions.updateStatement('q-0138', before.statement)).rejects.toMatchObject({
+      status: 409,
+    })
     await expect(questions.updateStatement('q-0143', before.statement)).rejects.toMatchObject({
       status: 409,
     })

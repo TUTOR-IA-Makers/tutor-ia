@@ -1,4 +1,5 @@
 export { RequestErrorState, SignInAgainLink } from './RequestErrorState'
+export { RequireSession } from './RequireSession'
 export type { RequestErrorStateProps } from './RequestErrorState'
 export { UserMenu } from './UserMenu'
 export { sessionKeys, useCurrentTeacher } from './useCurrentTeacher'

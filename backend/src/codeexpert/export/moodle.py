@@ -68,29 +68,15 @@ def _build_testcases_xml(testcases: list[TestCase], template: str) -> str:
     return "\n".join(parts)
 
 
-def export_question(workspace: RunWorkspace, output_dir: Path | None = None) -> ExportResult:
-    """Append this run's question to the questionnaire file.
-
-    Successive exports accumulate into one file, which is how a whole quiz gets
-    built. The question number is derived from what the file already contains
-    rather than fixed at 1.
-    """
+def _question_xml(workspace: RunWorkspace, question_number: int) -> str:
     statement = Statement.model_validate(workspace.read_json(STATEMENT))
     code = workspace.read_text(SOLUTION)
     testcases = [
         TestCase.model_validate(item) for item in workspace.read_json(TESTCASES)["testcases"]
     ]
     metadata = workspace.read_metadata()
-
-    directory = output_dir or get_settings().questions_dir
-    directory.mkdir(parents=True, exist_ok=True)
-    output_file = directory / OUTPUT_FILENAME
-
-    existing = output_file.read_text(encoding="utf-8") if output_file.exists() else ""
-    question_number = len(_QUESTION_MARKER.findall(existing)) + 1
-
     statement_html = escape(statement.statement).replace("\n", "<br>")
-    question_xml = (
+    return (
         _template("question.xml")
         .replace("Macro_QuestionNumber", str(question_number))
         .replace("Macro_QuestionName", escape(statement.name))
@@ -101,6 +87,35 @@ def export_question(workspace: RunWorkspace, output_dir: Path | None = None) -> 
         .replace("Macro_TestCases", _build_testcases_xml(testcases, _template("case.xml")))
         .replace("Macro_Tags", _build_tags(metadata))
     )
+
+
+def build_questionnaire(workspaces: list[RunWorkspace]) -> str:
+    """One questionnaire with these questions, in order, written nowhere.
+
+    What `POST /api/v1/exports/moodle` sends back for download. Unlike
+    `export_question`, nothing accumulates between calls: the teacher picks the
+    questions, and the file holds exactly those.
+    """
+    questions = "\n".join(
+        _question_xml(workspace, number) for number, workspace in enumerate(workspaces, start=1)
+    )
+    return _template("questionnaire.xml").replace("Macro_Question", questions)
+
+
+def export_question(workspace: RunWorkspace, output_dir: Path | None = None) -> ExportResult:
+    """Append this run's question to the questionnaire file.
+
+    Successive exports accumulate into one file, which is how a whole quiz gets
+    built. The question number is derived from what the file already contains
+    rather than fixed at 1.
+    """
+    directory = output_dir or get_settings().questions_dir
+    directory.mkdir(parents=True, exist_ok=True)
+    output_file = directory / OUTPUT_FILENAME
+
+    existing = output_file.read_text(encoding="utf-8") if output_file.exists() else ""
+    question_number = len(_QUESTION_MARKER.findall(existing)) + 1
+    question_xml = _question_xml(workspace, question_number)
 
     if existing:
         final_xml = existing.replace("</quiz>", question_xml + "\n</quiz>")

@@ -17,6 +17,7 @@ from fastapi import BackgroundTasks
 from fastapi.testclient import TestClient
 
 from codeexpert.api.app import create_app
+from codeexpert.api.deps import get_current_teacher
 from codeexpert.api.drafts import QuestionDraft, to_constraints
 from codeexpert.api.routes.resources import create_question_resource
 from codeexpert.domain import JobRecord, JobState, QuestionState
@@ -30,9 +31,10 @@ from codeexpert.generation.job import (
     start_job,
 )
 from codeexpert.llm import get_llm_client
+from codeexpert.settings import get_settings
 from codeexpert.store import LocalFilesystemStore
 from codeexpert.workspace import DRAFT, FAILURE, RunWorkspace
-from tests.conftest import FakeLLM, FakeRunner
+from tests.conftest import TEST_TEACHER, WEB_CLIENT, FakeLLM, FakeRunner
 from tests.integration.test_resource_api import DRAFT_BODY, INPUTS, SOLUTION_SOURCE
 
 pytestmark = pytest.mark.integration
@@ -67,7 +69,8 @@ def server(llm: FakeLLM, runner: FakeRunner | None = None) -> Iterator[TestClien
     app = create_app()
     app.dependency_overrides[get_llm_client] = lambda: llm
     app.dependency_overrides[get_code_runner] = lambda: runner or FakeRunner()
-    with TestClient(app) as client:
+    app.dependency_overrides[get_current_teacher] = lambda: TEST_TEACHER
+    with TestClient(app, headers=WEB_CLIENT) as client:
         yield client
 
 
@@ -100,7 +103,13 @@ class TestAccepted:
         background = BackgroundTasks()
 
         created = create_question_resource(
-            QuestionDraft(**DRAFT_BODY), background, store, llm, FakeRunner()
+            QuestionDraft(**DRAFT_BODY),
+            background,
+            store,
+            llm,
+            FakeRunner(),
+            TEST_TEACHER,
+            get_settings(),
         )
 
         workspace = RunWorkspace.open(store, created.id)

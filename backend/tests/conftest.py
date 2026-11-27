@@ -16,7 +16,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
+from codeexpert.accounts import Teacher, passwords
 from codeexpert.api.app import create_app
+from codeexpert.api.deps import WEB_CLIENT_HEADER, WEB_CLIENT_VALUE, get_current_teacher
 from codeexpert.domain import JobRecord, JobState, QuestionState, RunMetadata
 from codeexpert.execution import get_code_runner
 from codeexpert.execution.runner import RunOutcome
@@ -194,15 +196,49 @@ def statement_response() -> str:
     )
 
 
-@pytest.fixture
-def client(isolated_settings):
-    """A TestClient whose external effects are all fakes."""
+TEST_TEACHER = Teacher(id="teacher-test", name="Professora Teste", email="prof@example.edu")
+WEB_CLIENT = {WEB_CLIENT_HEADER: WEB_CLIENT_VALUE}
+
+
+@pytest.fixture(autouse=True)
+def cheap_password_hashing(monkeypatch: pytest.MonkeyPatch) -> None:
+    """scrypt at the production cost takes a tenth of a second per call; tests
+    hash dozens of passwords. The stored hash carries its own cost, so nothing
+    else changes."""
+    monkeypatch.setattr(passwords, "SCRYPT_N", 2**8)
+
+
+def _app_with_fakes(*, teacher: Teacher | None):
     app = create_app()
     fake_llm = FakeLLM([])
     fake_runner = FakeRunner()
     app.dependency_overrides[get_llm_client] = lambda: fake_llm
     app.dependency_overrides[get_code_runner] = lambda: fake_runner
-    with TestClient(app) as test_client:
+    if teacher is not None:
+        app.dependency_overrides[get_current_teacher] = lambda: teacher
+    return app, fake_llm, fake_runner
+
+
+@pytest.fixture
+def client(isolated_settings):
+    """A TestClient whose external effects are all fakes, signed in as `TEST_TEACHER`.
+
+    It sends the web client's header on every request, as the SPA does. Tests
+    of the session itself use `anonymous_client`.
+    """
+    app, fake_llm, fake_runner = _app_with_fakes(teacher=TEST_TEACHER)
+    with TestClient(app, headers=WEB_CLIENT) as test_client:
+        test_client.fake_llm = fake_llm
+        test_client.fake_runner = fake_runner
+        yield test_client
+
+
+@pytest.fixture
+def anonymous_client(isolated_settings):
+    """Like `client`, with no session: sign-in and the 401s go through the real code."""
+    app, fake_llm, fake_runner = _app_with_fakes(teacher=None)
+    # https, so the Secure cookie travels back as it does in a browser.
+    with TestClient(app, base_url="https://testserver", headers=WEB_CLIENT) as test_client:
         test_client.fake_llm = fake_llm
         test_client.fake_runner = fake_runner
         yield test_client

@@ -12,8 +12,9 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
 from codeexpert import __version__
+from codeexpert.accounts import AuthLimits
 from codeexpert.api.errors import register_error_handlers
-from codeexpert.api.routes import catalog, health, questions, resources
+from codeexpert.api.routes import catalog, health, questions, resources, session
 from codeexpert.api.spa import mount_spa
 from codeexpert.generation.job import recover_interrupted_jobs
 from codeexpert.settings import get_settings
@@ -54,10 +55,13 @@ def create_app() -> FastAPI:
         title="CodeExpert", version=__version__, description=DESCRIPTION, lifespan=_lifespan
     )
     register_error_handlers(app)
+    # Per app, not per module: each test's app starts with no failed attempts.
+    app.state.auth_limits = AuthLimits()
     app.include_router(health.router)
     app.include_router(catalog.router)
     app.include_router(questions.router)
     app.include_router(resources.router)
+    app.include_router(session.router)
 
     # Last, so the SPA's catch-all only sees what the API routes left behind.
     frontend_dir = get_settings().frontend_dir

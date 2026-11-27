@@ -29,7 +29,7 @@ export const STATUS: Record<QuestionStatus, StatusPresentation> = {
     label: 'Aprovada',
     tone: 'success',
     cardAction: 'Ver questão',
-    actions: ['export', 'edit'],
+    actions: ['export'],
   },
   REJEITADA: {
     label: 'Rejeitada',

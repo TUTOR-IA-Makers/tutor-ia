@@ -40,6 +40,9 @@ Lidas por `Settings` em `backend/src/codeexpert/settings.py`, com prefixo `CODEE
 | `CODEEXPERT_FRONTEND_DIR` | *(vazia)* | Pasta com o build do front-end (`frontend/dist`). Definida, a API serve `/`, as rotas da SPA e `/assets`; caminhos sob `/api/` nunca caem na SPA. Sem `index.html` a API não sobe. A imagem Docker define `/app/frontend`; vazia, `/` redireciona para `/docs` |
 | `CODEEXPERT_STORE_BACKEND` | `local` | Onde os artefatos de uma execução ficam: `local` (disco) ou `postgres` ([ADR-0012](../adr/0012-artifact-store-in-postgres.md)) |
 | `CODEEXPERT_DATABASE_URL` | *(vazia)* | Conexão do Postgres, obrigatória com `postgres`. Tem senha: trate como segredo, também aceita `/run/secrets/codeexpert_database_url` |
+| `CODEEXPERT_SESSION_COOKIE_SECURE` | `true` | Marca o cookie de sessão como `Secure`. Desligue só para testar por http num host que não seja `localhost` ou `127.0.0.1` ([ADR-0019](../adr/0019-accounts-sessions-and-question-ownership.md)) |
+| `CODEEXPERT_SESSION_TTL_HOURS` | `168` | Validade da sessão em horas (7 dias) |
+| `CODEEXPERT_DAILY_GENERATION_LIMIT` | `20` | Gerações que cada professor pode iniciar em 24 horas. Acima disso a API responde `429` com `Retry-After` |
 | `CODEEXPERT_WORKSPACE_ROOT` | `var/runs` | Diretórios das execuções, quando o backend é `local` |
 | `CODEEXPERT_QUESTIONS_DIR` | `var/questions` | Onde o XML é escrito |
 | `CODEEXPERT_COMPILE_TIMEOUT_SECONDS` | `20` | Timeout da compilação |
@@ -55,7 +58,7 @@ Lidas pelo Vite no build e no `make front-dev`, a partir de `frontend/.env.local
 | Variável | Padrão | O que controla |
 | --- | --- | --- |
 | `VITE_PUBLIC_API_MODE` | `mock` no `make front-dev`, `http` no build | `mock` usa dados simulados em memória; `http` chama a API real. O build só usa `mock` quando pedido explicitamente, como faz o `make front-e2e` |
-| `VITE_PUBLIC_API_BASE_URL` | `/api/v1` | Prefixo das rotas da API no modo `http`. O prefixo `/api/v1` é uma proposta e ainda não existe no backend |
+| `VITE_PUBLIC_API_BASE_URL` | `/api/v1` | Prefixo das rotas da API no modo `http`. É o prefixo que o backend usa |
 
 !!! warning "Nome errado é ignorado sem aviso"
     Variáveis desconhecidas são aceitas em silêncio: `CODEEXPERT_LLM_MODELO=...` não faz nada. Confira o que está em uso com `curl http://127.0.0.1:8000/config`.

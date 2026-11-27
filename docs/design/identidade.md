@@ -37,14 +37,14 @@
 | Item | Valor |
 |---|---|
 | Nome oficial | **CodeExpert** |
-| Grafia correta | uma palavra, C e E maiúsculos |
-| Grafias proibidas | Code Expert, Codeexpert, codeexpert, CODEEXPERT, Code-Expert |
+| Grafia correta | uma palavra, só o M maiúsculo |
+| Grafias proibidas | MILANI (fora de siglas e logos), milani em texto corrido |
 | Onde aparece | README, este site, `<title>` das páginas, logo, landing, slides de sprint |
 
-**Por que este nome:** já era o nome adotado na documentação e no repositório antes da S0. Trocar agora geraria retrabalho sem ganho para o professor.
+**Por que este nome:** o produto se chamava CodeExpert até novembro de 2026 e passou a se chamar CodeExpert (decisão D1). A troca também afasta a colisão com a plataforma "Code Expert" da ETH Zurich.
 
-!!! warning "Colisão de nome"
-    Existe uma plataforma educacional chamada "Code Expert" (ETH Zurich), também voltada a exercícios de programação. Como o CodeExpert é de uso interno, por convite e sem fins comerciais, o risco é baixo. Se o projeto for divulgado fora da UnB, a equipe deve rever o nome.
+!!! note "O nome técnico continua `codeexpert`"
+    A troca valeu para tudo o que o professor lê. O pacote Python `codeexpert`, o prefixo `CODEEXPERT_` das variáveis de ambiente, o cabeçalho `X-Requested-With: codeexpert-web`, a classe `CodeExpertError` e os caminhos do deploy mantêm o nome antigo até uma issue própria fazer a troca técnica.
 
 ## 3. Logo
 
@@ -439,13 +439,13 @@ Teste com leitor de tela e com professor de fora da equipe continuam <span class
 
 ## 13. Registro de decisões
 
-??? note "D1: Manter o nome CodeExpert"
+??? note "D1: Nome do produto: CodeExpert"
     | Campo | Valor |
     |---|---|
-    | Contexto | o critério de G5-1 exige um nome usado em todo lugar; o repositório chama `tutor-ia` e a documentação já usa CodeExpert |
-    | Alternativas | Tutor IA; novo nome |
-    | Decisão | CodeExpert |
-    | Consequências | nenhum retrabalho de documentação; risco baixo de colisão com "Code Expert" (ETH Zurich), a rever se o produto sair da UnB |
+    | Contexto | o critério de G5-1 exige um nome usado em todo lugar; o produto nasceu como CodeExpert, nome que colide com "Code Expert" (ETH Zurich) |
+    | Alternativas | manter CodeExpert; Tutor IA |
+    | Decisão | CodeExpert, em novembro de 2026, só na marca; os identificadores técnicos mudam depois |
+    | Consequências | telas, título das abas, nome do arquivo exportado, docs e READMEs dizem CodeExpert; código e deploy ainda dizem `codeexpert` |
 
 ??? note "D2: Paleta derivada da logo, próxima da UnB e do Aprender3"
     | Campo | Valor |

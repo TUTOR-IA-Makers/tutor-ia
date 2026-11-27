@@ -114,7 +114,7 @@ describe('rotas da aplicação', () => {
 
     clock.now += 5000
     expect(
-      await screen.findByRole('heading', { name: /Revisar questão/ }, { timeout: 5000 }),
+      await screen.findByRole('heading', { level: 1, name: 'Par ou ímpar' }, { timeout: 5000 }),
     ).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Par ou ímpar')
 

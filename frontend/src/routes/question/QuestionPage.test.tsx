@@ -42,7 +42,9 @@ describe('QuestionPage', () => {
 
   it('mostra a revisão quando a questão já foi gerada', async () => {
     renderPage('q-0142')
-    expect(await screen.findByRole('heading', { name: /Revisar questão/ })).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Ano bissexto' }),
+    ).toBeInTheDocument()
     expect(document.title).toBe('Ano bissexto · CodeExpert')
   })
 

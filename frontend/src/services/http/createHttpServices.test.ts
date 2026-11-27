@@ -130,7 +130,7 @@ describe('createHttpServices', () => {
     expect(calls[0]).toMatchObject({
       method: 'GET',
       path: '/api/v1/questions',
-      search: '?q=ano&status=GERADA',
+      search: '?q=ano&status=GERADA&page_size=100',
     })
     expect(list).toEqual([
       {

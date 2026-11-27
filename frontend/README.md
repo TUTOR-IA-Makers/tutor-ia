@@ -107,14 +107,14 @@ O que já está pronto no modo `http`:
 
 | Peça | Arquivo |
 | --- | --- |
-| Rotas e prefixo (`/api/v1`, proposta ainda sem ADR) | `services/http/endpoints.ts` |
+| Rotas e prefixo (`/api/v1`) | `services/http/endpoints.ts` |
 | Formato das respostas, validado com Zod | `services/http/dto.ts` |
 | Conversão DTO (snake_case) ↔ domínio (camelCase) | `services/http/mappers.ts` |
 | Cliente: mesma origem, `credentials: 'same-origin'`, header anti-CSRF nas mutações, timeout, query string, download com `Content-Disposition` | `lib/http/` |
 | Erros HTTP, rede e timeout traduzidos para o professor, com o próximo passo (tabela abaixo) | `lib/http/describeError.ts` |
 | Cache, polling da geração a cada 1,5 s e invalidação depois de cada ação | `features/questions/queries.ts` e `mutations.ts` |
 
-O contrato do backend ainda não existe. Endpoints e DTOs são uma proposta. Quando a API ficar pronta:
+Endpoints e DTOs seguem o backend descrito em [Integração front-end](../docs/architecture/frontend-integracao.md). Quando a API mudar:
 
 1. Ajuste `endpoints.ts` e `dto.ts` ao `openapi.json` (ou troque por um cliente gerado a partir do `openapi.json`, por exemplo com o orval).
 2. Ajuste `mappers.ts`. As telas não mudam, porque dependem só do domínio.
@@ -133,7 +133,7 @@ O contrato do backend ainda não existe. Endpoints e DTOs são uma proposta. Qua
 | `503` | Geração indisponível | Avisar a equipe; a biblioteca continua funcionando |
 | outro `5xx` | Erro no servidor | Tentar de novo e, se continuar, avisar a equipe |
 
-O backend já responde `502` quando o provedor de IA falha (`LLMError`) e `503` quando falta configuração (`ConfigurationError`), em `backend/src/codeexpert/api/errors.py`. A cota de gerações (G0-6) ainda não existe no backend: o front espera `429` com `Retry-After` em segundos ou data HTTP, e hoje esse caso só aparece nos testes.
+O backend já responde `502` quando o provedor de IA falha (`LLMError`) e `503` quando falta configuração (`ConfigurationError`), em `backend/src/codeexpert/api/errors.py`. Ele responde `429` com `Retry-After` em segundos quando o professor passa da cota diária de gerações (`CODEEXPERT_DAILY_GENERATION_LIMIT`, padrão 20) e quando há tentativas de login demais. O front também aceita `Retry-After` como data HTTP.
 
 No modo simulado, a questão `q-0142` começa interrompida, para demonstrar o **Retomar geração** sem backend.
 

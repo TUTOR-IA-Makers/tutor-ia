@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router'
 import { useToast } from '@/components/ui'
 import type { Question, QuestionDraft, Statement } from '@/domain'
 import { describeError, isHttpStatus } from '@/lib/http'
@@ -68,13 +69,14 @@ export function useRegenerateQuestion(id: string) {
   const { questions } = useServices()
   const client = useQueryClient()
   const toast = useToast()
+  const navigate = useNavigate()
   return useMutation({
     mutationFn: () => questions.regenerate(id),
-    onSuccess: async () => {
-      await client.invalidateQueries({ queryKey: questionKeys.generation(id) })
-      await client.invalidateQueries({ queryKey: questionKeys.detail(id) })
+    // The server starts a new question and leaves this one as it was.
+    onSuccess: async (created) => {
       void client.invalidateQueries({ queryKey: questionKeys.lists() })
       toast.show({ tone: 'info', title: 'Gerando a questão de novo' })
+      await navigate(`/questoes/${encodeURIComponent(created.id)}`)
     },
     onError: useOnError(id),
   })

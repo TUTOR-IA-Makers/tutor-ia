@@ -57,6 +57,15 @@ class Settings(BaseSettings):
     # `/run/secrets/codeexpert_database_url` and never needs to be in the environment.
     database_url: SecretStr | None = None
 
+    # ── Teachers and sessions ─────────────────────────────────────────────────
+    # Off only for plain-http development on a host browsers do not treat as
+    # secure. localhost and 127.0.0.1 are secure contexts, so `make run` keeps it.
+    session_cookie_secure: bool = True
+    session_ttl_hours: int = Field(default=7 * 24, gt=0)
+    # Generations one teacher may start in any 24 hours. Each one is paid to the
+    # model provider, so the limit is the bill's ceiling, not a courtesy.
+    daily_generation_limit: int = Field(default=20, ge=1)
+
     # ── Filesystem ────────────────────────────────────────────────────────────
     workspace_root: Path = Path("var/runs")
     questions_dir: Path = Path("var/questions")

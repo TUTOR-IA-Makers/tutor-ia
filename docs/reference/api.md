@@ -260,8 +260,10 @@ O formulário do front-end (modo `http`) chama estas rotas. O navegador pede uma
 
 A geração roda numa `BackgroundTask` do FastAPI, no mesmo processo da API, e o estado do job fica no banco: se o servidor reiniciar no meio, o job passa a `INTERROMPIDO` na inicialização seguinte e pode ser [retomado](#post-api-v1-resume) sem repetir as etapas já concluídas. Ver [Geração em segundo plano](../architecture/pipeline.md#geracao-em-segundo-plano).
 
+**Toda rota de questão e de exportação exige sessão** ([abaixo](#sessao)): sem o cookie, `401`. Todo método que muda estado precisa do cabeçalho `X-Requested-With: codeexpert-web`; sem ele, `403`. Cada professor vê e altera só as próprias questões e as que não têm dono (criadas antes das contas existirem). A questão de outro professor responde `404`, como uma que não existe ([ADR-0019](../adr/0019-accounts-sessions-and-question-ownership.md)).
+
 !!! warning "Limitações"
-    Não há fila distribuída nem sessão: as rotas são públicas como o resto da API. A detecção de `INTERROMPIDO` supõe um processo só da API, que é o que roda em produção ([ADR-0017](../adr/0017-resumable-generation-job.md)).
+    Não há fila distribuída. A detecção de `INTERROMPIDO` supõe um processo só da API, que é o que roda em produção ([ADR-0017](../adr/0017-resumable-generation-job.md)). As rotas RPC da raiz (`/gen_statement`, `/questions/{run_id}/approve` e as outras) continuam **sem sessão**.
 
 ### `POST /api/v1/questions` {#post-api-v1-questions}
 
@@ -415,12 +417,12 @@ Responde em qualquer estado, porque o front carrega a questão antes de escolher
 
 | Campo | Origem |
 | --- | --- |
-| `title`, `statement.text` | `statement.json`. Antes da etapa 1, `title` é "Enunciado ainda não gerado" e `text` é vazio |
+| `title`, `statement.text` | `statement.json`. Antes da etapa 1, `title` é "Enunciado ainda não gerado" e `text` é vazio. Quando a primeira linha do texto repete o título, ela sai de `text` |
 | `description`, `content_id`, `difficulty_*`, `structures` | O pedido original, guardado em `draft.json` |
 | `solution` | `solution.c`, ou `null` antes da etapa 2 |
 | `test_cases[].expected_output` | A saída real da execução da solução (etapa 4), nunca do modelo |
 | `code` | O próprio `run_id`; o backend não numera questões |
-| `statement.input`, `statement.output` | Sempre vazios: o enunciado ainda não é separado em blocos |
+| `statement.input`, `statement.output` | Os blocos `[Descricao das entradas]` e `[Descricao das saidas]` do texto gerado, separados na leitura. Vazios quando o texto não os traz |
 | `statement.example`, `actual_output`, `passed`, `compilation` | Sempre `null`: nada os produz ainda |
 | `constraints` | Sempre `[]`: a verificação de escopo (FEAT-024) não existe |
 | `reviewed`, `approved_by`, `approved_at` | O registro da aprovação (`meta.json`). `false`, `null`, `null` até alguém aprovar |
@@ -448,14 +450,11 @@ Erros: `404` (id desconhecido ou execução sem `draft.json`), `409` (job `EM_AN
 ### `POST /api/v1/questions/{id}/approve` {#post-api-v1-approve}
 
 O botão **Aprovar e salvar** da tela de revisão (G4-5). Mesmas regras de
-[`POST /questions/{run_id}/approve`](#post-questions-run_id-approve): mesmo corpo,
-idempotente, `409` para `FALHOU_VERIFICACAO`. A diferença é a resposta: a
-[questão inteira](#get-api-v1-question), já com `status: "APROVADA"`, porque o
+[`POST /questions/{run_id}/approve`](#post-questions-run_id-approve): idempotente,
+`409` para `FALHOU_VERIFICACAO`. Duas diferenças: não tem corpo, porque quem
+aprova é o professor da sessão (um `approved_by` enviado é ignorado), e a resposta
+é a [questão inteira](#get-api-v1-question), já com `status: "APROVADA"`, porque o
 front substitui a sua cópia por ela.
-
-```json title="Corpo"
-{ "approved_by": "Profa. Ana Lima" }
-```
 
 ```json title="200 (trecho)"
 {
@@ -467,12 +466,55 @@ front substitui a sua cópia por ela.
 }
 ```
 
-Erros: `404` (id desconhecido ou execução sem `draft.json`), `409`, `422`.
+Erros: `404` (id desconhecido, execução sem `draft.json` ou questão de outro professor), `409`.
 
-!!! warning "O front ainda não envia o corpo"
-    Hoje `createHttpServices.ts` chama esta rota sem corpo e receberia `422`.
-    Para integrar, a G4-5 precisa enviar `approved_by` e, se quiser mostrar quem
-    aprovou, ler `reviewed`, `approved_by` e `approved_at` em `dto.ts`.
+### `POST /api/v1/questions/{id}/reject` {#post-api-v1-reject}
+
+`GERADA` ou `FALHOU_VERIFICACAO` → `REJEITADA`, sem corpo. Responde com a [questão inteira](#get-api-v1-question). Erros: `404`, `409` (qualquer outro estado).
+
+### `POST /api/v1/questions/{id}/regenerate` {#post-api-v1-regenerate}
+
+Gera de novo a partir do mesmo pedido (`draft.json`), numa **execução nova**: a antiga fica como está, com o seu histórico. Sem corpo. Responde `202 {"id": "<id novo>"}`, como [`POST /api/v1/questions`](#post-api-v1-questions), e conta na mesma cota diária. Erros: `404`, `409` (a questão ainda está `GERANDO`), `429`.
+
+### `PATCH /api/v1/questions/{id}/statement` {#patch-api-v1-statement}
+
+A edição do enunciado na tela de revisão. O título não muda; as três partes são juntadas de volta no texto único que a exportação lê.
+
+```json title="Corpo"
+{ "text": "Leia dois inteiros...", "input": "Dois inteiros, um por linha.", "output": "A soma." }
+```
+
+`text` é obrigatório e não pode ser só espaços; `input` e `output` podem vir vazios. Responde com a [questão inteira](#get-api-v1-question). Só `GERADA` é editável: uma questão aprovada é final. Erros: `404`, `409`, `422`.
+
+### `POST /api/v1/exports/moodle` {#post-api-v1-export}
+
+Um arquivo XML do Moodle CodeRunner com as questões escolhidas, na própria resposta (`Content-Type: application/xml`, `Content-Disposition: attachment; filename="questoes_codeexpert.xml"`). Nada é gravado em disco.
+
+```json title="Corpo"
+{ "question_ids": ["20261105T142233Z-1a2b3c4d", "20261105T150010Z-5e6f7a8b"] }
+```
+
+De 1 a 200 ids; repetidos contam uma vez. Só questões `APROVADA` saem: se alguma não for, a resposta é `409` com o `run_id` dela e nada é exportado. Erros: `404`, `409`, `422`.
+
+### Cota de geração {#cota}
+
+Cada professor pode iniciar `CODEEXPERT_DAILY_GENERATION_LIMIT` gerações (padrão 20) em quaisquer 24 horas, contando `POST /questions` e `/regenerate`. A seguinte responde `429` com `Retry-After` em segundos, o tempo até a mais antiga das 24 horas sair da janela. Retomar (`/resume`) não conta, porque não repete chamadas já pagas.
+
+## Sessão e contas {#sessao}
+
+Contrato descrito em [Integração front-end e backend](../architecture/frontend-integracao.md#5-contrato-de-autenticacao). Todas exigem `X-Requested-With: codeexpert-web` nos métodos `POST`.
+
+| Rota | Resposta |
+| --- | --- |
+| `POST /api/v1/session` com `{email, password}` | `204` e o cookie `session` (`HttpOnly; Secure; SameSite=Lax; Path=/`). E-mail desconhecido e senha errada dão o mesmo `401` |
+| `GET /api/v1/session` | `200 {"name", "department"}` ou `401` |
+| `POST /api/v1/session/logout` | Sempre `204`, com o cookie expirado |
+| `POST /api/v1/accounts` com `{name, email, password, invite_code}` | `201` e sessão aberta. Qualquer recusa (regra de senha, e-mail já cadastrado, convite malformado) dá o mesmo `400` |
+
+- **Senha**: de 10 a 128 caracteres, fora da lista de senhas comuns, diferente do e-mail. Guardada com `scrypt`; o banco guarda só o hash do token da sessão.
+- **Convite**: <span class="ce-badge ce-status--planned">Planejado</span> só o formato é conferido (`^[A-Z0-9-]{6,32}$`, maiúsculas depois de normalizar). Qualquer código bem formado é aceito até os convites existirem.
+- **Limites** (`429` com `Retry-After`): 10 logins errados por e-mail e 100 por IP em 15 minutos; 20 cadastros por IP por hora. Ficam na memória do processo e zeram num reinício.
+- `CODEEXPERT_SESSION_TTL_HOURS` (padrão 168) é a validade da sessão; `CODEEXPERT_SESSION_COOKIE_SECURE=false` tira o `Secure` para desenvolvimento em `http://`.
 
 ---
 
@@ -482,10 +524,14 @@ Os serviços levantam exceções de domínio; `api/errors.py` traduz cada uma pe
 
 | Status | Exceção | Quando |
 | --- | --- | --- |
-| `404` | `RunNotFoundError` | `run_id` inexistente ou com formato inválido (inclusive `../../etc`) |
+| `400` | `AccountRefusedError` | Cadastro recusado. A mensagem é sempre a mesma; o motivo fica só no log |
+| `401` | `NotSignedInError` | Sem sessão, sessão expirada ou credencial errada |
+| `403` | `ForbiddenRequestError` | Método que muda estado sem `X-Requested-With: codeexpert-web` |
+| `404` | `RunNotFoundError` | `run_id` inexistente, com formato inválido (inclusive `../../etc`) ou de outro professor |
 | `409` | `MissingArtefactError` | Etapa chamada antes da anterior. A mensagem diz qual endpoint roda antes |
 | `409` | `InvalidTransitionError` | O estado atual da questão não permite a mudança pedida. A mensagem diz os dois estados |
 | `409` | `JobNotResumableError` | Retomar um job que não está `INTERROMPIDO` |
+| `429` | `TooManyRequestsError` | Tentativas demais ou cota de geração esgotada; o cabeçalho `Retry-After` diz em quantos segundos tentar de novo |
 | `422` | `CompilationError` | A solução não compila; `detail` traz o `stderr` do `gcc` |
 | `422` | `ExecutionError` | Entrada que não terminou no tempo limite, ou `gcc` fora do `PATH` |
 | `422` | validação do Pydantic | Corpo inválido. Aqui `detail` é uma **lista** de objetos, não texto |

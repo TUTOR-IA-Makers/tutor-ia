@@ -39,6 +39,26 @@ class JobNotResumableError(CodeExpertError):
     """Only an interrupted generation can be resumed; this one is running or ended."""
 
 
+class NotSignedInError(CodeExpertError):
+    """No session, an expired one, or credentials that do not match an account."""
+
+
+class AccountRefusedError(CodeExpertError):
+    """The account was not created. Why stays in the log: e-mail taken, bad invite."""
+
+
+class ForbiddenRequestError(CodeExpertError):
+    """A state-changing request without the header only the web client sends."""
+
+
+class TooManyRequestsError(CodeExpertError):
+    """Too many attempts, or the daily generation limit. `retry_after` is in seconds."""
+
+    def __init__(self, message: str, retry_after: int) -> None:
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
 class LLMError(CodeExpertError):
     """The language model provider failed or answered in an unusable shape."""
 

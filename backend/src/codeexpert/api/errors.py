@@ -12,20 +12,28 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from codeexpert.errors import (
+    AccountRefusedError,
     CodeExpertError,
     CompilationError,
     ConfigurationError,
     ExecutionError,
+    ForbiddenRequestError,
     InvalidTransitionError,
     JobNotResumableError,
     LLMError,
     MissingArtefactError,
+    NotSignedInError,
     RunNotFoundError,
+    TooManyRequestsError,
 )
 
 logger = logging.getLogger(__name__)
 
 STATUS_BY_ERROR: list[tuple[type[CodeExpertError], int]] = [
+    (AccountRefusedError, 400),  # one answer for every refusal, so it reveals none
+    (NotSignedInError, 401),
+    (ForbiddenRequestError, 403),
+    (TooManyRequestsError, 429),
     (RunNotFoundError, 404),
     (MissingArtefactError, 409),  # the run exists; the client called steps out of order
     (InvalidTransitionError, 409),  # the question exists; its state forbids the change
@@ -51,4 +59,7 @@ def register_error_handlers(app: FastAPI) -> None:
         content: dict[str, str] = {"detail": str(exc)}
         if exc.run_id is not None:
             content["run_id"] = exc.run_id
-        return JSONResponse(status_code=status, content=content)
+        headers = (
+            {"Retry-After": str(exc.retry_after)} if isinstance(exc, TooManyRequestsError) else None
+        )
+        return JSONResponse(status_code=status, content=content, headers=headers)

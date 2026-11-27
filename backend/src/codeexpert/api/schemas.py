@@ -7,7 +7,7 @@ so a client can drive the pipeline one step at a time.
 
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
 from codeexpert.api.drafts import StructureRules
 from codeexpert.domain import (
@@ -203,9 +203,30 @@ class ExampleView(BaseModel):
 
 class StatementView(BaseModel):
     text: str
-    input: str = Field(default="", description="Not split out of `text` yet; always empty.")
-    output: str = Field(default="", description="Not split out of `text` yet; always empty.")
+    input: str = Field(default="", description="The input block, split out of the stored text.")
+    output: str = Field(default="", description="The output block, split out of the stored text.")
     example: ExampleView | None = Field(default=None, description="Always null for now.")
+
+
+class StatementUpdate(BaseModel):
+    """`PATCH /api/v1/questions/{id}/statement`: the parts the review screen edits."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    text: str = Field(min_length=1, description="The statement body, without the title.")
+    input: str = ""
+    output: str = ""
+
+    @field_validator("text")
+    @classmethod
+    def _not_blank(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("The statement text must not be blank.")
+        return value
+
+
+class MoodleExportRequest(BaseModel):
+    question_ids: list[str] = Field(min_length=1, max_length=200)
 
 
 class TestCaseView(BaseModel):
@@ -297,3 +318,26 @@ __all__ = [
     "StatementResponse",
     "TestCaseResponse",
 ]
+
+
+# ── Session and accounts ──────────────────────────────────────────────────────
+# Only upper bounds here. The rules themselves live in `codeexpert.accounts.policy`,
+# which answers with one generic refusal; a 422 per field would say which rule
+# an e-mail or invite broke.
+
+
+class Credentials(BaseModel):
+    email: str = Field(max_length=320)
+    password: str = Field(max_length=128)
+
+
+class Registration(BaseModel):
+    name: str = Field(max_length=200)
+    email: str = Field(max_length=320)
+    password: str = Field(max_length=128)
+    invite_code: str = Field(max_length=64)
+
+
+class TeacherView(BaseModel):
+    name: str
+    department: str

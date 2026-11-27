@@ -123,13 +123,6 @@ export function createMockServices({
     }
   }
 
-  const restart = (record: Record) => {
-    delete record.stoppedAt
-    record.question = { ...record.question, status: 'GERANDO' }
-    record.startedAt = now()
-    record.runId = `run-${record.question.id}-${String(now())}`
-  }
-
   return {
     catalog: {
       async structures(options) {
@@ -184,25 +177,34 @@ export function createMockServices({
       },
       async regenerate(id) {
         await wait()
-        const record = find(id)
-        if (!can(record.question.status, 'regenerate')) throw conflict(record.question.status)
-        restart(record)
-        record.question = {
-          ...record.question,
-          failureReason: null,
-          constraints: record.question.constraints.map((check) => ({
-            ...check,
-            satisfied: true,
-            detail: null,
-          })),
-        }
-        return { id }
+        const { question } = find(id)
+        if (!can(question.status, 'regenerate')) throw conflict(question.status)
+        // Like the server: a new question from the same request, the old one untouched.
+        sequence += 1
+        const newId = `q-${String(sequence).padStart(4, '0')}`
+        store.set(newId, {
+          question: {
+            ...structuredClone(question),
+            id: newId,
+            code: `#${String(sequence).padStart(4, '0')}`,
+            status: 'GERANDO',
+            failureReason: null,
+            constraints: question.constraints.map((check) => ({
+              ...check,
+              satisfied: true,
+              detail: null,
+            })),
+          },
+          startedAt: now(),
+          runId: `run-${newId}`,
+        })
+        return { id: newId }
       },
       async updateStatement(id, statement) {
         await wait()
         const record = find(id)
         if (!can(record.question.status, 'edit')) throw conflict(record.question.status)
-        record.question = { ...record.question, statement, status: 'GERADA' }
+        record.question = { ...record.question, statement }
         return structuredClone(record.question)
       },
       async exportMoodleXml(ids) {

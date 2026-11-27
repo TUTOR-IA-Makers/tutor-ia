@@ -40,7 +40,7 @@ VITE_PUBLIC_API_MODE=http make front-dev  # terminal 2: front em http://127.0.0.
 
 A variável no shell vence o `frontend/.env`, que costuma estar em `mock`. O Vite repassa `/api` e `/health` para a API, então front e API ficam na mesma origem, como em produção.
 
-O menu da conta, no canto, fica vazio: `GET /api/v1/session` responde `404` até a fase F1, e o front trata isso como "sem sessão". O resto da tela funciona.
+As telas do app pedem sessão. Na primeira vez, abra <http://127.0.0.1:5173/criar-conta> e crie uma conta com qualquer convite no formato `ABC-123`: o backend ainda confere só o formato ([ADR-0019](../adr/0019-accounts-sessions-and-question-ownership.md)). A conta fica em `backend/var/accounts.json` no modo local, ou nas tabelas `teachers` e `sessions` com Postgres. Navegadores aceitam o cookie `Secure` em `127.0.0.1`; em outro host sem `https`, defina `CODEEXPERT_SESSION_COOKIE_SECURE=false`.
 
 ## 3. Gerar pelo formulário
 

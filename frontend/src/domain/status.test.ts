@@ -13,7 +13,7 @@ describe('status', () => {
     expect(can('FALHOU_VERIFICACAO', 'regenerate')).toBe(true)
     expect(can('FALHOU_VERIFICACAO', 'approve')).toBe(false)
     expect(can('APROVADA', 'export')).toBe(true)
-    expect(can('APROVADA', 'edit')).toBe(true)
+    expect(can('APROVADA', 'edit')).toBe(false)
     expect(can('REJEITADA', 'regenerate')).toBe(true)
   })
 })

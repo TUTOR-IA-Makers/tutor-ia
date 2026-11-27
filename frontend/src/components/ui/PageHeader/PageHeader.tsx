@@ -4,6 +4,7 @@ import styles from './PageHeader.module.css'
 export interface PageHeaderProps {
   title: ReactNode
   subtitle?: ReactNode
+  eyebrow?: ReactNode
   description?: ReactNode
   before?: ReactNode
   meta?: ReactNode
@@ -13,6 +14,7 @@ export interface PageHeaderProps {
 export function PageHeader({
   title,
   subtitle,
+  eyebrow,
   description,
   before,
   meta,
@@ -23,6 +25,7 @@ export function PageHeader({
       {before}
       <div className={styles.row}>
         <div className={styles.heading}>
+          {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
           <h1 className={styles.title}>
             {title}
             {subtitle && <span className={styles.subtitle}>{subtitle}</span>}

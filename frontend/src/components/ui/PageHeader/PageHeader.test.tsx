@@ -25,3 +25,11 @@ describe('PageHeader', () => {
     expect(screen.getByRole('button', { name: 'Gerar' })).toBeInTheDocument()
   })
 })
+
+describe('PageHeader com rótulo', () => {
+  it('põe o rótulo fora do h1', () => {
+    render(<PageHeader eyebrow="Revisar questão" title="Ano bissexto" />)
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/^Ano bissexto$/)
+    expect(screen.getByText('Revisar questão')).toBeInTheDocument()
+  })
+})

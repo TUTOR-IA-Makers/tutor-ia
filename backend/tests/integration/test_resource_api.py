@@ -14,6 +14,7 @@ from codeexpert.generation.job import start_job
 from codeexpert.llm import get_llm_client
 from codeexpert.store import LocalFilesystemStore
 from codeexpert.workspace import DRAFT, RunWorkspace
+from tests.conftest import TEST_TEACHER
 
 pytestmark = pytest.mark.integration
 
@@ -100,7 +101,12 @@ class TestSuccess:
         assert body["structures"] == DRAFT_BODY["structures"]
         assert body["constraints"] == []
         assert body["compilation"] is None
-        assert body["statement"]["example"] is None
+        assert body["statement"] == {
+            "text": "Leia dois numeros inteiros e escreva a soma.",
+            "input": "Dois inteiros, um por linha.",
+            "output": "A soma dos dois.",
+            "example": None,
+        }
         assert body["failure_reason"] is None
 
     def test_constraints_from_the_draft_reach_the_run(
@@ -148,16 +154,14 @@ class TestSuccess:
         # The review screen replaces its copy of the question with this response.
         _poll(client, question_id)
 
-        response = client.post(
-            f"/api/v1/questions/{question_id}/approve", json={"approved_by": "Profa. Ana Lima"}
-        )
+        response = client.post(f"/api/v1/questions/{question_id}/approve")
 
         assert response.status_code == 200
         body = response.json()
         assert body["id"] == question_id
         assert body["status"] == "APROVADA"
         assert body["reviewed"] is True
-        assert body["approved_by"] == "Profa. Ana Lima"
+        assert body["approved_by"] == TEST_TEACHER.name
         assert body["approved_at"] is not None
         assert body["test_case_count"] == 2
         assert client.get(f"/api/v1/questions/{question_id}").json() == body
@@ -172,10 +176,12 @@ class TestSuccess:
         assert again.status_code == 200
         assert again.json() == first
 
-    def test_approve_without_a_name_is_422(self, client, question_id) -> None:
+    def test_the_approver_comes_from_the_session_not_the_body(self, client, question_id) -> None:
         _poll(client, question_id)
-        assert client.post(f"/api/v1/questions/{question_id}/approve").status_code == 422
-        assert client.get(f"/api/v1/questions/{question_id}").json()["status"] == "GERADA"
+        response = client.post(
+            f"/api/v1/questions/{question_id}/approve", json={"approved_by": "Outra Pessoa"}
+        )
+        assert response.json()["approved_by"] == TEST_TEACHER.name
 
 
 class TestFailure:
@@ -320,3 +326,100 @@ class TestRejections:
 
         assert client.get(f"/api/v1/questions/{run_id}").status_code == 404
         assert client.get(f"/api/v1/questions/{run_id}/generation").status_code == 404
+
+
+class TestReviewActions:
+    @pytest.fixture
+    def generated(self, client, statement_response) -> str:
+        client.fake_llm._responses = [statement_response, SOLUTION_SOURCE, INPUTS]
+        question_id = _create(client)
+        _poll(client, question_id)
+        return question_id
+
+    def test_reject_answers_with_the_whole_question(self, client, generated) -> None:
+        response = client.post(f"/api/v1/questions/{generated}/reject")
+
+        assert response.status_code == 200
+        assert response.json()["status"] == "REJEITADA"
+
+    def test_rejecting_an_approved_question_is_409(self, client, generated) -> None:
+        client.post(f"/api/v1/questions/{generated}/approve", json={"approved_by": "Profa. Ana"})
+
+        assert client.post(f"/api/v1/questions/{generated}/reject").status_code == 409
+
+    def test_regenerate_starts_a_new_question_from_the_same_draft(
+        self, client, generated, statement_response
+    ) -> None:
+        client.fake_llm._responses = [statement_response, SOLUTION_SOURCE, INPUTS]
+
+        response = client.post(f"/api/v1/questions/{generated}/regenerate")
+
+        assert response.status_code == 202
+        new_id = response.json()["id"]
+        assert new_id != generated
+        assert _poll(client, new_id)["status"] == "GERADA"
+        old = client.get(f"/api/v1/questions/{generated}").json()
+        new = client.get(f"/api/v1/questions/{new_id}").json()
+        assert old["status"] == "GERADA"
+        assert new["structures"] == old["structures"] == DRAFT_BODY["structures"]
+        assert new["description"] == DRAFT_BODY["context"]
+
+    def test_regenerate_while_generating_is_409(self, client, isolated_settings) -> None:
+        store = LocalFilesystemStore(isolated_settings.workspace_root)
+        workspace = RunWorkspace.create(store)
+        start_job(workspace)
+        workspace.write_json(DRAFT, DRAFT_BODY)
+
+        response = client.post(f"/api/v1/questions/{workspace.run_id}/regenerate")
+
+        assert response.status_code == 409
+
+    def test_edit_keeps_the_title_and_splits_the_parts(self, client, generated) -> None:
+        edit = {"text": "Leia dois inteiros.\n\nSome.", "input": "A e B.", "output": "A + B."}
+
+        response = client.patch(f"/api/v1/questions/{generated}/statement", json=edit)
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["title"] == "Soma de dois numeros"
+        assert body["statement"] == {**edit, "example": None}
+        assert client.get(f"/api/v1/questions/{generated}").json() == body
+
+    def test_blank_edit_is_422(self, client, generated) -> None:
+        route = f"/api/v1/questions/{generated}/statement"
+        assert client.patch(route, json={"text": "   "}).status_code == 422
+
+    def test_an_approved_statement_cannot_be_edited(self, client, generated) -> None:
+        client.post(f"/api/v1/questions/{generated}/approve", json={"approved_by": "Profa. Ana"})
+
+        response = client.patch(f"/api/v1/questions/{generated}/statement", json={"text": "Novo."})
+
+        assert response.status_code == 409
+
+    def test_export_sends_one_file_with_the_approved_questions(
+        self, client, generated, statement_response
+    ) -> None:
+        client.fake_llm._responses = [statement_response, SOLUTION_SOURCE, INPUTS]
+        second = _create(client)
+        _poll(client, second)
+        for question_id in (generated, second):
+            client.post(
+                f"/api/v1/questions/{question_id}/approve", json={"approved_by": "Profa. Ana"}
+            )
+
+        response = client.post("/api/v1/exports/moodle", json={"question_ids": [generated, second]})
+
+        assert response.status_code == 200
+        assert response.headers["content-type"].startswith("application/xml")
+        assert 'filename="questoes_codeexpert.xml"' in response.headers["content-disposition"]
+        assert response.text.count('<question type="coderunner"') == 2
+        assert "Soma de dois numeros" in response.text
+
+    def test_export_with_a_question_not_approved_is_409(self, client, generated) -> None:
+        response = client.post("/api/v1/exports/moodle", json={"question_ids": [generated]})
+
+        assert response.status_code == 409
+        assert response.json()["run_id"] == generated
+
+    def test_export_with_no_questions_is_422(self, client) -> None:
+        assert client.post("/api/v1/exports/moodle", json={"question_ids": []}).status_code == 422
